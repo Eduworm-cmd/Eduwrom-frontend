@@ -1,15 +1,11 @@
 import './App.css'
 import { Button } from './components/ui/button'
+import DaysView from './pages/DaysView/DaysView'
 function App() {
 
   return (
     <>
-      <h1 class="bg-sky-200 text-3xl font-bold underline">
-        Hello world!
-      </h1>
-      <div className="flex flex-col items-center justify-center min-h-svh">
-      <Button>Click me</Button>
-    </div>
+      <DaysView/>
     </>
   )
 }
