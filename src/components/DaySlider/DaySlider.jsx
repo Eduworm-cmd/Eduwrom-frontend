@@ -1,47 +1,44 @@
 import React, { useState } from "react";
 import { ChevronLeft, ChevronRight, Info } from "lucide-react";
 
-const days = Array.from({ length: 8 }, (_, i) => 38 + i);
+const days = Array.from({ length: 15 }, (_, i) => 1 + i); // Increased days for better scrolling
 
 const DaySlider = () => {
   const [selectedDay, setSelectedDay] = useState(38);
 
   return (
-    <div className="bg-white p-4 rounded-lg flex flex-col items-center justify-between">
-      {/* Left Arrow */}
-      <button className="text-white p-2">
-        <ChevronLeft size={18} />
-      </button>
-
-      {/* Units */}
-      <div className="flex space-x-2">
-        <button className="bg-black text-white px-4 py-2 rounded-md">Unit 1</button>
-        <button className="bg-purple-400 text-white px-4 py-2 rounded-md">Unit 2</button>
+    <div className="bg-white py-3 rounded-lg flex flex-col items-center">
+      <div className="flex items-start w-full space-x-3 p-2">
+        <button className="py-2 px-4 rounded-lg border bg-sky-700 text-white">Unit 1</button>
+        <button className="py-2 px-4 rounded-lg border bg-white border-gray-400 text-gray-400">Unit 1</button>
+      </div>  
+      <div className="flex items-center w-full">
+        {/* Left Arrow */}
+        <button className="text-gray-400 p-2 cursor-pointer">
+          <ChevronLeft size={18} />
+        </button>
+        {/* Scrollable Days */}
+        <div className="flex space-x-3 overflow-x-auto scrollbar-hide  w-full">
+          {days.map((day) => (
+            <button
+              key={day}
+              className={`px-4 py-3 text-sm cursor-pointer rounded-lg border whitespace-nowrap ${
+                selectedDay === day ? "bg-sky-700 text-white font-bold" : "border-gray-400 text-gray-600"
+              }`}
+              onClick={() => setSelectedDay(day)}
+            >
+              <span className="block text-sm">Day</span>
+              {day}
+            </button>
+          ))}
+        </div>
+        {/* Right Arrow */}
+        <button className="text-gray-400 p-2 cursor-pointer">
+          <ChevronRight size={18} />
+        </button>
       </div>
-
-      {/* Day Buttons */}
-      <div className="flex space-x-3 overflow-auto border scrollbar-hide px-4">
-        {days.map((day) => (
-          <button
-            key={day}
-            className={`px-4 py-3 rounded-lg border ${
-              selectedDay === day ? "bg-white text-black font-bold" : "border-white text-white"
-            }`}
-            onClick={() => setSelectedDay(day)}
-          >
-            <span className="block text-sm">Day</span>
-            {day}
-          </button>
-        ))}
-      </div>
-
-      {/* Right Arrow */}
-      <button className="text-white p-2">
-        <ChevronRight size={18} />
-      </button>
-
       {/* View Summary */}
-      <button className="text-white text-sm underline flex items-center ml-4">
+      <button className="text-gray-400 cursor-pointer text-sm underline flex items-center mt-2">
         <Info size={16} className="mr-1" /> View Unit Summary
       </button>
     </div>

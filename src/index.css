@@ -147,3 +147,7 @@ body {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #2980b9; /* Thumb color on hover */
 }
+
+.scrollbar-hide::-webkit-scrollbar{
+  display: none;
+}
