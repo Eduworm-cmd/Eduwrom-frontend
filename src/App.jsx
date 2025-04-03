@@ -1,17 +1,16 @@
-import './App.css'
-import { Button } from './components/ui/button'
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { TeacherHomePage } from "./pages/Teacheradmin/TeacherHomePage/TeacherHomePage";
+import { Layout } from "./layout/Layout";
 function App() {
-
   return (
-    <>
-      <h1 class="bg-sky-200 text-3xl font-bold underline">
-        Hello world!
-      </h1>
-      <div className="flex flex-col items-center justify-center min-h-svh">
-      <Button>Click me</Button>
-    </div>
-    </>
-  )
+    <BrowserRouter>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route path="/" element={<TeacherHomePage />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
