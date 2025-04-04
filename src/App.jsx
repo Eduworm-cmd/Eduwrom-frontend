@@ -7,6 +7,7 @@ import { CourseView } from "./pages/CourseView/CourseView";
 import UnitSummary from "./components/UnitSummary/UnitSummary";
 import { BookHomePage } from "./pages/Book/BookHomePage/BookHomePage";
 import { BookPreview } from "./pages/Book/BookPreview/BookPreview";
+import { AdminPannelLayout } from "./layout/AdminPannelLayout";
 function App() {
   return (
     <BrowserRouter>
@@ -20,6 +21,8 @@ function App() {
           <Route path="/days" element={<DaysView />} />
           <Route path="/view" element={<CourseView />} />
           <Route path="/unit" element={<UnitSummary />} />
+        </Route>
+        <Route path="/super-admin-pannel" element={<AdminPannelLayout />}>
         </Route>
       </Routes>
     </BrowserRouter>
