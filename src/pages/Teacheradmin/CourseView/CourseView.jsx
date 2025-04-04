@@ -1,6 +1,6 @@
 import { ArrowRight, ChevronDown, ChevronRight, Flower, NotebookPen, PackageOpen, PanelsRightBottom, Target } from 'lucide-react';
 import React, { useState } from 'react';
-import intoGirl from "../../assets/Images/Day-view-girl.png";
+import intoGirl from "../../../assets/Images/Day-view-girl.png";
 
 export const CourseView = () => {
     const [activeTaskIndex, setActiveTaskIndex] = useState(0);

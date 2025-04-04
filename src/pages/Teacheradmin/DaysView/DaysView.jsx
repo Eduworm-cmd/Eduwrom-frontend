@@ -1,6 +1,6 @@
 import React from 'react'
 import "./DaysView.css"
-import intoGirl from "../../assets/Images/Day-view-girl.png"
+import intoGirl from "../../../assets/Images/Day-view-girl.png";
 import { ArrowRight } from 'lucide-react'
 import { Pen, Headphones, Volume2, Clock } from "lucide-react";
 import { useNavigate } from 'react-router-dom';

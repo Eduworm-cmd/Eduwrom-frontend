@@ -128,7 +128,7 @@ const LessonCard = ({ lessons }) => {
                   <span className="text-black flex  px-5 py-1 font-medium hover:underline" style={{backgroundColor : btn}}>
                     {expandedIndex === index ? "View Less" : "View More"}
                   <ChevronRight
-                    className={`w-5 h-5 ml-1 transition-transform text-black duration-300 ${expandedIndex === index ? "rotate-90" : ""
+                    className={`w-5 h-5 ml-1 mt-[4px] transition-transform text-black duration-300 ${expandedIndex === index ? "rotate-90" : ""
                       }`}
                   />
                   </span>
