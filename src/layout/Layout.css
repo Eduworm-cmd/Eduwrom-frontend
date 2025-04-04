@@ -1,0 +1,5 @@
+@media (min-width: 1300px) {
+    .custom-width {
+      width: 30%;
+    }
+  }

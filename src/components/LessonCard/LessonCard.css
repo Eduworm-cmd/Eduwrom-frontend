@@ -1,34 +1,40 @@
 .lessoncard {
-    position: relative;
-    display: inline-block;
-    overflow: hidden;
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
 }
 
 .lession-card-inner {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 85px;
-    height: 85px;
-    background-color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: opacity 0.3s ease-in-out;
-    border-top-left-radius: 10px; /* Optional for rounded effect */
-    border-bottom-right-radius: 1rem;
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 85px;
+  height: 85px;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: opacity 0.3s ease-in-out;
+  border-top-left-radius: 10px; /* Optional for rounded effect */
+  border-bottom-right-radius: 1rem;
 }
 
-.lession-card-inner{
-    background-color: #ffffff;
-    padding: 2px 2px 4px 2px;
+.lession-card-inner {
+  background-color: #ffffff;
+  padding: 2px 2px 4px 2px;
 }
 
+.arrow-icon {
+  transition: transform 0.3s ease;
+}
 
+.hover\:translate-x-2:hover .arrow-icon {
+  transform: translateX(5px); 
+}
 
 @media screen and (min-width: 1200px) {
-    .lessoncard::after {
-        display: none;
-    }
+  .lessoncard::after {
+    display: none;
+  }
 }
