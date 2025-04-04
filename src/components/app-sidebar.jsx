@@ -14,22 +14,23 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { ChevronDown, ChevronRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 // Sample Data
 const data = {
   navMain: [
     {
-      title: "Getting Started",
+      title: "Home",
       items: [
-        { title: "Installation", url: "#" },
-        { title: "Project Structure", url: "#" },
+        { title: "Home", url: "/super-admin-pannel/home" },
       ],
     },
     {
-      title: "Components",
+      title: "Manage Content",
       items: [
-        { title: "Buttons", url: "#" },
-        { title: "Forms", url: "#" },
+        { title: "Course Curriculum", url: '/course-curriculum' },
+        { title: "Add Video Chapters", url: "/video-chaper-upload" },
+        { title: "Add Learning Game", url: "/add-learning-game" },
       ],
     },
   ],
@@ -67,7 +68,7 @@ export function AppSidebar({ ...props }) {
                 {item.items.map((subItem) => (
                   <SidebarMenuItem key={subItem.title}>
                     <SidebarMenuButton asChild>
-                      <a href={subItem.url}>{subItem.title}</a>
+                      <Link href={subItem.url}>{subItem.title}</Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
