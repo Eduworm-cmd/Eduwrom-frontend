@@ -11,7 +11,11 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import DaySlider from "../DaySlider/DaySlider";
+import { SelectCustom } from "../SelectCustom/SelectCustom";
+import { useNavigate } from "react-router-dom";
 export const Header = () => {
+
+  const navigate = useNavigate();
   return (
     <div className="absolute top-0 left-0 w-full bg-white">
       <div className="border-b w-full px-8 py-4 flex items-center justify-center gap-2">
@@ -42,10 +46,10 @@ export const Header = () => {
 
         <div className="flex items-center gap-4 flex-col">
           <div className="flex w-full gap-4 items-center justify-end max-md:gap-2">
-            <button className=" bg-white cursor-pointer border shadow-md transition-all ease-in p-2 text-gray-500 rounded-full hover:bg-sky-600 hover:text-white">
+            <button onClick={() => navigate("/")} className=" bg-white cursor-pointer border shadow-md transition-all ease-in p-2 text-gray-500 rounded-full hover:bg-sky-600 hover:text-white">
               <CalendarDays className="w-5 h-5" />
             </button>
-            <button className=" bg-white border cursor-pointer shadow-md transition-all ease-in p-2 text-gray-500 rounded-full hover:bg-sky-600 hover:text-white">
+            <button onClick={() => navigate("/books")} className="bg-white border cursor-pointer shadow-md transition-all ease-in p-2 text-gray-500 rounded-full hover:bg-sky-600 hover:text-white">
               <Book className="w-5 h-5" />
             </button>
             <Dialog>
@@ -72,16 +76,7 @@ export const Header = () => {
               </DialogContent>
             </Dialog>
           </div>
-          <select
-            id="countries"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-sky-600 focus:border-sky-600 block w-full max-md:w-[90%] p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-sky-600 dark:focus:border-sky-600"
-          >
-            <option  disabled selected hidden> Class</option>
-            <option value="US">United States</option>
-            <option value="CA">Canada</option>
-            <option value="FR">France</option>
-            <option value="DE">Germany</option>
-          </select>
+          <SelectCustom />
         </div>
       </div>
     </div>
