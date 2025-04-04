@@ -140,12 +140,12 @@ body {
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #3498db; /* Thumb color */
+  background: #5f6365; /* Thumb color */
   border-radius: 10px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #2980b9; /* Thumb color on hover */
+  background: #4e5356; /* Thumb color on hover */
 }
 
 .scrollbar-hide::-webkit-scrollbar{

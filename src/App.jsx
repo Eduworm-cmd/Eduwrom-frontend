@@ -6,6 +6,7 @@ import { MainLayout } from "./layout/MainLayout";
 import { CourseView } from "./pages/Teacheradmin/CourseView/CourseView";
 import UnitSummary from "./components/UnitSummary/UnitSummary";
 import { AdminPannelLayout } from "./layout/AdminPannelLayout";
+import { SAHomePage } from "./pages/super-admin-pannel/SAHomePage/SAHomePage";
 import { BookHomePage } from "./pages/Teacheradmin/Book/BookHomePage/BookHomePage";
 import { BookPreview } from "./pages/Teacheradmin/Book/BookPreview/BookPreview";
 function App() {
@@ -15,7 +16,7 @@ function App() {
         <Route element={<Layout />}>
           <Route path="/" element={<TeacherHomePage />} />
           <Route path="/books" element={<BookHomePage />} />
-          <Route path="/book/preview/:id" element={<BookPreview />} />
+          <Route path="/book/preview/:id" element={<BookPreview/>} />
         </Route>
         <Route element={<MainLayout />}>
           <Route path="/days" element={<DaysView />} />
@@ -23,6 +24,7 @@ function App() {
           <Route path="/unit" element={<UnitSummary />} />
         </Route>
         <Route path="/super-admin-pannel" element={<AdminPannelLayout />}>
+          <Route path="home" element={<SAHomePage />} />
         </Route>
       </Routes>
     </BrowserRouter>
