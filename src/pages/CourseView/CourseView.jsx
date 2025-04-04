@@ -1,5 +1,6 @@
-import { ChevronDown, ChevronRight, PackageOpen, Target } from 'lucide-react';
+import { ArrowRight, ChevronDown, ChevronRight, PackageOpen, Target } from 'lucide-react';
 import React, { useState } from 'react';
+import intoGirl from "../../assets/Images/Day-view-girl.png"
 
 export const CourseView = () => {
     const [activeTaskIndex, setActiveTaskIndex] = useState(0);
@@ -50,6 +51,28 @@ export const CourseView = () => {
 
     return (
         <div>
+              <div className="intora-day relative bg-slate-500 p-6 rounded-xl shadow-md text-white w-full max-w-2xl mx-auto flex items-center mt-5">
+                <div className="absolute -top-7 left-4 w-32 h-32 md:w-40 md:h-40 lg:w-48 lg:h-48">
+                    <img
+                        src={intoGirl}
+                        alt="Beronica Peterson"
+                        className="w-full h-full"
+                    />
+                </div>
+                <div className="ml-auto pl-0 md:pl-32 lg:pl-60 w-full">
+                    <h3 className="text-xl md:text-2xl font-semibold">Beronica Peterson</h3>
+                    <p className="text-sm md:text-base text-blue-200">English Teacher</p>
+                    <div className="mt-4 flex items-center space-x-4">
+                        <p className="text-white flex items-center space-x-2">
+                            Moral <ArrowRight className="w-4 h-4" />
+                        </p>
+                        <button className="px-4 py-2 bg-white text-blue-700 rounded-full font-medium">
+                        Social-Emotional
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <div className="p-4 bg-gray-100 min-h-screen">
                 {/* Current Grades Section */}
                 <div className="bg-white p-4 rounded-xl shadow-md mb-4">

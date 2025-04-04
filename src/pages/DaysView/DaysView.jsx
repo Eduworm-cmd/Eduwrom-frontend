@@ -3,8 +3,14 @@ import "./DaysView.css"
 import intoGirl from "../../assets/Images/Day-view-girl.png"
 import { ArrowRight } from 'lucide-react'
 import { Pen, Headphones, Volume2, Clock } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
 
 const DaysView = () => {
+    const navigate = useNavigate();
+
+    const handleViewMore = ()  =>{
+        navigate("/view")
+    }
     return (
         <div>
             <div className="intora-day relative bg-slate-500 p-6 rounded-xl shadow-md text-white w-full max-w-2xl mx-auto flex items-center mt-5">
@@ -48,8 +54,10 @@ const DaysView = () => {
                                 It is recommended that you complete this assign to improve your writing skills for beginner English.
                             </p>
                             <div className="mt-4 flex items-center justify-between">
-                                <button className="px-4 py-2 bg-slate-500 text-white rounded-lg font-medium flex items-center space-x-2">
-                                    Submit →
+                                <button 
+                                 onClick={handleViewMore}
+                                className="px-4 py-2 cursor-pointer bg-slate-500 text-white rounded-lg font-medium flex items-center space-x-2">
+                                    View →
                                 </button>
                                 <div className="flex items-center text-gray-600 text-sm">
                                     <Clock className="mr-1 w-4 h-4" /> 40 Min
@@ -75,8 +83,8 @@ const DaysView = () => {
                                 It is recommended that you complete this assign to improve your listening skills for beginner German.
                             </p>
                             <div className="mt-4 flex items-center justify-between">
-                                <button className="px-4 py-2 bg-white text-slate-500 rounded-lg font-medium flex items-center space-x-2">
-                                    Submit →
+                                <button className="px-4 py-2 cursor-pointer bg-white text-slate-500 rounded-lg font-medium flex items-center space-x-2">
+                                    View →
                                 </button>
                                 <div className="flex items-center text-white text-sm">
                                     <Clock className="mr-1 w-4 h-4" /> 40 Min
@@ -102,8 +110,8 @@ const DaysView = () => {
                                 It is recommended that you complete this assign to improve your speaking skills for beginner English.
                             </p>
                             <div className="mt-4 flex items-center justify-between">
-                                <button className="px-4 py-2 bg-slate-500 text-white rounded-lg font-medium flex items-center space-x-2">
-                                    Submit →
+                                <button className="px-4 py-2 cursor-pointer bg-slate-500 text-white rounded-lg font-medium flex items-center space-x-2">
+                                    View →
                                 </button>
                                 <div className="flex items-center text-gray-600 text-sm">
                                     <Clock className="mr-1 w-4 h-4" /> 40 Min
@@ -132,8 +140,8 @@ const DaysView = () => {
                                 It is recommended that you complete this assign to improve your writing skills for beginner English.
                             </p>
                             <div className="mt-4 flex items-center justify-between">
-                                <button className="px-4 py-2 bg-slate-500 text-white rounded-lg font-medium flex items-center space-x-2">
-                                    Submit →
+                                <button className="px-4 py-2 cursor-pointer bg-slate-500 text-white rounded-lg font-medium flex items-center space-x-2">
+                                    View →
                                 </button>
                                 <div className="flex items-center text-gray-600 text-sm">
                                     <Clock className="mr-1 w-4 h-4" /> 40 Min
@@ -159,8 +167,8 @@ const DaysView = () => {
                                 It is recommended that you complete this assign to improve your listening skills for beginner German.
                             </p>
                             <div className="mt-4 flex items-center justify-between">
-                                <button className="px-4 py-2 bg-white text-slate-500 rounded-lg font-medium flex items-center space-x-2">
-                                    Submit →
+                                <button className="px-4 py-2 cursor-pointer bg-white text-slate-500 rounded-lg font-medium flex items-center space-x-2">
+                                    View →
                                 </button>
                                 <div className="flex items-center text-white text-sm">
                                     <Clock className="mr-1 w-4 h-4" /> 40 Min
@@ -186,8 +194,8 @@ const DaysView = () => {
                                 It is recommended that you complete this assign to improve your speaking skills for beginner English.
                             </p>
                             <div className="mt-4 flex items-center justify-between">
-                                <button className="px-4 py-2 bg-slate-500 text-white rounded-lg font-medium flex items-center space-x-2">
-                                    Submit →
+                                <button className="px-4 py-2 cursor-pointer bg-slate-500 text-white rounded-lg font-medium flex items-center space-x-2">
+                                    View →
                                 </button>
                                 <div className="flex items-center text-gray-600 text-sm">
                                     <Clock className="mr-1 w-4 h-4" /> 40 Min

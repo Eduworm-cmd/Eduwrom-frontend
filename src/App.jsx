@@ -4,6 +4,7 @@ import { Layout } from "./layout/Layout";
 import DaysView from "./pages/DaysView/DaysView";
 import { MainLayout } from "./layout/MainLayout";
 import { CourseView } from "./pages/CourseView/CourseView";
+import UnitSummary from "./components/UnitSummary/UnitSummary";
 function App() {
   return (
     <BrowserRouter>
@@ -14,6 +15,7 @@ function App() {
         <Route element={<MainLayout />}>
           <Route path="/days" element={<DaysView />} />
           <Route path="/view" element={<CourseView />} />
+          <Route path="/unit" element={<UnitSummary />} />
         </Route>
       </Routes>
     </BrowserRouter>
