@@ -5,9 +5,9 @@ import DaysView from "./pages/Teacheradmin/DaysView/DaysView";
 import { MainLayout } from "./layout/MainLayout";
 import { CourseView } from "./pages/Teacheradmin/CourseView/CourseView";
 import UnitSummary from "./components/UnitSummary/UnitSummary";
-import { BookHomePage } from "./pages/Book/BookHomePage/BookHomePage";
-import { BookPreview } from "./pages/Book/BookPreview/BookPreview";
 import { AdminPannelLayout } from "./layout/AdminPannelLayout";
+import { BookHomePage } from "./pages/Teacheradmin/Book/BookHomePage/BookHomePage";
+import { BookPreview } from "./pages/Teacheradmin/Book/BookPreview/BookPreview";
 function App() {
   return (
     <BrowserRouter>
