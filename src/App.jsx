@@ -5,12 +5,16 @@ import DaysView from "./pages/DaysView/DaysView";
 import { MainLayout } from "./layout/MainLayout";
 import { CourseView } from "./pages/CourseView/CourseView";
 import UnitSummary from "./components/UnitSummary/UnitSummary";
+import { BookHomePage } from "./pages/Book/BookHomePage/BookHomePage";
+import { BookPreview } from "./pages/Book/BookPreview/BookPreview";
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<TeacherHomePage />} />
+          <Route path="/books" element={<BookHomePage />} />
+          <Route path="/book/preview/:id" element={<BookPreview />} />
         </Route>
         <Route element={<MainLayout />}>
           <Route path="/days" element={<DaysView />} />

@@ -1,10 +1,16 @@
 import React, { useState } from "react";
 import { ChevronLeft, ChevronRight, Info } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-const days = Array.from({ length: 15 }, (_, i) => 1 + i); // Increased days for better scrolling
+const days = Array.from({ length: 15 }, (_, i) => 1 + i); 
 
 const DaySlider = () => {
   const [selectedDay, setSelectedDay] = useState(38);
+  const navigate = useNavigate();
+
+  const handleViewSummary = () => {
+    navigate("/unit");
+  }
 
   return (
     <div className="bg-white py-3 rounded-lg flex flex-col items-center">
@@ -38,7 +44,7 @@ const DaySlider = () => {
         </button>
       </div>
       {/* View Summary */}
-      <button className="text-gray-400 cursor-pointer text-sm underline flex items-center mt-2">
+      <button className="text-gray-400 cursor-pointer text-sm underline flex items-center mt-2" onClick={handleViewSummary}>
         <Info size={16} className="mr-1" /> View Unit Summary
       </button>
     </div>

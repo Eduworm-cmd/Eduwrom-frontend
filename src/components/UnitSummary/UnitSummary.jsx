@@ -57,7 +57,7 @@ const UnitDocuments = () => {
           <button
             className={`px-4 py-2 rounded-lg font-medium transition-all w-1/2 ${
               activeUnit === "Unit-1"
-                ? "bg-purple-600 text-white shadow-md"
+                ? "bg-slate-500 text-white shadow-md"
                 : "bg-gray-300 text-gray-700"
             }`}
             onClick={() => setActiveUnit("Unit-1")}
@@ -67,7 +67,7 @@ const UnitDocuments = () => {
           <button
             className={`px-4 py-2 rounded-lg font-medium transition-all w-1/2 ${
               activeUnit === "Unit-2"
-                ? "bg-purple-600 text-white shadow-md"
+                ? "bg-slate-500 text-white shadow-md"
                 : "bg-gray-300 text-gray-700"
             }`}
             onClick={() => setActiveUnit("Unit-2")}
@@ -77,7 +77,7 @@ const UnitDocuments = () => {
           <button
             className={`px-4 py-2 rounded-lg font-medium transition-all w-1/2 ${
               activeUnit === "Unit-3"
-                ? "bg-purple-600 text-white shadow-md"
+                ? "bg-slate-500 text-white shadow-md"
                 : "bg-gray-300 text-gray-700"
             }`}
             onClick={() => setActiveUnit("Unit-3")}
@@ -87,7 +87,7 @@ const UnitDocuments = () => {
           <button
             className={`px-4 py-2 rounded-lg font-medium transition-all w-1/2 ${
               activeUnit === "Unit-4"
-                ? "bg-purple-600 text-white shadow-md"
+                ? "bg-slate-500 text-white shadow-md"
                 : "bg-gray-300 text-gray-700"
             }`}
             onClick={() => setActiveUnit("Unit-4")}
@@ -102,7 +102,7 @@ const UnitDocuments = () => {
               key={index}
               className="flex items-center bg-slate-200 p-4 shadow-md rounded-lg transition-transform hover:scale-105 hover:shadow-lg"
             >
-              <FileText className="text-purple-600 w-6 h-6 mr-3" />
+              <FileText className="text-slate-500 w-6 h-6 mr-3" />
               <div>
                 <h3 className="text-lg font-semibold text-gray-800">{doc.title}</h3>
                 <p className="text-sm text-gray-500">Added on: {doc.date}</p>
