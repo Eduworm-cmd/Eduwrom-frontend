@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-
 import { AppSidebar } from "@/components/app-sidebar";
 import {
   Breadcrumb,
@@ -15,16 +14,23 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Outlet, useLocation } from "react-router-dom";
+import { MangeRoles, Roles } from "@/utils/roles";
 
 export const AdminPannelLayout = () => {
   const [path, setpath] = useState({
     currentpath: "",
     paths: [],
   });
+  const [roles, setRoles] = useState(null);
   const location = useLocation();
 
   useEffect(() => {
+    const role = Roles.TEACHER;
+    const paths = MangeRoles(role);
+    setRoles(paths)
+
     const pathsarr = location.pathname.split("/");
+
     setpath({
       ...path,
       currentpath: location.pathname,
@@ -32,14 +38,18 @@ export const AdminPannelLayout = () => {
     });
   }, []);
 
+
+
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar data={roles} />
       <SidebarInset>
+
         <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="mr-2 h-4" />
           <Breadcrumb>
+
             <BreadcrumbList>
               {path.paths.map((item, index) => (
                 <React.Fragment key={index}>
@@ -54,8 +64,10 @@ export const AdminPannelLayout = () => {
                 </React.Fragment>
               ))}
             </BreadcrumbList>
+
           </Breadcrumb>
         </header>
+
         <div className="w-full h-full p-4">
           <Outlet />
         </div>

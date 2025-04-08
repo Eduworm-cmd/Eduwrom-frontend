@@ -47,6 +47,7 @@ const data = [
   { id: "PRE43174", name: "Diana Plenty", marks: 1165, percent: "91%", year: 2014 },
   { id: "PRE43187", name: "John Millar", marks: 1175, percent: "92%", year: 2014 },
 ];
+
 export const SAHomePage = () => {
   return (
     <div className="flex flex-col gap-4">
