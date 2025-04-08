@@ -13,10 +13,12 @@ import { Add_Vedio } from "./components/Add_Vedio/Add_Vedio";
 import { Add_Content } from "./pages/ContentAdmin/Add_Content";
 import RichtoolEditor from "./components/RichtoolEditor/RichtoolEditor";
 import { Content_Manage } from "./pages/ContentAdmin/Content_Manage";
+import Login_SignUp from "./auth/Login_SignUp";
 function App() {
   return (
     <BrowserRouter>
       <Routes>
+          <Route path="/login" element={<Login_SignUp/>} />
         <Route element={<Layout />}>
           <Route path="/" element={<TeacherHomePage />} />
           <Route path="/books" element={<BookHomePage />} />
