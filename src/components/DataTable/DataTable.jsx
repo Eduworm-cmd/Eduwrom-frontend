@@ -46,9 +46,7 @@ const DataTable = ({ columns, data, title, onView, onDelete }) => {
           {/* Table Head */}
           <thead className="bg-primary text-white">
             <tr className="text-left uppercase tracking-wide">
-              <th className="p-3">
-                <input type="checkbox" disabled className="cursor-not-allowed" />
-              </th>
+              
               {columns.map((col) => (
                 <th key={col.key} className="p-3 font-semibold">{col.label}</th>
               ))}
@@ -63,14 +61,6 @@ const DataTable = ({ columns, data, title, onView, onDelete }) => {
                 key={item.id}
                 className="hover:bg-gray-100 transition cursor-pointer"
               >
-                <td className="p-3">
-                  <input
-                    type="checkbox"
-                    checked={selectedRows.includes(item.id)}
-                    onChange={() => handleSelect(item.id)}
-                    className="accent-sky-600 cursor-pointer"
-                  />
-                </td>
                 {columns.map((col) => (
                   <td key={col.key} className="p-3 text-gray-700">
                     {col.render ? col.render(item[col.key], item) : item[col.key]}
