@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/sidebar";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import { FooterUserDropdown } from "./FooterUserDropdown/FooterUserDropdown";
 
 export function AppSidebar({ data, ...props }) {
   const [openMenu, setOpenMenu] = useState(null);
@@ -28,20 +29,24 @@ export function AppSidebar({ data, ...props }) {
     return <div>Loading...</div>;
   }
 
+
+  function truncateAfterWords(str, wordLimit = 3) {
+    const words = str.split(' ');
+    if (words.length <= wordLimit) return str;
+    return words.slice(0, wordLimit).join(' ') + '...';
+  }
+
   return (
     <Sidebar {...props}>
       <SidebarHeader>
         <VersionSwitcher />
         <SearchForm />
       </SidebarHeader>
-
-      <SidebarContent className={"mt-4"}>
-        {/* Rendering Buttons outside of navMain */}
-        {data.buttons && (
+      {data.buttons && (
           <div className="buttons">
             {data.buttons.map((button) => (
               <SidebarGroupLabel
-                className="flex justify-center items-center py-5 cursor-pointer border-2 text-[14px] w-60 mx-auto text-left px-3 bg-blue-500"
+                className="flex justify-center mt-4 text-white items-center py-5 cursor-pointer border-2 text-[14px] w-60 mx-auto text-left px-3 bg-sky-500"
               >
                 <Link to={button.url} className="flex items-center py-2">
                   <button.icon size={16} />
@@ -52,6 +57,9 @@ export function AppSidebar({ data, ...props }) {
             ))}
           </div>
         )}
+      <SidebarContent className={"mt-2"}>
+        {/* Rendering Buttons outside of navMain */}
+        
 
         {/* Rendering Sidebar Groups for each navMain section */}
         {data.navMain.map((item) => (
@@ -80,7 +88,7 @@ export function AppSidebar({ data, ...props }) {
             >
               {/* <item.icon size={16} /> */}
 
-              {item.title}
+              {truncateAfterWords(item.title)}
               {openMenu === item.title ? (
                 <ChevronDown size={16} />
               ) : (
@@ -107,25 +115,7 @@ export function AppSidebar({ data, ...props }) {
       </SidebarContent>
 
       <SidebarFooter>
-        <div className="py-2 text-center text-sm text-gray-500">
-          {
-            data.footersBtns && data.footersBtns.length > 0 ? (
-              data.footersBtns.map((button) => (
-                <SidebarGroupLabel
-                  className="flex justify-center items-center py-5 cursor-pointer border-2 text-[14px] w-60 mx-auto text-left px-3 bg-blue-500"
-                >
-                  <Link to={button.url} className="flex items-center py-2">
-                    <button.icon size={16} />
-                    <span className="ml-2">{button.title}</span>
-                  </Link>
-
-                </SidebarGroupLabel>
-              ))
-            ) : (
-              null
-            )
-          }
-        </div>
+        <FooterUserDropdown/>
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

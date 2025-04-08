@@ -18,7 +18,7 @@ export const Add_Vedio = () => {
 
     return (
         <div>
-            <DataTable columns={columns} data={data} title="Add Vedio" />
+            Table columns={columns} data={data} title="Add Vedio" />
         </div>
     )
 }

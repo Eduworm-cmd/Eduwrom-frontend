@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Pencil, Trash, Search, Eye } from "lucide-react";
+import { SearchableDropdown } from "../SearchableDropdown/SearchableDropdown";
 
-const DataTable = ({ columns, data, title, onView, onDelete }) => {
+const DataTable = ({ columns, data, title, onView, onDelete, isDropdown,dropdownData ,handleSearchDropdown}) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
 
@@ -23,16 +24,26 @@ const DataTable = ({ columns, data, title, onView, onDelete }) => {
     )
   );
 
+
+
+
   return (
-    <div className="bg-white p-6 rounded-md w-full">
+    <div className="bg-white rounded-md w-full">
       {/* Header Section */}
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold capitalize text-[#FF9800] font-mono tracking-wide">{title}</h2>
+      <h1>Student List</h1>
+      <div className="flex items-center justify-between mb-4 bg-blue-400 rounded-sm shadow-md px-2 py-2">
+        {
+          isDropdown && (
+            <SearchableDropdown
+            onSelect={handleSearchDropdown}  
+            dropdownProps={dropdownData}
+          />)
+        }
         <div className="relative">
           <input
             type="text"
             placeholder="Search..."
-            className="w-full bg-white max-w-[250px] p-2 pl-10 border rounded-full focus:outline-none focus:ring-2 focus:ring-sky-500 transition"
+            className="w-full bg-white max-w-[250px] p-2 pl-10 border rounded-sm focus:outline-none focus:ring-2 focus:ring-sky-500 transition"
             value={searchTerm}
             onChange={handleSearch}
           />
@@ -44,7 +55,7 @@ const DataTable = ({ columns, data, title, onView, onDelete }) => {
       <div className="overflow-x-auto rounded-lg shadow-md">
         <table className="w-full border-collapse rounded-lg overflow-hidden">
           {/* Table Head */}
-          <thead className="bg-gradient-to-r from-[#FFC107] to-[#FF9800] text-white">
+          <thead className="bg-primary text-white">
             <tr className="text-left uppercase tracking-wide">
               <th className="p-3">
                 <input type="checkbox" disabled className="cursor-not-allowed" />
@@ -89,6 +100,7 @@ const DataTable = ({ columns, data, title, onView, onDelete }) => {
           </tbody>
         </table>
       </div>
+      
     </div>
   );
 };

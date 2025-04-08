@@ -17,16 +17,17 @@ import { Outlet, useLocation } from "react-router-dom";
 import { MangeRoles, Roles } from "@/utils/roles";
 
 export const AdminPannelLayout = () => {
+
+  const [roles, setRoles] = useState({});
   const [path, setpath] = useState({
     currentpath: "",
     paths: [],
-  });
-  const [roles, setRoles] = useState(null);
+  });  
   const location = useLocation();
 
   useEffect(() => {
-    const role = Roles.TEACHER;
-    const paths = MangeRoles(role);
+    const userrole = Roles.SUPERADMIN
+    const paths = MangeRoles(userrole);
     setRoles(paths)
 
     const pathsarr = location.pathname.split("/");
@@ -44,7 +45,8 @@ export const AdminPannelLayout = () => {
     <SidebarProvider>
       <AppSidebar data={roles} />
       <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+
+        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 fixed bg-white w-full z-30">
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="mr-2 h-4" />
           <Breadcrumb>
@@ -67,7 +69,7 @@ export const AdminPannelLayout = () => {
           </Breadcrumb>
         </header>
 
-        <div className="w-full h-full p-4">
+        <div className="w-full h-full p-4 mt-16">
           <Outlet />
         </div>
       </SidebarInset>

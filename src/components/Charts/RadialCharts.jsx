@@ -7,9 +7,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 
 const chartData = [
-  { browser: "chrome", visitors: 275, fill: "var(--color-chart-5)" },
-  { browser: "safari", visitors: 200, fill: "var(--color-chart-4)" },
-];
+  { browser: "chrome", visitors: 275, fill: "var(--color-chart-1)" },
+  { browser: "safari", visitors: 200, fill: "var(--color-chart-2)" },
+]
 
 const chartConfig = {
   visitors: {
