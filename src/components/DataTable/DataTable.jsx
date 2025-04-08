@@ -27,7 +27,7 @@ const DataTable = ({ columns, data, title, onView, onDelete }) => {
     <div className="bg-white p-6 rounded-md w-full">
       {/* Header Section */}
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold capitalize text-[#FF9800] font-mono tracking-wide">{title}</h2>
+        <h2 className="text-lg font-semibold capitalize text-gray-800 font-sans">{title}</h2>
         <div className="relative">
           <input
             type="text"
@@ -44,7 +44,7 @@ const DataTable = ({ columns, data, title, onView, onDelete }) => {
       <div className="overflow-x-auto rounded-lg shadow-md">
         <table className="w-full border-collapse rounded-lg overflow-hidden">
           {/* Table Head */}
-          <thead className="bg-gradient-to-r from-[#FFC107] to-[#FF9800] text-white">
+          <thead className="bg-primary text-white">
             <tr className="text-left uppercase tracking-wide">
               <th className="p-3">
                 <input type="checkbox" disabled className="cursor-not-allowed" />

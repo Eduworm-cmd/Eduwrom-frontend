@@ -11,8 +11,9 @@ import { BookHomePage } from "./pages/Teacheradmin/Book/BookHomePage/BookHomePag
 import { BookPreview } from "./pages/Teacheradmin/Book/BookPreview/BookPreview";
 import { Add_Vedio } from "./components/Add_Vedio/Add_Vedio";
 import { Add_Content } from "./pages/ContentAdmin/Add_Content";
-import RichtoolEditor from "./components/RichtoolEditor/RichtoolEditor";
 import { Content_Manage } from "./pages/ContentAdmin/Content_Manage";
+import { SchoolList } from "./pages/super-admin-pannel/SAThemeBrandingControl/SchoolList/SchoolList";
+import { AddSchool } from "./pages/super-admin-pannel/SAThemeBrandingControl/AddSchool/AddSchool";
 function App() {
   return (
     <BrowserRouter>
@@ -29,9 +30,13 @@ function App() {
           <Route path="/unit" element={<UnitSummary />} />
         </Route>
 
-        <Route path="/super-admin-pannel" element={<AdminPannelLayout />}>
+        <Route path="/eduworm-admin" element={<AdminPannelLayout />}>
           {/* Super Admin Panel Routes */}
           <Route path="home" element={<SAHomePage />} />
+          <Route path="school/list" element={<SchoolList />} />
+          <Route path="school/add" element={<AddSchool />} />
+
+
           <Route path="video-chapter-upload" element={<Add_Vedio />} />
 
           
