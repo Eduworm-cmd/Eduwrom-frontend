@@ -13,11 +13,11 @@ export const StepperSidebar = ({ handleactiveStep, stepperSidebar, activeindex }
   }, [activeindex, stepperSidebar.length]);
 
   return (
-    <div className="w-full relative pr-8">
+    <div className="w-full relative pr-8 flex flex-row md:flex-col">
       {/* Vertical line */}
-      <div className="h-full w-3 rounded-t-2xl overflow-hidden rounded-b-2xl right-10 bg-gray-200 absolute">
+      <div className="md:h-full md:w-3 w-full h-0 rounded-t-2xl overflow-hidden rounded-b-2xl bottom-5 md:right-10 bg-gray-200 absolute">
         <div
-          style={{ height: `${height}%` }}
+          style={{ height: `${height}%`  }}
           className="rounded-t-2xl w-3 bg-primary transition-all duration-300"
         />
       </div>
@@ -28,11 +28,11 @@ export const StepperSidebar = ({ handleactiveStep, stepperSidebar, activeindex }
           <div
             key={index}
             onClick={() => handleactiveStep(index)}
-            className="relative flex items-center justify-end mb-10 gap-4 cursor-pointer pr-8"
+            className="flex flex-col-reverse md:flex-row justify-center  items-center md:justify-end mb-10 gap-4 cursor-pointer pr-8"
           >
             <div className="ml-4">
               <div
-                className={`text-sm font-semibold ${
+                className={`text-sm max-md:text-xs font-semibold ${
                   activeindex === index ? "text-slate-800" : "text-slate-500"
                 }`}
               >

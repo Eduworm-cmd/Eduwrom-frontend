@@ -15,17 +15,18 @@ import { Content_Manage } from "./pages/ContentAdmin/Content_Manage";
 import { SchoolList } from "./pages/super-admin-pannel/SAThemeBrandingControl/SchoolList/SchoolList";
 import { AddSchool } from "./pages/super-admin-pannel/SAThemeBrandingControl/AddSchool/AddSchool";
 import Login_SignUp from "./auth/Login_SignUp";
+import { SALSHome } from "./pages/super-admin-pannel/SALicenseSubscription/SALSHome/SALSHome";
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-          <Route path="/login" element={<Login_SignUp/>} />
+        <Route path="/login" element={<Login_SignUp />} />
         <Route element={<Layout />}>
           <Route path="/" element={<TeacherHomePage />} />
           <Route path="/books" element={<BookHomePage />} />
-          <Route path="/book/preview/:id" element={<BookPreview/>} />
+          <Route path="/book/preview/:id" element={<BookPreview />} />
         </Route>
-        
+
         <Route element={<MainLayout />}>
           <Route path="/days" element={<DaysView />} />
           <Route path="/view" element={<CourseView />} />
@@ -33,18 +34,14 @@ function App() {
         </Route>
 
         <Route path="/eduworm-admin" element={<AdminPannelLayout />}>
-          {/* Super Admin Panel Routes */}
           <Route path="home" element={<SAHomePage />} />
           <Route path="school/list" element={<SchoolList />} />
           <Route path="school/add" element={<AddSchool />} />
           <Route path="video-chapter-upload" element={<Add_Vedio />} />
-
-          
-         {/* Teacher Admin Panel Routes */}
-          <Route path="content/mange" element={<Content_Manage/>} />
+          <Route path="content/mange" element={<Content_Manage />} />
           <Route path="content/add" element={<Add_Content />} />
+          <Route path="licens-subscription-home" element={<SALSHome />} />
         </Route>
-
       </Routes>
     </BrowserRouter>
   );

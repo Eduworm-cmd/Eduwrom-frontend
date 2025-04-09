@@ -11,6 +11,7 @@ const DataTable = ({
   isDropdown,
   dropdownData,
   handleSearchDropdown,
+  actionButtons,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
@@ -99,18 +100,27 @@ const DataTable = ({
             value={searchTerm}
             onChange={handleSearch}
           />
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" size={18} />
+          <Search
+            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+            size={18}
+          />
         </div>
       </div>
 
       {/* Table Section - Modernized design */}
       <div className="border border-gray-200 rounded-lg overflow-hidden shadow-sm">
         {/* Table Header */}
-        <div className="bg-slate-300 border-b border-gray-200">
-          <div className="grid" style={{ gridTemplateColumns: `repeat(${columns.length + 1}, minmax(0, 1fr))` }}>
+        <div className="bg-slate-100 border-b">
+          <div
+            className="grid"
+            style={{
+              gridTemplateColumns: `repeat(${
+                columns.length + 1
+              }, minmax(0, 1fr))`,
+            }}
+          >
             {columns.map((col, idx) => {
-              const colWidth = idx === 0 ? '2fr' :
-                idx === 2 ? '4fr' : '3fr';
+              const colWidth = idx === 0 ? "2fr" : idx === 2 ? "4fr" : "3fr";
 
               return (
                 <div
@@ -134,20 +144,27 @@ const DataTable = ({
             <div
               key={index}
               className="grid border-b border-gray-200 hover:bg-gray-50 transition-colors"
-              style={{ gridTemplateColumns: `repeat(${columns.length + 1}, minmax(0, 1fr))` }}
+              style={{
+                gridTemplateColumns: `repeat(${
+                  columns.length + 1
+                }, minmax(0, 1fr))`,
+              }}
             >
               {columns.map((col, idx) => {
                 // Use inline styles for dynamic column sizing
-                const colWidth = idx === 0 ? '2fr' :
-                  idx === 2 ? '4fr' : '3fr';
+                const colWidth = idx === 0 ? "2fr" : idx === 2 ? "4fr" : "3fr";
 
-                const cellContent = col.render ? col.render(item[col.key], item) : item[col.key];
+                const cellContent = col.render
+                  ? col.render(item[col.key], item)
+                  : item[col.key];
                 const isName = idx === 0;
 
                 return (
                   <div
                     key={col.key}
-                    className={`p-4 ${isName ? 'font-medium text-gray-900' : 'text-gray-600'}`}
+                    className={`p-4 ${
+                      isName ? "font-medium text-gray-900" : "text-gray-600"
+                    }`}
                     style={{ gridColumn: `span 1 / span 1` }}
                   >
                     {cellContent}
@@ -155,12 +172,21 @@ const DataTable = ({
                 );
               })}
               <div className="p-4 flex justify-center">
-                <button
-                  onClick={() => onView(item)}
-                  className="text-blue-600 hover:text-blue-800 font-medium"
-                >
-                  Edit
-                </button>
+                {actionButtons.map((button, idx) => {
+                  const Icon = button.icon;
+                  return (
+                    <button
+                      key={idx}
+                      className={`py-2 px-4 rounded mr-2 ${
+                        button.className
+                      }`}
+                      onClick={() => button.onClick(item)}
+                      title={button.label} // optional tooltip
+                    >
+                      <Icon size={18} />
+                    </button>
+                  );
+                })}
               </div>
             </div>
           ))}
@@ -191,13 +217,20 @@ const DataTable = ({
         <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
           <div>
             <p className="text-sm text-gray-700">
-              Showing <span className="font-medium">{indexOfFirstItem + 1}</span> to{" "}
-              <span className="font-medium">{Math.min(indexOfLastItem, filteredData.length)}</span> of{" "}
-              <span className="font-medium">{filteredData.length}</span> results
+              Showing{" "}
+              <span className="font-medium">{indexOfFirstItem + 1}</span> to{" "}
+              <span className="font-medium">
+                {Math.min(indexOfLastItem, filteredData.length)}
+              </span>{" "}
+              of <span className="font-medium">{filteredData.length}</span>{" "}
+              results
             </p>
           </div>
           <div>
-            <nav aria-label="Pagination" className="isolate inline-flex -space-x-px rounded-md shadow-xs">
+            <nav
+              aria-label="Pagination"
+              className="isolate inline-flex -space-x-px rounded-md shadow-xs"
+            >
               <a
                 href="#"
                 onClick={() => paginate(currentPage - 1)}
@@ -209,23 +242,29 @@ const DataTable = ({
               </a>
 
               {/* Render Pagination Range */}
-              {paginationRange().map((page, index) => (
+              {paginationRange().map((page, index) =>
                 page === "..." ? (
-                  <span key={index} className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300">...</span>
+                  <span
+                    key={index}
+                    className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300"
+                  >
+                    ...
+                  </span>
                 ) : (
                   <a
                     key={index}
                     href="#"
                     onClick={() => paginate(page)}
-                    className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${currentPage === page
+                    className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
+                      currentPage === page
                         ? "bg-indigo-600 text-white"
                         : "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                      }`}
+                    }`}
                   >
                     {page}
                   </a>
                 )
-              ))}
+              )}
 
               <a
                 href="#"

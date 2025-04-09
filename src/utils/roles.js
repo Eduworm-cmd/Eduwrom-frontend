@@ -24,7 +24,6 @@ const adminData = {
     },
   ],
   navMain: [
-    
     {
       title: "Theme & Branding Control",
       icon: Users,
@@ -37,7 +36,7 @@ const adminData = {
       title: "License & Subscription",
       icon: Users,
       items: [
-        { title: "Teachers List", url: "/admin/teachers" },
+        { title: "License Subscription", url: "/eduworm-admin/licens-subscription-home" },
         { title: "Add Teacher", url: "/admin/teachers/add" },
       ]
     },
