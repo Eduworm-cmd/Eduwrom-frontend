@@ -14,10 +14,12 @@ import { Add_Content } from "./pages/ContentAdmin/Add_Content";
 import { Content_Manage } from "./pages/ContentAdmin/Content_Manage";
 import { SchoolList } from "./pages/super-admin-pannel/SAThemeBrandingControl/SchoolList/SchoolList";
 import { AddSchool } from "./pages/super-admin-pannel/SAThemeBrandingControl/AddSchool/AddSchool";
+import Login_SignUp from "./auth/Login_SignUp";
 function App() {
   return (
     <BrowserRouter>
       <Routes>
+          <Route path="/login" element={<Login_SignUp/>} />
         <Route element={<Layout />}>
           <Route path="/" element={<TeacherHomePage />} />
           <Route path="/books" element={<BookHomePage />} />
@@ -35,8 +37,6 @@ function App() {
           <Route path="home" element={<SAHomePage />} />
           <Route path="school/list" element={<SchoolList />} />
           <Route path="school/add" element={<AddSchool />} />
-
-
           <Route path="video-chapter-upload" element={<Add_Vedio />} />
 
           
