@@ -15,7 +15,7 @@ const DataTable = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
+  const itemsPerPage = 8;
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
@@ -83,8 +83,8 @@ const DataTable = ({
   return (
     <div className="bg-white rounded-md w-full">
       {/* Header Section */}
-      <h1>{title}</h1>
-      <div className="flex items-center justify-between mb-4 bg-blue-400 rounded-sm shadow-md px-2 py-2">
+      <h1 className="text-xl font-sans font-semibold mb-4">{title}</h1>
+      <div className="flex items-center justify-between mb-4">
         {isDropdown && (
           <SearchableDropdown
             onSelect={handleSearchDropdown}
@@ -95,7 +95,7 @@ const DataTable = ({
           <input
             type="text"
             placeholder="Search..."
-            className="w-full bg-white max-w-[250px] p-2 pl-10 border rounded-sm focus:outline-none focus:ring-2 focus:ring-sky-500 transition"
+            className="w-full bg-white max-w-[250px] p-2 pl-10 border rounded-full focus:outline-none focus:ring-2 focus:ring-sky-500 transition"
             value={searchTerm}
             onChange={handleSearch}
           />
@@ -129,7 +129,7 @@ const DataTable = ({
         </div>
 
         {/* Table Body */}
-        <div className="bg-white max-h-82 overflow-y-auto">
+        <div className="bg-white max-h-82 overflow-y-auto custom-scrollbar ">
           {currentItems.map((item, index) => (
             <div
               key={index}
