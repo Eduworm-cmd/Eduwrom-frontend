@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { StepContent } from "./StepContent";
 import { StepperSidebar } from "./StepperSidebar";
 
-export const MultiStepForm = ({stepperSidebar = [], stepContent = []}) => {
+export const MultiStepForm = ({stepperSidebar = [], stepContent = [], title, description}) => {
 
 
   const [activeStepindex, setActiveStepindex] = useState(0);
@@ -18,9 +18,9 @@ export const MultiStepForm = ({stepperSidebar = [], stepContent = []}) => {
   return (
     <div className="bg-white text-slate-700 shadow-md border min-h-[500px] transition-all duration-300 ease-in-out  px-10 py-6 w-full rounded-xl">
       <div className=" border-b pb-8">
-        <h4 className="text-2xl font-semibold">Example With Steps UI</h4>
+        <h4 className="text-2xl font-semibold">{title}</h4>
         <p className="text-sm">
-          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Rem, cum?
+          {description}
         </p>
       </div>
       <div className="mt-4 flex items-center px-8">
@@ -28,7 +28,7 @@ export const MultiStepForm = ({stepperSidebar = [], stepContent = []}) => {
           <StepperSidebar stepperSidebar={stepperSidebar} handleactiveStep={handleactiveStep}  activeindex={activeStepindex}/>
         </div>
         <div className="w-[70%]">
-          <p className="text-sm text-gray-700 mb-2">Step 1/5</p>
+          <p className="text-sm text-gray-700 mb-2">Step {activeStepindex + 1}/{stepperSidebar.length}</p>
           <StepContent>
             {
               reanderComponent()

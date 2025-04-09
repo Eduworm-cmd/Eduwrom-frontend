@@ -12,7 +12,7 @@ const adminData = {
   buttons: [
     {
       title: "Dashboard",
-      url: "/super-admin-pannel/home",
+      url: "/eduworm-admin/home",
       icon: LayoutDashboard,
     },
   ],
