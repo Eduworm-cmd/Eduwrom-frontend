@@ -14,6 +14,7 @@ import { Add_Content } from "./pages/ContentAdmin/Add_Content";
 import { Content_Manage } from "./pages/ContentAdmin/Content_Manage";
 import { SchoolList } from "./pages/super-admin-pannel/SAThemeBrandingControl/SchoolList/SchoolList";
 import Login_SignUp from "./auth/Login_SignUp";
+<<<<<<< HEAD
 import { Curriculum } from "./pages/Curriculum/Curriculum";
 import { CommunicationHub } from "./pages/Notification Schedules/CommunicationHub";
 import { AddSchool } from "./pages/super-admin-pannel/SAThemeBrandingControl/AddSchool/AddSchool";
@@ -23,17 +24,20 @@ import { Invoice } from "./pages/super-admin-pannel/Biiling/Invoice/Invoice";
 import { Notification } from "./pages/Notification Schedules/Notification";
 import { AddStaff } from "./pages/super-admin-pannel/Staff/AddStaff";
 import { StaffList } from "./pages/super-admin-pannel/Staff/StaffList";
+=======
+import { SALSHome } from "./pages/super-admin-pannel/SALicenseSubscription/SALSHome/SALSHome";
+>>>>>>> 75c96d4c8cda2a2be9d3f519714fa4466fb4b479
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-          <Route path="/login" element={<Login_SignUp/>} />
+        <Route path="/login" element={<Login_SignUp />} />
         <Route element={<Layout />}>
           <Route path="/" element={<TeacherHomePage />} />
           <Route path="/books" element={<BookHomePage />} />
-          <Route path="/book/preview/:id" element={<BookPreview/>} />
+          <Route path="/book/preview/:id" element={<BookPreview />} />
         </Route>
-        
+
         <Route element={<MainLayout />}>
           <Route path="/days" element={<DaysView />} />
           <Route path="/view" element={<CourseView />} />
@@ -41,11 +45,11 @@ function App() {
         </Route>
 
         <Route path="/eduworm-admin" element={<AdminPannelLayout />}>
-          {/* Super Admin Panel Routes */}
           <Route path="home" element={<SAHomePage />} />
           <Route path="school/list" element={<SchoolList />} />
           <Route path="school/add" element={<AddSchool />} />
           <Route path="video-chapter-upload" element={<Add_Vedio />} />
+<<<<<<< HEAD
           <Route path="curriculum" element={<Curriculum />} />
           <Route path="communication-hub" element={<CommunicationHub />} />
           <Route path="SchoolSubscription-List" element={<SchoolSubscriptionList />} />
@@ -58,9 +62,12 @@ function App() {
           
          {/* Teacher Admin Panel Routes */}
           <Route path="content/mange" element={<Content_Manage/>} />
+=======
+          <Route path="content/mange" element={<Content_Manage />} />
+>>>>>>> 75c96d4c8cda2a2be9d3f519714fa4466fb4b479
           <Route path="content/add" element={<Add_Content />} />
+          <Route path="licens-subscription-home" element={<SALSHome />} />
         </Route>
-
       </Routes>
     </BrowserRouter>
   );
