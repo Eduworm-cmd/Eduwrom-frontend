@@ -13,8 +13,16 @@ import { Add_Vedio } from "./components/Add_Vedio/Add_Vedio";
 import { Add_Content } from "./pages/ContentAdmin/Add_Content";
 import { Content_Manage } from "./pages/ContentAdmin/Content_Manage";
 import { SchoolList } from "./pages/super-admin-pannel/SAThemeBrandingControl/SchoolList/SchoolList";
-import { AddSchool } from "./pages/super-admin-pannel/SAThemeBrandingControl/AddSchool/AddSchool";
 import Login_SignUp from "./auth/Login_SignUp";
+import { Curriculum } from "./pages/Curriculum/Curriculum";
+import { CommunicationHub } from "./pages/Notification Schedules/CommunicationHub";
+import { AddSchool } from "./pages/super-admin-pannel/SAThemeBrandingControl/AddSchool/AddSchool";
+import { SchoolSubscriptionList } from "./pages/super-admin-pannel/SchoolSubscriptionList/SchoolSubscriptionList";
+import { InvoiceList } from "./pages/super-admin-pannel/Biiling/Invoice/InvoiceList";
+import { Invoice } from "./pages/super-admin-pannel/Biiling/Invoice/Invoice";
+import { Notification } from "./pages/Notification Schedules/Notification";
+import { AddStaff } from "./pages/super-admin-pannel/Staff/AddStaff";
+import { StaffList } from "./pages/super-admin-pannel/Staff/StaffList";
 function App() {
   return (
     <BrowserRouter>
@@ -38,6 +46,14 @@ function App() {
           <Route path="school/list" element={<SchoolList />} />
           <Route path="school/add" element={<AddSchool />} />
           <Route path="video-chapter-upload" element={<Add_Vedio />} />
+          <Route path="curriculum" element={<Curriculum />} />
+          <Route path="communication-hub" element={<CommunicationHub />} />
+          <Route path="SchoolSubscription-List" element={<SchoolSubscriptionList />} />
+          <Route path="Invoice-List" element={<InvoiceList />} />
+          <Route path="Create/Invoice" element={<Invoice />} />
+          <Route path="Notification" element={<Notification />} />
+          <Route path="add-staff" element={<AddStaff />} />
+          <Route path="staff/list" element={<StaffList />} />
 
           
          {/* Teacher Admin Panel Routes */}

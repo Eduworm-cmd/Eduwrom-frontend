@@ -125,6 +125,9 @@ const DataTable = ({
             <div className="p-4 text-center text-sm font-medium text-gray-700">
               Actions
             </div>
+            {/* <div className="p-4 text-center text-sm font-medium text-gray-700">
+              Actions
+            </div> */}
           </div>
         </div>
 
@@ -162,6 +165,7 @@ const DataTable = ({
                   Edit
                 </button>
               </div>
+
             </div>
           ))}
         </div>

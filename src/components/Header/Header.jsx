@@ -52,12 +52,14 @@ export const Header = () => {
             <button onClick={() => navigate("/books")} className="bg-white border cursor-pointer shadow-md transition-all ease-in p-2 text-gray-500 rounded-full hover:bg-sky-600 hover:text-white">
               <Book className="w-5 h-5" />
             </button>
+
             <Dialog>
               <DialogTrigger asChild>
                 <button className=" bg-white border cursor-pointer shadow-md transition-all ease-in p-2 text-gray-500 rounded-full hover:bg-sky-600 hover:text-white">
                   <Menu className="w-5 h-5" />
                 </button>
               </DialogTrigger>
+
               <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                   <DialogTitle>Select Unit and Day</DialogTitle>

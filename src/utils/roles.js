@@ -1,5 +1,4 @@
-import { LayoutDashboard, Inbox, Users, Settings, BarChart, User, School } from "lucide-react"; // Ensure you're importing necessary icons
-
+import { LayoutDashboard, Inbox, Users, Settings, BarChart, User, School } from "lucide-react"; 
 
 export const Roles = {
     SUPERADMIN: 'admin',
@@ -26,29 +25,16 @@ const adminData = {
   navMain: [
     
     {
-      title: "Theme & Branding Control",
+      title: "School Management",
       icon: Users,
       items: [
-        { title: "School List", url: "/eduworm-admin/school/list" },
         { title: "Add School", url: "/eduworm-admin/school/add" },
+        { title: "School List", url: "/eduworm-admin/school/list" },
+        { title: "Add Staff", url: "/admin/teachers/add" },
+        { title: "Staff List", url: "/eduworm-admin/staff/list" },
       ]
     },
-    {
-      title: "License & Subscription",
-      icon: Users,
-      items: [
-        { title: "Teachers List", url: "/admin/teachers" },
-        { title: "Add Teacher", url: "/admin/teachers/add" },
-      ]
-    },
-    {
-      title: "Notification Schedules",
-      icon: Users,
-      items: [
-        { title: "Teachers List", url: "/admin/teachers" },
-        { title: "Add Teacher", url: "/admin/teachers/add" },
-      ]
-    },
+    
     {
       title: "Multi‑School / Campus Configuration",
       icon: Users,
@@ -61,26 +47,37 @@ const adminData = {
       title: "Role Delegation & Approval Workflows",
       icon: Users,
       items: [
-        { title: "Teachers List", url: "/admin/teachers" },
-        { title: "Add Teacher", url: "/admin/teachers/add" },
+        { title: "Teacher Admin List", url: "/admin/teachers" },
+        { title: "Staff List", url: "/admin/teachers" },
+        { title: "Add Staff", url: "/eduworm-admi" },
       ]
     },
     {
       title: "Course & Curriculum Pages",
       icon: Users,
       items: [
-        { title: "Teachers List", url: "/admin/teachers" },
-        { title: "Add Teacher", url: "/admin/teachers/add" },
+        { title: "Curriculum List", url: "/eduworm-admin/curriculum" },
+        { title: "Add Class", url: "/eduworm-admin/curriculum" },
       ]
     },
     {
       title: "Library & Resource Catalog",
       icon: Users,
       items: [
-        { title: "Teachers List", url: "/admin/teachers" },
-        { title: "Add Teacher", url: "/admin/teachers/add" },
+        { title: "E‑books List", url: "/admin/teachers" },
+        { title: "Videos", url: "/admin/teachers/add" },
+        { title: "Lesson Plans", url: "/admin/teachers/add" },
       ]
-    }
+    },
+    {
+      title: "Notification Schedules",
+      icon: Users,
+      items: [
+        { title: "Notification ", url: "/eduworm-admin/Notification" },
+        { title: "Delivery Schedules", url: "/admin/teachers/add" },
+        { title: "Communication Logs", url: "/eduworm-admin/communication-hub" },
+      ]
+    },
   ]
     
 }
