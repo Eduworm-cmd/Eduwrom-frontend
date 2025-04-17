@@ -24,7 +24,7 @@ export const AddStaff = () => {
     Nationality: "",
     Religion: "",
     Father_Name: "",
-    
+
     Account_Number: "",
     Name_As_Per_Bank: "",
     Bank_Name: "",
@@ -257,10 +257,10 @@ export const AddStaff = () => {
         />
       </div>
 
-      <div className="md:col-span-2 text-right">
+      <div className="md:col-span-2 text-right mt-4">
         <button
           type="submit"
-          className="bg-sky-600 text-white px-6 py-2 rounded hover:bg-sky-700 transition"
+          className="bg-sky-600 text-white px-8 py-2 rounded hover:bg-sky-700 transition"
         >
           Submit
         </button>
@@ -271,13 +271,15 @@ export const AddStaff = () => {
 
 const Input = ({ name, label, value, onChange, type = "text" }) => (
   <div>
-    <label className="block font-medium">{label}</label>
+    <label className="block mb-2 text-lg font-medium text-gray-700">
+      {label} <span className="text-red-500">*</span>
+    </label>
     <input
       type={type}
       name={name}
       value={value}
       onChange={onChange}
-      className="w-full border rounded px-3 py-2 mt-1 focus:ring-2 focus:ring-sky-500 outline-none"
+      className="w-full border rounded-md px-3 py-2 mt-1 focus:ring-2 focus:ring-sky-500 outline-none"
     />
   </div>
 );
@@ -285,7 +287,9 @@ const Input = ({ name, label, value, onChange, type = "text" }) => (
 // Reusable Select Component
 const Select = ({ name, label, value, onChange, options }) => (
   <div>
-    <label className="block font-medium">{label}</label>
+    <label className="block mb-2 text-lg font-medium text-gray-700">
+      {label} <span className="text-red-500">*</span>
+    </label>{" "}
     <select
       name={name}
       value={value}
@@ -305,7 +309,9 @@ const Select = ({ name, label, value, onChange, options }) => (
 // Reusable Textarea
 const Textarea = ({ name, label, value, onChange }) => (
   <div className="md:col-span-2">
-    <label className="block font-medium">{label}</label>
+    <label className="block mb-2 text-lg font-medium text-gray-700">
+      {label} <span className="text-red-500">*</span>
+    </label>{" "}
     <textarea
       name={name}
       value={value}
@@ -318,7 +324,9 @@ const Textarea = ({ name, label, value, onChange }) => (
 // Reusable File Upload
 const FileUpload = ({ name, label, onChange }) => (
   <div>
-    <label className="block font-medium">{label}</label>
+    <label className="block mb-2 text-lg font-medium text-gray-700">
+      {label} <span className="text-red-500">*</span>
+    </label>{" "}
     <input
       type="file"
       name={name}

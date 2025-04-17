@@ -114,9 +114,8 @@ const DataTable = ({
           <div
             className="grid"
             style={{
-              gridTemplateColumns: `repeat(${
-                columns.length + 1
-              }, minmax(0, 1fr))`,
+              gridTemplateColumns: `repeat(${columns.length + 1
+                }, minmax(0, 1fr))`,
             }}
           >
             {columns.map((col, idx) => {
@@ -148,9 +147,8 @@ const DataTable = ({
               key={index}
               className="grid border-b border-gray-200 hover:bg-gray-50 transition-colors"
               style={{
-                gridTemplateColumns: `repeat(${
-                  columns.length + 1
-                }, minmax(0, 1fr))`,
+                gridTemplateColumns: `repeat(${columns.length + 1
+                  }, minmax(0, 1fr))`,
               }}
             >
               {columns.map((col, idx) => {
@@ -165,32 +163,37 @@ const DataTable = ({
                 return (
                   <div
                     key={col.key}
-                    className={`p-4 ${
-                      isName ? "font-medium text-gray-900" : "text-gray-600"
-                    }`}
+                    className={`p-4 ${isName ? "font-medium text-gray-900" : "text-gray-600"
+                      }`}
                     style={{ gridColumn: `span 1 / span 1` }}
                   >
                     {cellContent}
                   </div>
                 );
               })}
-              <div className="p-4 flex justify-center">
-                {actionButtons.map((button, idx) => {
-                  const Icon = button.icon;
-                  return (
-                    <button
-                      key={idx}
-                      className={`py-2 px-4 rounded mr-2 ${
-                        button.className
-                      }`}
-                      onClick={() => button.onClick(item)}
-                      title={button.label} // optional tooltip
-                    >
-                      <Icon size={18} />
-                    </button>
-                  );
-                })}
-              </div>
+              {
+                Array.isArray(actionButtons) && actionButtons.length > 0 ? (
+
+                  <div className="p-4 flex justify-center">
+                    {actionButtons.map((button, idx) => {
+                      const Icon = button.icon;
+                      return (
+                        <button
+                          key={idx}
+                          className={`py-2 px-4 rounded mr-2 ${button.className
+                            }`}
+                          onClick={() => button.onClick(item)}
+                          title={button.label} 
+                        >
+                          <Icon size={18} />
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  null
+                )
+              }
 
             </div>
           ))}
@@ -259,11 +262,10 @@ const DataTable = ({
                     key={index}
                     href="#"
                     onClick={() => paginate(page)}
-                    className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
-                      currentPage === page
+                    className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${currentPage === page
                         ? "bg-indigo-600 text-white"
                         : "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                    }`}
+                      }`}
                   >
                     {page}
                   </a>

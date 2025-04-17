@@ -22,22 +22,22 @@ export const AdminPannelLayout = () => {
   const [path, setpath] = useState({
     currentpath: "",
     paths: [],
-  });  
+  });
   const location = useLocation();
 
   useEffect(() => {
-    const userrole = Roles.SUPERADMIN
+    const userrole = Roles.SUPERADMIN;
     const paths = MangeRoles(userrole);
-    setRoles(paths)
-
-    const pathsarr = location.pathname.split("/");
-
+    setRoles(paths);
+  
+    const pathsarr = location.pathname.split("/").filter(Boolean); 
+  
     setpath({
-      ...path,
       currentpath: location.pathname,
       paths: pathsarr,
     });
-  }, []);
+  }, [location]);
+  
 
 
 
@@ -50,7 +50,6 @@ export const AdminPannelLayout = () => {
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="mr-2 h-4" />
           <Breadcrumb>
-
             <BreadcrumbList>
               {path.paths.map((item, index) => (
                 <React.Fragment key={index}>

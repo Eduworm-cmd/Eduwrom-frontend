@@ -66,7 +66,7 @@ export const AddStudent = () => {
 
   return (
     <div>
-      <div className="max-w-5xl mx-auto p-6 bg-white shadow-md rounded-lg">
+      <div className="max-w-7xl mx-auto p-6 bg-white shadow-md rounded-lg">
         <h2 className="text-xl font-bold text-sky-500 mb-6">Student Information</h2>
         <form
           onSubmit={handleSubmit}
