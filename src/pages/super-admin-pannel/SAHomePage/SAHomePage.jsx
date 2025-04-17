@@ -1,8 +1,9 @@
 import React from "react";
-import { GraduationCap, User, Users, DollarSign } from "lucide-react";
+import { GraduationCap, User, Users, DollarSign, BellRing, Pencil } from "lucide-react";
 import Barcharts from "@/components/Charts/Barcharts";
 import { RadialCharts } from "@/components/Charts/RadialCharts";
 import DataTable from "@/components/DataTable/DataTable";
+import Table from "../Staff/Table";
 
 const stats = [
   {
@@ -48,6 +49,22 @@ const data = [
   { id: "PRE43187", name: "John Millar", marks: 1175, percent: "92%", year: 2014 },
 ];
 
+
+const actionButtons = [
+  {
+    label: "notify",
+    icon: BellRing,
+    onClick: () => console.log("notify"),
+    className: "text-red-500 bg-red-50",
+  },
+  {
+    label: "edit",
+    icon: Pencil,
+    onClick: () => alert("edit"),
+    className: "text-sky-500 bg-sky-50",
+  },
+];
+
 export const SAHomePage = () => {
   return (
     <div className="flex flex-col gap-4">
@@ -57,14 +74,14 @@ export const SAHomePage = () => {
           {stats.map((stat, index) => (
             <div
               key={index}
-              className={`flex items-center justify-between px-4 py-6 rounded-lg  ${stat.bgColor}`}
+              className={`flex items-center justify-between px-4 py-6 rounded-lg ${stat.bgColor}`}
             >
 
               <div >
                 <p className="text-gray-600 text-md font-semibold ">{stat.title}</p>
                 <h3 className="text-2xl text-gray-700 font-bold">{stat.value}</h3>
               </div>
-              <div className="p-3  rounded-full ">
+              <div className="p-3 rounded-full">
                 {stat.icon}
               </div>
             </div>
@@ -76,7 +93,8 @@ export const SAHomePage = () => {
           <RadialCharts/>
       </div>
       <div className="p-6 bg-muted/50 rounded-2xl">
-          <DataTable columns={columns} data={data} title="Star Student"/>
+         {/* <Table columns={} data={} actionMenu={} /> */}
+          <DataTable columns={columns} data={data} title="Star Student" actionButtons={actionButtons}/>
       </div>
     </div>
   );

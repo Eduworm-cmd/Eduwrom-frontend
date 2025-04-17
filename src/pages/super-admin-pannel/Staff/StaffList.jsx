@@ -4,7 +4,6 @@ import { PlusCircle } from "lucide-react";
 
 import DownloadButton from "@/components/Buttons/DownloadButton/DownloadButton";
 import { ExportButton } from "@/components/Buttons/ExportButton/ExportButton";
-import SchoolDataTable from "@/components/DataTable/SchoolDataTable";
 import Table from "./Table";
 
 export const StaffList = () => {
@@ -57,7 +56,7 @@ export const StaffList = () => {
             status: true,
         },
         {
-            id: 3,
+            id: 6,
             name: "Michael Johnson",
             phone: "9988776655",
             email: "michael.johnson@example.com",
@@ -66,7 +65,7 @@ export const StaffList = () => {
             status: true,
         },
         {
-            id: 4,
+            id: 7,
             name: "Sarah Williams",
             phone: "9988776655",
             email: "sarahwilliams@example.com",
@@ -75,7 +74,7 @@ export const StaffList = () => {
             status: false,
         },
         {
-            id: 5,
+            id: 8,
             name: "David Brown",
             phone: "9988776655",
             email: "davidbrown@example.com",
@@ -84,7 +83,7 @@ export const StaffList = () => {
             status: true,
         },
         {
-            id: 3,
+            id: 9,
             name: "Michael Johnson",
             phone: "9988776655",
             email: "michael.johnson@example.com",
@@ -93,7 +92,7 @@ export const StaffList = () => {
             status: true,
         },
         {
-            id: 4,
+            id: 10,
             name: "Sarah Williams",
             phone: "9988776655",
             email: "sarahwilliams@example.com",
@@ -102,7 +101,7 @@ export const StaffList = () => {
             status: false,
         },
         {
-            id: 5,
+            id: 11,
             name: "David Brown",
             phone: "9988776655",
             email: "davidbrown@example.com",
@@ -111,7 +110,7 @@ export const StaffList = () => {
             status: true,
         },
         {
-            id: 3,
+            id: 12,
             name: "Michael Johnson",
             phone: "9988776655",
             email: "michael.johnson@example.com",
@@ -120,7 +119,7 @@ export const StaffList = () => {
             status: true,
         },
         {
-            id: 4,
+            id: 13,
             name: "Sarah Williams",
             phone: "9988776655",
             email: "sarahwilliams@example.com",
@@ -129,7 +128,7 @@ export const StaffList = () => {
             status: false,
         },
         {
-            id: 5,
+            id: 14,
             name: "David Brown",
             phone: "9988776655",
             email: "davidbrown@example.com",
@@ -202,10 +201,10 @@ export const StaffList = () => {
         <div>
             <div className="flex gap-2 justify-end mb-3">
                 <button
-                    onClick={() => navigate("/eduworm-admin/school/add")}
+                    onClick={() => navigate("/eduworm-admin/staff/add")}
                     className="flex gap-2 mt-4 text-white py-2 px-5 outline-none rounded-sm font-semibold cursor-pointer text-[14px] bg-sky-500"
                 >
-                    <PlusCircle /> Add School
+                    <PlusCircle /> Add Staff
                 </button>
                 <DownloadButton />
                 <ExportButton columns={columns} currentItems={schoolData} />
@@ -222,11 +221,11 @@ export const StaffList = () => {
                 actionMenu={[
                     {
                         label: "Edit",
-                        url: (item) => `/eduworm-admin/school/edit/${item.id}`,
+                        url: (item) => `/eduworm-admin/staff/edit/${item.id}`,
                     },
                     {
                         label: "View",
-                        onClick: (item) => console.log("Viewing", item),
+                        url: (item) => `/eduworm-admin/staff/view/${item.id}`,
                     },
                     {
                         label: "Delete",

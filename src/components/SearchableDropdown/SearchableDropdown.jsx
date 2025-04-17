@@ -19,7 +19,7 @@ export const SearchableDropdown = ({ onSelect, dropdownProps }) => {
     control: (styles) => ({
       ...styles,
       padding: '0px 12px',
-      borderRadius: '2rem',
+      borderRadius: '0.3rem',
       borderColor: '#d1d5db',
       boxShadow: 'none',
       '&:hover': {
@@ -28,7 +28,7 @@ export const SearchableDropdown = ({ onSelect, dropdownProps }) => {
     }),
     menu: (styles) => ({
       ...styles,
-      borderRadius: '8px',
+      borderRadius: '0px',
       boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
     }),
   };

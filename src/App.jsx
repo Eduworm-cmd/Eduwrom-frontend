@@ -12,21 +12,21 @@ import { BookPreview } from "./pages/Teacheradmin/Book/BookPreview/BookPreview";
 import { Add_Vedio } from "./components/Add_Vedio/Add_Vedio";
 import { Add_Content } from "./pages/ContentAdmin/Add_Content";
 import { Content_Manage } from "./pages/ContentAdmin/Content_Manage";
-import { SchoolList } from "./pages/super-admin-pannel/SAThemeBrandingControl/SchoolList/SchoolList";
 import Login_SignUp from "./auth/Login_SignUp";
-<<<<<<< HEAD
 import { Curriculum } from "./pages/Curriculum/Curriculum";
 import { CommunicationHub } from "./pages/Notification Schedules/CommunicationHub";
-import { AddSchool } from "./pages/super-admin-pannel/SAThemeBrandingControl/AddSchool/AddSchool";
-import { SchoolSubscriptionList } from "./pages/super-admin-pannel/SchoolSubscriptionList/SchoolSubscriptionList";
 import { InvoiceList } from "./pages/super-admin-pannel/Biiling/Invoice/InvoiceList";
 import { Invoice } from "./pages/super-admin-pannel/Biiling/Invoice/Invoice";
 import { Notification } from "./pages/Notification Schedules/Notification";
 import { AddStaff } from "./pages/super-admin-pannel/Staff/AddStaff";
 import { StaffList } from "./pages/super-admin-pannel/Staff/StaffList";
-=======
+import { AddSchool } from "./pages/super-admin-pannel/School/AddSchool";
+import { SchoolList } from "./pages/super-admin-pannel/School/SchoolList";
+import { SchoolView } from "./pages/super-admin-pannel/School/SchoolView";
+import { StaffView } from "./pages/super-admin-pannel/Staff/StaffView.";
 import { SALSHome } from "./pages/super-admin-pannel/SALicenseSubscription/SALSHome/SALSHome";
->>>>>>> 75c96d4c8cda2a2be9d3f519714fa4466fb4b479
+import { Lms } from "./pages/super-admin-pannel/LMS/Lms";
+
 function App() {
   return (
     <BrowserRouter>
@@ -45,28 +45,31 @@ function App() {
         </Route>
 
         <Route path="/eduworm-admin" element={<AdminPannelLayout />}>
+          <Route index element={<SAHomePage />} />
           <Route path="home" element={<SAHomePage />} />
+          <Route path="Admin" element={<SALSHome />} />
           <Route path="school/list" element={<SchoolList />} />
           <Route path="school/add" element={<AddSchool />} />
+          <Route path="school/edit/:id" element={<AddSchool />} />
+          <Route path="school/view/:id" element={<SchoolView />} />
+
+          <Route path="staff/list" element={<StaffList />} />
+          <Route path="staff/add" element={<AddStaff />} />
+          <Route path="staff/edit/:id" element={<AddStaff />} />
+          <Route path="staff/view/:id" element={<StaffView />} />
+
+          <Route path="lms" element={<Lms/>}/>
           <Route path="video-chapter-upload" element={<Add_Vedio />} />
-<<<<<<< HEAD
           <Route path="curriculum" element={<Curriculum />} />
           <Route path="communication-hub" element={<CommunicationHub />} />
-          <Route path="SchoolSubscription-List" element={<SchoolSubscriptionList />} />
           <Route path="Invoice-List" element={<InvoiceList />} />
           <Route path="Create/Invoice" element={<Invoice />} />
           <Route path="Notification" element={<Notification />} />
-          <Route path="add-staff" element={<AddStaff />} />
-          <Route path="staff/list" element={<StaffList />} />
 
-          
-         {/* Teacher Admin Panel Routes */}
-          <Route path="content/mange" element={<Content_Manage/>} />
-=======
+
+          {/* Teacher Admin Panel Routes */}
           <Route path="content/mange" element={<Content_Manage />} />
->>>>>>> 75c96d4c8cda2a2be9d3f519714fa4466fb4b479
           <Route path="content/add" element={<Add_Content />} />
-          <Route path="licens-subscription-home" element={<SALSHome />} />
         </Route>
       </Routes>
     </BrowserRouter>

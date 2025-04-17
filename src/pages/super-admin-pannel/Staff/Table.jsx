@@ -86,76 +86,82 @@ const Table = ({
 
       {/* Table */}
       <div className="border border-gray-200 rounded-lg overflow-hidden shadow-sm">
-        <table className="min-w-full">
-          <thead className="bg-slate-300 border-b border-gray-200">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-slate-300">
             <tr>
               {columns.map((col) => (
-                <th key={col.key} className="p-4 text-sm font-semibold text-gray-700 text-left">
+                <th key={col.key} className="px-4 py-3 text-left text-sm font-semibold text-gray-700">
                   {col.label}
                 </th>
               ))}
-              <th className="p-4 text-center text-sm font-medium text-gray-700">Actions</th>
-              <th className="p-4 text-center text-sm font-medium text-gray-700">Status</th>
+              <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">Actions</th>
+              <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">Status</th>
             </tr>
           </thead>
-          <tbody className="bg-white">
-            {currentItems.map((item) => (
-              <tr
-                key={item.id}
-                className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
-              >
-                {columns.map((col) => (
-                  <td key={col.key} className="p-4 text-gray-700 font-medium">
-                    {col.render ? col.render(item[col.key], item) : item[col.key]}
+
+          <tbody className="bg-white divide-y divide-gray-200">
+            {currentItems.map((item, index) => {
+              const isLastTwo = index >= currentItems.length - 2;
+              return (
+                <tr key={item.id} className="hover:bg-gray-50 transition-colors relative">
+                  {columns.map((col) => (
+                    <td key={col.key} className="px-4 py-3 text-gray-700 font-medium">
+                      {col.render ? col.render(item[col.key], item) : item[col.key]}
+                    </td>
+                  ))}
+
+                  {/* Actions */}
+                  <td className="px-4 py-3 text-center relative">
+                    <button
+                      onClick={() => handleActions(item.id)}
+                      className="text-blue-600 hover:text-blue-800 font-medium"
+                    >
+                      Actions
+                    </button>
+                    {activeActionId === item.id && (
+                      <div
+                        className={`absolute z-20 bg-white border rounded-sm shadow-md min-w-[120px] ${
+                          isLastTwo ? "bottom-full mb-1" : "top-full mt-1"
+                        } left-1/2 -translate-x-1/2`}
+                      >
+                        {actionMenu.map((action, idx) => (
+                          <button
+                            key={idx}
+                            className="block w-full px-4 py-2 hover:bg-gray-100 text-left text-sm"
+                            onClick={() => {
+                              if (action.onClick) action.onClick(item);
+                              if (action.url) {
+                                const destination =
+                                  typeof action.url === "function" ? action.url(item) : action.url;
+                                navigate(destination);
+                              }
+                              setActiveActionId(null);
+                            }}
+                          >
+                            {action.label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </td>
-                ))}
 
-                {/* Actions */}
-                <td className="p-4 text-center">
-                  <button
-                    onClick={() => handleActions(item.id)}
-                    className="text-blue-600 hover:text-blue-800 font-medium"
-                  >
-                    Actions
-                  </button>
-                  {activeActionId === item.id && (
-                    <div className="absolute top-10 z-20 bg-white border rounded-sm shadow-md min-w-[120px]">
-                      {actionMenu.map((action, idx) => (
-                        <button
-                          key={idx}
-                          className="block w-full px-4 py-2 hover:bg-gray-100 text-left text-sm"
-                          onClick={() => {
-                            if (action.onClick) action.onClick(item);
-                            if (action.url) {
-                              const destination = typeof action.url === "function" ? action.url(item) : action.url;
-                              navigate(destination);
-                            }
-                            setActiveActionId(null);
-                          }}
-                        >
-                          {action.label}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </td>
-
-                {/* Status */}
-                <td className="p-4 text-center">
-                  <label className="inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      className="sr-only peer"
-                      checked={item.status}
-                      onChange={() => onToggleStatus(item)}
-                    />
-                    <div className="relative w-10 h-5 bg-gray-200 peer-focus:outline-none peer-checked:bg-blue-600 rounded-full">
-                      <div className="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-5"></div>
-                    </div>
-                  </label>
-                </td>
-              </tr>
-            ))}
+                  {/* Status */}
+                  <td className="px-4 py-3 text-center">
+                    <label className="inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="sr-only peer"
+                        checked={item.status}
+                        onChange={() => onToggleStatus(item)}
+                      />
+                      <div className="relative w-10 h-5 bg-gray-200 peer-focus:outline-none peer-checked:bg-blue-600 rounded-full">
+                        <div className="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-5"></div>
+                      </div>
+                    </label>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -179,12 +185,18 @@ const Table = ({
 
           {paginationRange().map((page, idx) =>
             page === "..." ? (
-              <span key={idx} className="px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-gray-300">...</span>
+              <span key={idx} className="px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-gray-300">
+                ...
+              </span>
             ) : (
               <button
                 key={idx}
                 onClick={() => paginate(page)}
-                className={`px-4 py-2 text-sm font-semibold ${currentPage === page ? "bg-indigo-600 text-white" : "text-gray-900 ring-1 ring-gray-300 hover:bg-gray-50"}`}
+                className={`px-4 py-2 text-sm font-semibold ${
+                  currentPage === page
+                    ? "bg-indigo-600 text-white"
+                    : "text-gray-900 ring-1 ring-gray-300 hover:bg-gray-50"
+                }`}
               >
                 {page}
               </button>
