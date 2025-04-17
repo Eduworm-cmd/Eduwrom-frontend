@@ -33,26 +33,7 @@ const adminData = {
         { title: "Staff List", url: "/eduworm-admin/staff/list" },
       ]
     },
-<<<<<<< HEAD
     
-=======
-    {
-      title: "License & Subscription",
-      icon: Users,
-      items: [
-        { title: "License Subscription", url: "/eduworm-admin/licens-subscription-home" },
-        { title: "Add Teacher", url: "/admin/teachers/add" },
-      ]
-    },
-    {
-      title: "Notification Schedules",
-      icon: Users,
-      items: [
-        { title: "Teachers List", url: "/admin/teachers" },
-        { title: "Add Teacher", url: "/admin/teachers/add" },
-      ]
-    },
->>>>>>> 75c96d4c8cda2a2be9d3f519714fa4466fb4b479
     {
       title: "Multi‑School / Campus Configuration",
       icon: Users,
