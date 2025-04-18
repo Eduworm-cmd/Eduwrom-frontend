@@ -12,7 +12,6 @@ import { BookPreview } from "./pages/Teacheradmin/Book/BookPreview/BookPreview";
 import { Add_Vedio } from "./components/Add_Vedio/Add_Vedio";
 import { Add_Content } from "./pages/ContentAdmin/Add_Content";
 import { Content_Manage } from "./pages/ContentAdmin/Content_Manage";
-import Login_SignUp from "./auth/Login_SignUp";
 import { Curriculum } from "./pages/Curriculum/Curriculum";
 import { CommunicationHub } from "./pages/Notification Schedules/CommunicationHub";
 import { InvoiceList } from "./pages/super-admin-pannel/Biiling/Invoice/InvoiceList";
@@ -26,6 +25,7 @@ import { SchoolView } from "./pages/super-admin-pannel/School/SchoolView";
 import { StaffView } from "./pages/super-admin-pannel/Staff/StaffView.";
 import { SALSHome } from "./pages/super-admin-pannel/SALicenseSubscription/SALSHome/SALSHome";
 import { Lms } from "./pages/super-admin-pannel/LMS/Lms";
+import { Login_SignUp } from "./auth/Login_SignUp";
 
 function App() {
   return (

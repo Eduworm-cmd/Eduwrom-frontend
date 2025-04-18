@@ -22,6 +22,7 @@ const adminData = {
       icon: Settings,
     },
   ],
+
   navMain: [
     {
       title: "School Management",
@@ -33,7 +34,6 @@ const adminData = {
         { title: "Staff List", url: "/eduworm-admin/staff/list" },
       ]
     },
-
     {
       title: "LMS Management",
       icon: NotebookPen,
@@ -87,51 +87,83 @@ const schoolAdminData = {
   buttons: [
     {
       title: "Dashboard",
-      buttons: [
-        {
-          title: "Dashboard",
-          url: "/eduworm-admin/home",
-        },
-      ],
+      url: "/eduworm-admin/home",
+      icon: LayoutDashboard,
     },
+    {
+      title: "AI Reports",
+      url: "/eduworm-admin/home",
+      icon: LayoutDashboard,
+    },
+   
   ],
-
   footersBtns: [
     {
       title: "Settings",
-      url: "/settings",
+      url: "/home",
       icon: Settings,
-    }
+    },
   ],
+  
+  navMain: [
+    {
+      title: "Center Management",
+      icon: Users,
+      items: [
+        { title: "Student Data", url: "/eduworm-admin" },
+        { title: "Staff Data", url: "/eduworm-admin/school/list" },
+        { title: "Academic Year", url: "/eduworm-admin/staff/add" },
+        { title: "Grade Management", url: "/eduworm-admin/staff/list" },
+        { title: "Classroom Management", url: "/eduworm-admin/staff/list" },
+      ]
+    },
 
-  navMain:[
-     {
-        title: "Center Management",
-        icon: Users,
-        items:[
-          {title: "Student Data" , url:"/student-data"},
-          {title:"Staff Data", url:"/staff-data"},
-          {title:"Academic Year", url:"/academic-year"},
-          {title:"Grade Mangement", url:"/grade-management"},
-          {title:"ClassRoom Management", url:"/classroom-management"},
-        ]
-     },
-     {
-        title:"LMS Module",
-        icons: Users,
-        items:[
-          { title:"Playlist / Assigement" , url:"/playlist-assigenment"},
-          {title:"Content ", url:"/content"},
-          {title:"Scheduled List", url:"/scheduled-list"},
-          {title:"Assignment History", url:"/assignment-history"},
-          {title:"Results / Summary", url:"/results-summary"},
-        ]
+    {
+      title: "LMS Management",
+      icon: NotebookPen,
+      items: [
+        { title: "Playlist/ Assignment", url: "/eduworm-admin/lms" },
+        { title: "Content", url: "/admin/teachers/add" },
+        { title: "Scheduled List", url: "/admin/teachers/add" },
+        { title: "Assignment History", url: "/admin/teachers/add" },
+      ]
+    },
 
+    {
+      title: "Lesson Management",
+      icon: Users,
+      items: [
+        { title: "Lesson Plan", url: "/admin/teachers" },
+        { title: "Tech", url: "/admin/teachers" },
+      ]
+    },
+
+    {
+      title: "Finance & Billing",
+      icon: Users,
+      items: [
+        { title: "Invoice", url: "/eduworm-admin/curriculum" },
+        { title: "Balance & Refund", url: "/eduworm-admin/curriculum" },
+        { title: "Receipts", url: "/eduworm-admin/curriculum" },
+      ]
     },
     {
-       title:"Lesson Managemnt", url:""
-    }
-  ],
+      title: "Document Management",
+      icon: Users,
+      items: [
+        { title: "Manage Documents", url: "/admin/teachers" },
+        { title: "Daily Diary", url: "/admin/teachers/add" },
+      ]
+    },
+    {
+      title: "",
+      icon: Users,
+      items: [
+        { title: "Manage Documents", url: "/admin/teachers" },
+        { title: "Daily Diary", url: "/admin/teachers/add" },
+      ]
+    },
+  ]
 
 }
 

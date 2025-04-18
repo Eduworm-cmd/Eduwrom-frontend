@@ -26,7 +26,7 @@ export const AdminPannelLayout = () => {
   const location = useLocation();
 
   useEffect(() => {
-    const userrole = Roles.SUPERADMIN;
+    const userrole = Roles.SCHOOLADMIN;
     const paths = MangeRoles(userrole);
     setRoles(paths);
   
@@ -45,7 +45,6 @@ export const AdminPannelLayout = () => {
     <SidebarProvider>
       <AppSidebar data={roles} />
       <SidebarInset>
-
         <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 fixed bg-white w-full z-30">
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="mr-2 h-4" />
