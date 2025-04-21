@@ -1,9 +1,16 @@
 import React, { useState } from "react";
 import { Upload } from "lucide-react";
 import Select from "react-select";
+import { CreateSchool } from "@/Network/Super_Admin/auth";
+import { toast, ToastContainer } from "react-toastify";
 
 export const AddSchool = () => {
+  const [logoPreview, setLogoPreview] = useState(null);
+  const [logoName, setLogoName] = useState("");
+  const [selectedClasses, setSelectedClasses] = useState([]);
   const [formData, setFormData] = useState({
+    schoolLogo:"",
+    classes:"",
     schoolName: "",
     displayName: "",
     phone: "",
@@ -21,9 +28,6 @@ export const AddSchool = () => {
     branchEmail: "",
   });
 
-  const [logoPreview, setLogoPreview] = useState(null);
-  const [logoName, setLogoName] = useState("");
-  const [selectedClasses, setSelectedClasses] = useState([]);
 
   const classOptions = [
     { value: "Nursery", label: "Nursery" },
@@ -83,6 +87,20 @@ export const AddSchool = () => {
     }
   };
 
+  const handleAddSchoolAPi = async (data) => {
+    try {
+      const response = await CreateSchool(data);
+      console.log("API Response:", response);
+      toast.success("School added successfully!");
+    } catch (error) {
+      console.error("Error adding school:", error);
+  
+      const errorMessage = error.response?.data?.message || error.message || "Error adding school.";
+      toast.error(errorMessage);  
+    }
+  };
+  
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const submissionData = {
@@ -91,6 +109,7 @@ export const AddSchool = () => {
       logoName,
     };
     console.log("Form submitted:", submissionData);
+    handleAddSchoolAPi(submissionData);
   };
 
   const selectStyles = {
@@ -122,6 +141,7 @@ export const AddSchool = () => {
 
   return (
     <div className="">
+    <ToastContainer/>
       <form className="max-w-4xl mx-auto p-6 shadow-md">
         {/* Logo Upload */}
         <div className="mb-6">

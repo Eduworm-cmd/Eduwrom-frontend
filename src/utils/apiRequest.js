@@ -1,15 +1,18 @@
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
 
-const apiRequest = async (url, {
-  method = "GET",
-  headers = {},
-  body = null,
-  credentials = "include",
-  authorization = null
-} = {}) => {
+const apiRequest = async (
+  url,
+  {
+    method = "GET",
+    headers = {},
+    body = null,
+    credentials = "include",
+  } = {}
+) => {
   try {
-    if (authorization) {
-      headers.authorization = `Bearer ${authorization}`;
+    const token = localStorage.getItem("token");
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
     }
 
     const fullUrl = `${BASE_URL}${url}`;
@@ -23,12 +26,13 @@ const apiRequest = async (url, {
       body: body ? JSON.stringify(body) : null,
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "API Error");
+      throw new Error(data.message || "API Error");
     }
 
-    return await response.json();
+    return data;
   } catch (error) {
     console.error("API Request Error:", error.message);
     throw error;

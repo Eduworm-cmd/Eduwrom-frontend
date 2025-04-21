@@ -1,20 +1,22 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { LockKeyholeOpen, User } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { OtpVerify } from './OtpVerify';
-import { Register, OTPVerify } from '@/Network/Super_Admin/auth';
+import {SetLocalStorage, SuperAdminLogin, SuperAdminRegister } from '@/Network/Super_Admin/auth';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { setUserData } from './authSlice';
 
 export const Login_SignUp = () => {
+  
   const [showSignup, setShowSignup] = useState(false);
   const [showOtpForm, setShowOtpForm] = useState(false);
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    phoneNumber: '',
+    name: '',
+    email: '',
     password: '',
   });
 
@@ -41,54 +43,55 @@ export const Login_SignUp = () => {
       [name]: value,
     }));
   };
-
+  
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await Register({ body: formData });
-
-      if (response?.message) {
-        if (response.message.toLowerCase().includes('error')) {
-          toast.error(response.message, { autoClose: 3000 });
-        } else {
-          toast.success(response.message, { autoClose: 2000 });
-          setShowOtpForm(true);
-        }
+      const response = await SuperAdminRegister(formData);
+  
+      if (response.message) {
+        toast.error(response.message);
+      } else {
+        toast.success("Registration successfully!");
+        handleShowform();
       }
     } catch (error) {
-      console.error('Registration error:', error);
-      toast.error('Something went wrong. Please try again.', {
-        autoClose: 3000,
-      });
+      toast.error(error.message || "Registration failed");
+      console.error("Registration error:", error);
     }
   };
-
-  const handleOtpSubmit = async (otpArray) => {
-    const fullOtp = otpArray.join('');
-    try {
-      const response = await OTPVerify({
-        body: {
-          staticOtp: fullOtp,
-          phoneNumber: formData.phoneNumber,
-        },
-      });
-
-      if (response) {
-        toast.success('OTP verified successfully');
-        setShowOtpForm(false);
-        setShowSignup(false);
-      }
-    } catch (err) {
-      toast.error('Invalid OTP');
-      console.error(err);
-    }
-  };
-
+  
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Add your login API here
+    try {
+      const response = await SuperAdminLogin(loginData);
+  
+      if (response.message) {
+        toast.error(response.message);
+      } else {
+        SetLocalStorage("token", response.token);  
+        dispatch(setUserData({
+          user: {
+            id: response._id,
+            name: response.name,
+            email: response.email,
+            role: response.role,
+          },
+          token: response.token,
+        }));
+  
+        toast.success("Login successfully!", {
+          onClose: () => navigate("/eduworm-admin/home"),
+          autoClose: 3000,
+        });
+      }
+    } catch (error) {
+      toast.error(error.message || "Login failed");
+      console.error("Login error:", error);
+    }
   };
-
+  
+  
   return (
     <div className="relative">
       <ToastContainer />
@@ -114,37 +117,25 @@ export const Login_SignUp = () => {
         {/* Signup Form */}
         <form className="w-1/2 flex flex-col justify-center items-center bg-white">
           <div className="flex flex-row gap-2">
-            <div className="flex items-center bg-gray-100 rounded-lg p-3 w-40 mb-4">
+          <div className="flex items-center bg-gray-100 rounded-lg p-3 w-80 mb-4">
               <input
                 onChange={handleChange}
-                name="firstName"
-                value={formData.firstName}
+                name="name"
+                value={formData.name}
                 type="text"
-                placeholder="First Name"
-                className="bg-transparent flex-1 outline-none text-gray-700"
-              />
-              <User className="text-sky-600" />
-            </div>
-            <div className="flex items-center bg-gray-100 rounded-lg p-3 w-40 mb-4">
-              <input
-                onChange={handleChange}
-                name="lastName"
-                value={formData.lastName}
-                type="text"
-                placeholder="Last Name"
+                placeholder="Name"
                 className="bg-transparent flex-1 outline-none text-gray-700"
               />
               <User className="text-sky-600" />
             </div>
           </div>
           <div className="flex items-center bg-gray-100 rounded-lg p-3 w-80 mb-4">
-            <span className="text-xl mr-2">🇮🇳 +91</span>
             <input
               onChange={handleChange}
-              name="phoneNumber"
-              value={formData.phoneNumber}
+              name="email"
+              value={formData.email}
               type="tel"
-              placeholder="Phone Number"
+              placeholder="Email"
               className="bg-transparent flex-1 outline-none text-gray-700"
             />
           </div>

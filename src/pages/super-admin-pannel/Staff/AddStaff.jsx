@@ -1,4 +1,6 @@
+import { CreateStafff } from "@/Network/Super_Admin/auth";
 import React, { useState } from "react";
+import { toast, ToastContainer } from "react-toastify";
 
 export const AddStaff = () => {
   const [staffData, setStaffData] = useState({
@@ -10,7 +12,7 @@ export const AddStaff = () => {
     Gender: "",
     EmployeeRole: "",
     School: "",
-    Branch: "",
+    Branch: "68029baa8337f09336b0cb07",
     EmployeeId: "",
     Title: "",
     DateOfJoining: "",
@@ -45,13 +47,64 @@ export const AddStaff = () => {
     }));
   };
 
+  const handleStaffApi = async (data) => {
+    try {
+      const response = await CreateStafff(data);
+      if (response.message) {
+        toast.error(response.message);
+      } else {
+        toast.success("Registration successfully!");
+      }
+    } catch (error) {
+      toast.error(error.message || "Registration failed");
+      console.error("Registration error:", error);
+    }
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Submitted Staff Data:", staffData);
+  
+    const formattedData = {
+      firstName: staffData.firstName,
+      lastName: staffData.lastName,
+      dateOfBirth: staffData.DateOfBirth,
+      phoneNumber: staffData.PhoneNumber,
+      emailIDOfficial: staffData.EmailID,
+      gender: staffData.Gender,
+      employeeRole: staffData.EmployeeRole,
+      branch: staffData.Branch,
+      employeeId: staffData.EmployeeId,
+      title: staffData.Title,
+      dateOfJoining: staffData.DateOfJoining,
+      emailIDPersonal: staffData.EmailIDPersonal,
+      bloodGroup: staffData.BloodGroup,
+      maritalStatus: staffData.Marital_Status,
+      marriageAnniversary: staffData.Marriage_Anniversary,
+      department: staffData.Department,
+      subDepartment: staffData.Sub_Department,
+      emergencyContact: staffData.Emergency_Contact,
+      nationality: staffData.Nationality,
+      religion: staffData.Religion,
+      fatherName: staffData.Father_Name,
+      bankDetails: {
+        accountNumber: staffData.Account_Number,
+        nameAsPerBank: staffData.Name_As_Per_Bank,
+        bankName: staffData.Bank_Name,
+        bankBranch: staffData.Bank_Branch,
+        ifscCode: staffData.IFSC_Code,
+      },
+      currentAddress: staffData.Current_Address,
+      permanentAddress: staffData.Permanent_Address,
+    };
+  
+    console.log("Formatted Payload:", formattedData);
+    handleStaffApi(formattedData);
   };
+  
 
   return (
     <form onSubmit={handleSubmit}>
+      <ToastContainer/>
       <div className="max-w-5xl mx-auto p-6 bg-white shadow-md rounded-lg grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <h2 className="md:col-span-2 text-2xl font-bold text-sky-600">
           Staff Information

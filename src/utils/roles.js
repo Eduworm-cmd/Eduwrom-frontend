@@ -79,7 +79,6 @@ const adminData = {
       ]
     },
   ]
-
 }
 
 const schoolAdminData = {

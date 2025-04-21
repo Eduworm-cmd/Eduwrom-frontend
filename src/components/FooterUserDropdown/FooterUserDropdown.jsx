@@ -14,6 +14,9 @@ import {
   Star,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { GetUser } from "@/Network/Super_Admin/auth";
+import { useEffect, useState } from "react";
+
 
 const menuItems = [
   {
@@ -47,6 +50,15 @@ const bottomItems = [
 ];
 
 export function FooterUserDropdown() {
+  const [user, setUser] = useState(null);
+  useEffect(() => {
+    const userData = GetUser();
+    if (userData) {
+      setUser(userData);
+    } else {
+      setUser(null);
+    }
+  },[])
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -54,11 +66,13 @@ export function FooterUserDropdown() {
           <div className="flex items-center space-x-3">
             <Avatar>
               <AvatarImage src="/avatar.png" />
-              <AvatarFallback className="bg-primary text-primary-foreground">SC</AvatarFallback>
+              <AvatarFallback className="bg-primary text-primary-foreground">
+                {user?.name?.substring(0, 2)?.toUpperCase() }
+              </AvatarFallback>
             </Avatar>
             <div>
-              <p className="text-sm font-medium">shadcn</p>
-              <p className="text-xs text-muted-foreground">m@example.com</p>
+              <p className="text-sm font-medium">{user?.name || "Demo"}</p>
+              <p className="text-xs text-muted-foreground">{user?.email || "Demo@gmail.com"}</p>
             </div>
           </div>
         </div>
@@ -73,11 +87,11 @@ export function FooterUserDropdown() {
         <div className="flex items-center space-x-3 p-3">
           <Avatar>
             <AvatarImage src="/avatar.png" />
-            <AvatarFallback>SC</AvatarFallback>
+            <AvatarFallback></AvatarFallback>
           </Avatar>
           <div>
-            <p className="text-sm font-medium">shadcn</p>
-            <p className="text-xs text-muted-foreground">m@example.com</p>
+            <p className="text-sm font-medium">{user?.name || "Demo"}</p>
+            <p className="text-xs text-muted-foreground">{user?.email || "Demo@gmail.com"}</p>
           </div>
         </div>
 
