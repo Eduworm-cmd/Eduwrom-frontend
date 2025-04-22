@@ -26,7 +26,7 @@ export const AdminPannelLayout = () => {
   const location = useLocation();
 
   useEffect(() => {
-    const userrole = Roles.SCHOOLADMIN;
+    const userrole = Roles.SUPERADMIN;
     const paths = MangeRoles(userrole);
     setRoles(paths);
   

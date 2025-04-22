@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Upload } from "lucide-react";
 import Select from "react-select";
-import { CreateSchool } from "@/Network/Super_Admin/auth";
+import { ConvertImageToBase64, CreateSchool } from "@/Network/Super_Admin/auth";
 import { toast, ToastContainer } from "react-toastify";
 
 export const AddSchool = () => {
@@ -9,8 +9,8 @@ export const AddSchool = () => {
   const [logoName, setLogoName] = useState("");
   const [selectedClasses, setSelectedClasses] = useState([]);
   const [formData, setFormData] = useState({
-    schoolLogo:"",
-    classes:"",
+    schoolLogo: "",
+    classes: "",
     schoolName: "",
     displayName: "",
     phone: "",
@@ -24,10 +24,9 @@ export const AddSchool = () => {
     endDate: "",
     academicYear: "",
     branchName: "",
-    branchPhone: "",
+    branchPassword: "",
     branchEmail: "",
   });
-
 
   const classOptions = [
     { value: "Nursery", label: "Nursery" },
@@ -79,11 +78,16 @@ export const AddSchool = () => {
     }));
   };
 
-  const handleLogoChange = (e) => {
+  const handleLogoChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      setLogoPreview(URL.createObjectURL(file));
+      const base64String = await ConvertImageToBase64(file);
       setLogoName(file.name);
+      setLogoPreview(URL.createObjectURL(file));
+      setFormData((prev) => ({
+        ...prev,
+        schoolLogo: base64String,
+      }));
     }
   };
 
@@ -94,20 +98,36 @@ export const AddSchool = () => {
       toast.success("School added successfully!");
     } catch (error) {
       console.error("Error adding school:", error);
-  
       const errorMessage = error.response?.data?.message || error.message || "Error adding school.";
-      toast.error(errorMessage);  
+      toast.error(errorMessage);
     }
   };
-  
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const selectedClassValues = selectedClasses.map(cls => cls.value);
+
     const submissionData = {
-      ...formData,
-      selectedClasses: selectedClasses.map((c) => c.value),
-      logoName,
+      schoolName: formData.schoolName,
+      displayName: formData.displayName,
+      email: formData.email,
+      password: formData.branchPassword,
+      phoneNumber: formData.phone,
+      country: formData.country,
+      state: formData.state,
+      city: formData.city,
+      pincode: formData.pincode,
+      address: formData.address,
+      startDate: formData.startDate,
+      endDate: formData.endDate,
+      academicYear: formData.academicYear,
+      branchName: formData.branchName,
+      branchEmail: formData.branchEmail,
+      classes: ["6450ab8c2d9e7c4f8a1 ","6450ab8c2d9e7c4f8a123458"],
+      schoolLogo: formData.schoolLogo,
     };
+
     console.log("Form submitted:", submissionData);
     handleAddSchoolAPi(submissionData);
   };
@@ -141,8 +161,8 @@ export const AddSchool = () => {
 
   return (
     <div className="">
-    <ToastContainer/>
-      <form className="max-w-4xl mx-auto p-6 shadow-md">
+      <ToastContainer />
+      <form className="max-w-4xl mx-auto p-6 shadow-md" onSubmit={handleSubmit}>
         {/* Logo Upload */}
         <div className="mb-6">
           <label className="block text-lg font-medium text-gray-700 mb-2">
@@ -154,12 +174,12 @@ export const AddSchool = () => {
                 <img
                   src={logoPreview}
                   alt="Logo Preview"
-                  className="h-32 object-contain rounded-md "
+                  className="h-32 object-contain rounded-md"
                 />
                 <p className="text-sm text-gray-600">{logoName}</p>
               </>
             )}
-            <label className="cursor-pointer w-full text-center flex items-center justify-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-md  hover:bg-blue-200 transition">
+            <label className="cursor-pointer w-full text-center flex items-center justify-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-md hover:bg-blue-200 transition">
               <Upload className="w-5 h-5" />
               <span>{logoName || "Upload Logo"}</span>
               <input
@@ -183,7 +203,7 @@ export const AddSchool = () => {
               name="schoolName"
               value={formData.schoolName}
               onChange={handleInputChange}
-              className="p-2 w-full border border-gray-300 rounded-md  focus:ring-2 focus:ring-sky-500 outline-none"
+              className="p-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-sky-500 outline-none"
               required
             />
           </div>
@@ -202,7 +222,7 @@ export const AddSchool = () => {
           </div>
         </div>
 
-        {/* Select Classes & Academic Year */}
+        {/* Classes & Academic Year */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <div>
             <label className="block text-lg font-medium text-gray-700 mb-2">
@@ -224,13 +244,12 @@ export const AddSchool = () => {
               options={academicYearOptions}
               value={academicYearOptions.find(opt => opt.value === formData.academicYear)}
               onChange={(opt) => handleSelectChange(opt, "academicYear")}
-              placeholder="Select Academic Year"
               styles={selectStyles}
             />
           </div>
         </div>
 
-        {/* Start & End Date */}
+        {/* Dates */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <div>
             <label className="block mb-2 text-lg font-medium text-gray-700">
@@ -271,7 +290,7 @@ export const AddSchool = () => {
               name="phone"
               value={formData.phone}
               onChange={handleInputChange}
-              className="p-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-sky-500 outline-none"
+              className="p-2 w-full border border-gray-300 rounded-md"
               required
             />
           </div>
@@ -284,7 +303,7 @@ export const AddSchool = () => {
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              className="p-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-sky-500 outline-none"
+              className="p-2 w-full border border-gray-300 rounded-md"
               required
             />
           </div>
@@ -294,51 +313,47 @@ export const AddSchool = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <div>
             <label className="block mb-2 text-lg font-medium text-gray-700">
-              Country <span className="text-red-500">*</span>
+              Country
             </label>
             <Select
               options={countryOptions}
               value={countryOptions.find(opt => opt.value === formData.country)}
               onChange={(opt) => handleSelectChange(opt, "country")}
-              placeholder="Select Country"
               styles={selectStyles}
             />
           </div>
           <div>
             <label className="block mb-2 text-lg font-medium text-gray-700">
-              State <span className="text-red-500">*</span>
+              State
             </label>
             <Select
               options={stateOptions}
               value={stateOptions.find(opt => opt.value === formData.state)}
               onChange={(opt) => handleSelectChange(opt, "state")}
-              placeholder="Select State"
               styles={selectStyles}
             />
           </div>
           <div>
             <label className="block mb-2 text-lg font-medium text-gray-700">
-              City <span className="text-red-500">*</span>
+              City
             </label>
             <Select
               options={cityOptions}
               value={cityOptions.find(opt => opt.value === formData.city)}
               onChange={(opt) => handleSelectChange(opt, "city")}
-              placeholder="Select City"
               styles={selectStyles}
             />
           </div>
           <div>
             <label className="block mb-2 text-lg font-medium text-gray-700">
-              Pin Code <span className="text-red-500">*</span>
+              Pincode
             </label>
             <input
               type="text"
               name="pincode"
               value={formData.pincode}
               onChange={handleInputChange}
-              className="p-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-sky-500 outline-none"
-              required
+              className="p-2 w-full border border-gray-300 rounded-md"
             />
           </div>
         </div>
@@ -346,23 +361,23 @@ export const AddSchool = () => {
         {/* Address */}
         <div className="mb-6">
           <label className="block mb-2 text-lg font-medium text-gray-700">
-            Address <span className="text-red-500">*</span>
+            Address
           </label>
           <textarea
             name="address"
             value={formData.address}
             onChange={handleInputChange}
-            className="p-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-sky-500 outline-none"
+            className="p-2 w-full border border-gray-300 rounded-md"
             required
           ></textarea>
         </div>
 
-        {/* Map Preview */}
+        {/* Map */}
         <div className="mb-6">
           <label className="block mb-2 text-lg font-medium text-gray-700">
             School Location on Map
           </label>
-          <div className="w-full h-[200px] overflow-hidden rounded-md  border">
+          <div className="w-full h-[200px] overflow-hidden rounded-md border">
             <iframe
               title="School Location"
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2734.2862581827308!2d77.1350949!3d28.693044300000015!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390d03ffa2cad31d%3A0xcfc0692e9870bf55!2sEduworm!5e1!3m2!1sen!2sin!4v1744444825160!5m2!1sen!2sin"
@@ -375,11 +390,9 @@ export const AddSchool = () => {
             ></iframe>
           </div>
         </div>
-      </form>
 
-      <div className="max-w-4xl mx-auto p-6 shadow-md mt-10">
-        <h1 className="text-4xl text-sky-500 mb-8">Branch Admin Information</h1>
-        {/* Branch Info */}
+        {/* Branch Admin Info */}
+        <h1 className="text-3xl text-sky-500 mb-6 mt-10">Branch Admin Information</h1>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div>
             <label className="block mb-2 text-lg font-medium text-gray-700">
@@ -390,48 +403,48 @@ export const AddSchool = () => {
               name="branchName"
               value={formData.branchName}
               onChange={handleInputChange}
-              className="p-2 w-full border border-gray-300 rounded-md  focus:ring-2 focus:ring-sky-500 outline-none"
+              className="p-2 w-full border border-gray-300 rounded-md"
               required
             />
           </div>
           <div>
             <label className="block mb-2 text-lg font-medium text-gray-700">
-              Phone No <span className="text-red-500">*</span>
+              Password <span className="text-red-500">*</span>
             </label>
             <input
-              type="phone"
-              name="branchPhone"
-              value={formData.branchPhone}
+              type="password"
+              name="branchPassword"
+              value={formData.branchPassword}
               onChange={handleInputChange}
-              className="p-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-sky-500 outline-none"
+              className="p-2 w-full border border-gray-300 rounded-md"
               required
             />
           </div>
           <div>
             <label className="block mb-2 text-lg font-medium text-gray-700">
-              Email Address <span className="text-red-500">*</span>
+              Email <span className="text-red-500">*</span>
             </label>
             <input
-              type="text"
+              type="email"
               name="branchEmail"
               value={formData.branchEmail}
               onChange={handleInputChange}
-              className="p-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-sky-500 outline-none"
+              className="p-2 w-full border border-gray-300 rounded-md"
               required
             />
           </div>
         </div>
-        {/* Submit Button */}
+
+        {/* Submit */}
         <div className="flex justify-end">
           <button
             type="submit"
-            onClick={handleSubmit}
-            className="bg-blue-600 text-white px-6 py-2 rounded-md  hover:bg-blue-700 transition"
+            className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition"
           >
             Submit
           </button>
         </div>
-      </div>
+      </form>
     </div>
   );
 };

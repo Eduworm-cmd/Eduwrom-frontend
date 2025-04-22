@@ -6,8 +6,6 @@ const DataTable = ({
   columns,
   data,
   title,
-  onView,
-  onDelete,
   isDropdown,
   dropdownData,
   handleSearchDropdown,
@@ -134,9 +132,7 @@ const DataTable = ({
             <div className="p-4 text-center text-sm font-medium text-gray-700">
               Actions
             </div>
-            {/* <div className="p-4 text-center text-sm font-medium text-gray-700">
-              Actions
-            </div> */}
+
           </div>
         </div>
 

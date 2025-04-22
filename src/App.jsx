@@ -29,6 +29,8 @@ import { Login_SignUp } from "./auth/Login_SignUp";
 import PlayListAssignment from "./pages/Teacheradmin/InteractiveContent/PlayListAssignment";
 import Content from "./pages/Teacheradmin/InteractiveContent/Content";
 import ScheduleList from "./pages/Teacheradmin/InteractiveContent/ScheduleList";
+import { Assigements_Playlist } from "./pages/super-admin-pannel/LMS/Assigements_Playlist";
+import { SP_ScheduleList } from "./pages/super-admin-pannel/ScheduleList/SP_ScheduleList";
 
 function App() {
   return (
@@ -61,6 +63,8 @@ function App() {
           <Route path="staff/edit/:id" element={<AddStaff />} />
           <Route path="staff/view/:id" element={<StaffView />} />
 
+          <Route path="schedule/List" element={<SP_ScheduleList/>} />
+          <Route path="assigements&playlist" element={<Assigements_Playlist/>} />
           <Route path="lms" element={<Lms />} />
           <Route path="video-chapter-upload" element={<Add_Vedio />} />
           <Route path="curriculum" element={<Curriculum />} />
@@ -80,7 +84,6 @@ function App() {
           <Route path="playlist" element={<PlayListAssignment />} />
           <Route path="content" element={<Content />} />
           <Route path="scheduleList" element={<ScheduleList />} />
-
         </Route>
       </Routes>
     </BrowserRouter>

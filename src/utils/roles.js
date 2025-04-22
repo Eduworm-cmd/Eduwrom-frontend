@@ -38,9 +38,9 @@ const adminData = {
       title: "LMS Management",
       icon: NotebookPen,
       items: [
-        { title: "Playlists & Assigement", url: "/eduworm-admin/lms" },
-        { title: "Content", url: "/admin/teachers/add" },
-        { title: "Sheduled List", url: "/admin/teachers/add" },
+        { title: "Playlists & Assigement", url: "/eduworm-admin/assigements&playlist" },
+        { title: "Add Content", url: "/eduworm-admin/lms" },
+        { title: "Sheduled List", url: "/eduworm-admin/schedule/List" },
         { title: "Assignment History", url: "/admin/teachers/add" },
         { title: "Result & Summary", url: "/admin/teachers/add" },
       ]

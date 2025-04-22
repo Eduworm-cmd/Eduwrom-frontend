@@ -85,7 +85,7 @@ const Table = ({
       </div>
 
       {/* Table */}
-      <div className="border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+      <div className="border border-gray-200 rounded-lg overflow-y-auto shadow-sm">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-slate-300">
             <tr>

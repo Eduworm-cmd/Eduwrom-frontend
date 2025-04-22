@@ -8,6 +8,19 @@ const SetLocalStorage = (key, value) => {
     }
 };
 
+const ConvertImageToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+        resolve(reader.result);
+      };
+
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
 const GetUser = () => {
     const user = store.getState()?.auth?.user;
     return user || null;
@@ -44,6 +57,7 @@ const CreateStafff = async (body) =>{
 
 export {
     SetLocalStorage,
+    ConvertImageToBase64,
     GetUser,
     SuperAdminRegister,
     SuperAdminLogin,
