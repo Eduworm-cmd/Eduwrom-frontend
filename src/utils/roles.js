@@ -136,6 +136,9 @@ const schoolAdminData = {
       icon: Users,
       items: [
         { title: "Lesson Plan", url: "/admin/teachers" },
+        { title: "PlayList / Assignment", url: "/eduworm-school/playlist" },
+        { title: "Content", url: "/eduworm-school/content" },
+        { title: "Schedule List", url: "/eduworm-school/scheduleList" },
         { title: "Tech", url: "/admin/teachers" },
       ]
     },

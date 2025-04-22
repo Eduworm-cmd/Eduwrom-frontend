@@ -26,6 +26,9 @@ import { StaffView } from "./pages/super-admin-pannel/Staff/StaffView.";
 import { SALSHome } from "./pages/super-admin-pannel/SALicenseSubscription/SALSHome/SALSHome";
 import { Lms } from "./pages/super-admin-pannel/LMS/Lms";
 import { Login_SignUp } from "./auth/Login_SignUp";
+import PlayListAssignment from "./pages/Teacheradmin/InteractiveContent/PlayListAssignment";
+import Content from "./pages/Teacheradmin/InteractiveContent/Content";
+import ScheduleList from "./pages/Teacheradmin/InteractiveContent/ScheduleList";
 
 function App() {
   return (
@@ -58,7 +61,7 @@ function App() {
           <Route path="staff/edit/:id" element={<AddStaff />} />
           <Route path="staff/view/:id" element={<StaffView />} />
 
-          <Route path="lms" element={<Lms/>}/>
+          <Route path="lms" element={<Lms />} />
           <Route path="video-chapter-upload" element={<Add_Vedio />} />
           <Route path="curriculum" element={<Curriculum />} />
           <Route path="communication-hub" element={<CommunicationHub />} />
@@ -70,6 +73,14 @@ function App() {
           {/* Teacher Admin Panel Routes */}
           <Route path="content/mange" element={<Content_Manage />} />
           <Route path="content/add" element={<Add_Content />} />
+        </Route>
+
+        <Route path="/eduworm-school" element={<AdminPannelLayout />}>
+          <Route index element={<SAHomePage />} />
+          <Route path="playlist" element={<PlayListAssignment />} />
+          <Route path="content" element={<Content />} />
+          <Route path="scheduleList" element={<ScheduleList />} />
+
         </Route>
       </Routes>
     </BrowserRouter>
