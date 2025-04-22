@@ -38,26 +38,29 @@ const adminData = {
       title: "LMS Management",
       icon: NotebookPen,
       items: [
-        { title: "Content & Assigement", url: "/eduworm-admin/lms" },
-        { title: "Add Teacher", url: "/admin/teachers/add" },
+        { title: "Playlists & Assigement", url: "/eduworm-admin/lms" },
+        { title: "Content", url: "/admin/teachers/add" },
+        { title: "Sheduled List", url: "/admin/teachers/add" },
+        { title: "Assignment History", url: "/admin/teachers/add" },
+        { title: "Result & Summary", url: "/admin/teachers/add" },
       ]
     },
 
     {
-      title: "Role Delegation & Approval Workflows",
+      title: "Lesson Management",
       icon: Users,
       items: [
-        { title: "Teacher Admin List", url: "/admin/teachers" },
-        { title: "Staff List", url: "/admin/teachers" },
-        { title: "Add Staff", url: "/eduworm-admin/add-staff" },
+        { title: "Lesson Plan", url: "/admin/teachers" },
+        { title: "Teach", url: "/admin/teachers" },
       ]
     },
     {
-      title: "Course & Curriculum Pages",
+      title: "Finance & Billing",
       icon: Users,
       items: [
-        { title: "Curriculum List", url: "/eduworm-admin/curriculum" },
-        { title: "Add Class", url: "/eduworm-admin/curriculum" },
+        { title: "Invoice", url: "/eduworm-admin/curriculum" },
+        { title: "Balance & Refund", url: "/eduworm-admin/curriculum" },
+        { title: "Receipts", url: "/eduworm-admin/curriculum" },
       ]
     },
     {
