@@ -30,8 +30,11 @@ const adminData = {
       items: [
         { title: "Add School", url: "/eduworm-admin/school/add" },
         { title: "School List", url: "/eduworm-admin/school/list" },
-        { title: "Add Staff", url: "/eduworm-admin/staff/add" },
-        { title: "Staff List", url: "/eduworm-admin/staff/list" },
+        { title: "Student Data", url: "/eduworm-admin/student" },
+        { title: "Staff Data", url: "/eduworm-admin/staff" },
+        { title: "Academic Year", url: "/eduworm-admin/academic Year" },
+        { title: "Grade Management", url: "/eduworm-admin/grade" },
+        { title: "Classroom Management", url: "/eduworm-admin/classroom" },
       ]
     },
     {
@@ -97,7 +100,7 @@ const schoolAdminData = {
       url: "/eduworm-admin/home",
       icon: LayoutDashboard,
     },
-   
+
   ],
   footersBtns: [
     {
@@ -106,7 +109,7 @@ const schoolAdminData = {
       icon: Settings,
     },
   ],
-  
+
   navMain: [
     {
       title: "Center Management",
