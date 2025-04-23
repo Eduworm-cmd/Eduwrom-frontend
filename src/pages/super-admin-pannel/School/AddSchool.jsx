@@ -1,20 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Upload } from "lucide-react";
 import Select from "react-select";
-import { ConvertImageToBase64, CreateSchool } from "@/Network/Super_Admin/auth";
 import { toast, ToastContainer } from "react-toastify";
+import axios from "axios";
 
 export const AddSchool = () => {
   const [logoPreview, setLogoPreview] = useState(null);
   const [logoName, setLogoName] = useState("");
+  const [logoBuffer, setLogoBuffer] = useState(null);
   const [selectedClasses, setSelectedClasses] = useState([]);
+  const [classOptions, setClassOptions] = useState([]);
+  const [academicYearOptions, setAcademicYearOptions] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  
   const [formData, setFormData] = useState({
-    schoolLogo: "",
-    classes: "",
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    phoneNumber: "",
     schoolName: "",
     displayName: "",
     phone: "",
-    email: "",
     country: "",
     state: "",
     city: "",
@@ -22,28 +29,44 @@ export const AddSchool = () => {
     address: "",
     startDate: "",
     endDate: "",
-    academicYear: "",
+    academicYear: [],
     branchName: "",
     branchPassword: "",
     branchEmail: "",
+    branches: [],
   });
 
-  const classOptions = [
-    { value: "Nursery", label: "Nursery" },
-    { value: "LKG", label: "LKG" },
-    { value: "UKG", label: "UKG" },
-    { value: "1st", label: "1st" },
-    { value: "2nd", label: "2nd" },
-    { value: "3rd", label: "3rd" },
-    { value: "4th", label: "4th" },
-    { value: "5th", label: "5th" },
-  ];
+  // Fetch classes and academic years from API
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        // Fetch classes
+        const classesResponse = await axios.get("http://localhost:4000/api/class");
+        const classesData = classesResponse?.data?.map(cls => ({
+          value: cls._id,
+          label: cls.className || cls.name
+        }));
+        setClassOptions(classesData || []);
+        
+        // Fetch academic years
+        const academicYearsResponse = await axios.get("http://localhost:4000/api/academic");
+        console.log("Academic Years Data:", academicYearsResponse.data);
+        const academicYearsData = academicYearsResponse?.data.map(year => ({
+          value: year._id,
+          label: year.name || `AY ${year.startYear} - ${year.endYear}`
+        }));
+        setAcademicYearOptions(academicYearsData || []);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        toast.error("Failed to load class or academic year data");
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  const academicYearOptions = [
-    { value: "AY 2023 - 2024", label: "AY 2023 - 2024" },
-    { value: "AY 2024 - 2025", label: "AY 2024 - 2025" },
-    { value: "AY 2025 - 2026", label: "AY 2025 - 2026" },
-  ];
+    fetchData();
+  }, []);
 
   const countryOptions = [
     { value: "India", label: "India" },
@@ -81,19 +104,47 @@ export const AddSchool = () => {
   const handleLogoChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      const base64String = await ConvertImageToBase64(file);
-      setLogoName(file.name);
+      // Set file preview
       setLogoPreview(URL.createObjectURL(file));
-      setFormData((prev) => ({
-        ...prev,
-        schoolLogo: base64String,
-      }));
+      setLogoName(file.name);
+      
+      // Convert to base64 buffer
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        // Extract base64 string without the data:image prefix
+        const base64String = reader.result.split(',')[1];
+        setLogoBuffer(base64String);
+      };
     }
   };
 
-  const handleAddSchoolAPi = async (data) => {
+  const createSchool = async (data) => {
     try {
-      const response = await CreateSchool(data);
+      const response = await axios.post(
+        "http://localhost:4000/api/schooladmin-auth/create-by-superadmin",
+        data
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Prepare API data with all required fields and ObjectIDs
+    const submissionData = {
+      ...formData,
+      // Using array of class ObjectIDs from selected options
+      classes: selectedClasses.map((c) => c.value),
+      // academicYear is already an ObjectID from handleSelectChange
+      schoolLogoBuffer: logoBuffer,
+    };
+    
+    try {
+      const response = await createSchool(submissionData);
       console.log("API Response:", response);
       toast.success("School added successfully!");
     } catch (error) {
@@ -101,35 +152,6 @@ export const AddSchool = () => {
       const errorMessage = error.response?.data?.message || error.message || "Error adding school.";
       toast.error(errorMessage);
     }
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    const selectedClassValues = selectedClasses.map(cls => cls.value);
-
-    const submissionData = {
-      schoolName: formData.schoolName,
-      displayName: formData.displayName,
-      email: formData.email,
-      password: formData.branchPassword,
-      phoneNumber: formData.phone,
-      country: formData.country,
-      state: formData.state,
-      city: formData.city,
-      pincode: formData.pincode,
-      address: formData.address,
-      startDate: formData.startDate,
-      endDate: formData.endDate,
-      academicYear: formData.academicYear,
-      branchName: formData.branchName,
-      branchEmail: formData.branchEmail,
-      classes: ["6450ab8c2d9e7c4f8a1 ","6450ab8c2d9e7c4f8a123458"],
-      schoolLogo: formData.schoolLogo,
-    };
-
-    console.log("Form submitted:", submissionData);
-    handleAddSchoolAPi(submissionData);
   };
 
   const selectStyles = {
@@ -159,16 +181,24 @@ export const AddSchool = () => {
     }),
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="text-lg">Loading form data...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="">
       <ToastContainer />
-      <form className="max-w-4xl mx-auto p-6 shadow-md" onSubmit={handleSubmit}>
+      <form className="max-w-4xl mx-auto p-6 shadow-md">
         {/* Logo Upload */}
         <div className="mb-6">
           <label className="block text-lg font-medium text-gray-700 mb-2">
             School Logo <span className="text-red-500">*</span>
           </label>
-          <div className="border-2 border-dashed border-gray-300 rounded-md  p-4 flex flex-col items-center justify-center gap-4">
+          <div className="border-2 border-dashed border-gray-300 rounded-md p-4 flex flex-col items-center justify-center gap-4">
             {logoPreview && (
               <>
                 <img
@@ -189,6 +219,75 @@ export const AddSchool = () => {
                 className="hidden"
               />
             </label>
+          </div>
+        </div>
+
+        {/* School Admin Info */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div>
+            <label className="block mb-2 text-lg font-medium text-gray-700">
+              First Name <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              name="firstName"
+              value={formData.firstName}
+              onChange={handleInputChange}
+              className="p-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-sky-500 outline-none"
+              required
+            />
+          </div>
+          <div>
+            <label className="block mb-2 text-lg font-medium text-gray-700">
+              Last Name <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              name="lastName"
+              value={formData.lastName}
+              onChange={handleInputChange}
+              className="p-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-sky-500 outline-none"
+              required
+            />
+          </div>
+          <div>
+            <label className="block mb-2 text-lg font-medium text-gray-700">
+              Email <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              className="p-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-sky-500 outline-none"
+              required
+            />
+          </div>
+          <div>
+            <label className="block mb-2 text-lg font-medium text-gray-700">
+              Password <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleInputChange}
+              className="p-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-sky-500 outline-none"
+              required
+            />
+          </div>
+          <div>
+            <label className="block mb-2 text-lg font-medium text-gray-700">
+              Phone Number <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="tel"
+              name="phoneNumber"
+              value={formData.phoneNumber}
+              onChange={handleInputChange}
+              className="p-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-sky-500 outline-none"
+              required
+            />
           </div>
         </div>
 
@@ -234,6 +333,8 @@ export const AddSchool = () => {
               value={selectedClasses}
               onChange={setSelectedClasses}
               styles={selectStyles}
+              placeholder={classOptions.length ? "Select Classes" : "Loading classes..."}
+              isDisabled={!classOptions.length}
             />
           </div>
           <div>
@@ -244,7 +345,9 @@ export const AddSchool = () => {
               options={academicYearOptions}
               value={academicYearOptions.find(opt => opt.value === formData.academicYear)}
               onChange={(opt) => handleSelectChange(opt, "academicYear")}
+              placeholder={academicYearOptions.length ? "Select Academic Year" : "Loading academic years..."}
               styles={selectStyles}
+              isDisabled={!academicYearOptions.length}
             />
           </div>
         </div>
@@ -391,8 +494,9 @@ export const AddSchool = () => {
           </div>
         </div>
 
-        {/* Branch Admin Info */}
-        <h1 className="text-3xl text-sky-500 mb-6 mt-10">Branch Admin Information</h1>
+      <div className="max-w-4xl mx-auto p-6 shadow-md mt-10">
+        <h1 className="text-2xl font-bold text-sky-500 mb-8">Branch Admin Information</h1>
+        {/* Branch Info */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div>
             <label className="block mb-2 text-lg font-medium text-gray-700">
@@ -403,7 +507,7 @@ export const AddSchool = () => {
               name="branchName"
               value={formData.branchName}
               onChange={handleInputChange}
-              className="p-2 w-full border border-gray-300 rounded-md"
+              className="p-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-sky-500 outline-none"
               required
             />
           </div>
@@ -439,12 +543,15 @@ export const AddSchool = () => {
         <div className="flex justify-end">
           <button
             type="submit"
+            onClick={handleSubmit}
             className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition"
           >
             Submit
           </button>
         </div>
+      </div>
       </form>
+
     </div>
   );
 };

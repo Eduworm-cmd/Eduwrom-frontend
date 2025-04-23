@@ -31,12 +31,14 @@ import Content from "./pages/Teacheradmin/InteractiveContent/Content";
 import ScheduleList from "./pages/Teacheradmin/InteractiveContent/ScheduleList";
 import { Assigements_Playlist } from "./pages/super-admin-pannel/LMS/Assigements_Playlist";
 import { SP_ScheduleList } from "./pages/super-admin-pannel/ScheduleList/SP_ScheduleList";
+import { SchoolAdminLogin } from "./auth/SchoolAdminLogin";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login_SignUp />} />
+        <Route path="/Schooladmin/login" element={<SchoolAdminLogin />} />
         <Route element={<Layout />}>
           <Route path="/" element={<TeacherHomePage />} />
           <Route path="/books" element={<BookHomePage />} />
