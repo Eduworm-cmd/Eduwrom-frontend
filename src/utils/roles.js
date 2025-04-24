@@ -1,7 +1,7 @@
 import { LayoutDashboard, Inbox, Users, Settings, BarChart, User, School, NotebookPen } from "lucide-react";
 
 export const Roles = {
-  SUPERADMIN: 'admin',
+  SUPERADMIN: 'superadmin',
   SCHOOLADMIN: 'schooladmin',
   TEACHER: 'teacher',
 }
@@ -92,7 +92,7 @@ const schoolAdminData = {
   buttons: [
     {
       title: "Dashboard",
-      url: "/eduworm-admin/home",
+      url: "/eduworm-school/home",
       icon: LayoutDashboard,
     },
     {
@@ -180,11 +180,10 @@ const schoolAdminData = {
 
 export const MangeRoles = (role = "") => {
   switch (role) {
-    case "admin":
+    case "superadmin":
       return adminData;
     case 'teacher':
       return teacherData;
-
     case 'schooladmin':
       return schoolAdminData;
     default:

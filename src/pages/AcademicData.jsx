@@ -1,70 +1,42 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { format } from 'date-fns';
-import {
-  Table,
-  Button,
-  Input,
-  Form,
-  Select,
-  DatePicker,
-  Space,
-  Spin,
-  Alert,
-  Modal,
-  Checkbox,
-  Dropdown,
-  Menu,
-  Tooltip,
-  Typography,
-  Row,
-  Col,
-  Card,
-  Divider
-} from 'antd';
-import {
-  LeftOutlined,
-  PlusOutlined,
-  SearchOutlined,
-  ReloadOutlined,
-  EditOutlined,
-  MoreOutlined,
-  EyeOutlined,
-  DeleteOutlined,
-  LoadingOutlined
-} from '@ant-design/icons';
-import moment from 'moment';
-
-const { Title } = Typography;
-const { Option } = Select;
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { format } from "date-fns";
+import { PlusCircle, Search, Trash2 } from "lucide-react";
+import { GetAcademicYearsById, GetSchools } from "@/Network/Super_Admin/auth";
 
 const AcademicYearManagement = () => {
-  const [view, setView] = useState('list'); // 'list', 'add', 'edit'
+  const [view, setView] = useState("list"); // 'list', 'add', 'edit'
   const [academicYears, setAcademicYears] = useState([]);
   const [schools, setSchools] = useState([]);
   const [branches, setBranches] = useState([]);
   const [selectedSchool, setSelectedSchool] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [editItemId, setEditItemId] = useState(null);
-  const [form] = Form.useForm();
+
+  // Form state for add/edit
+  const [formData, setFormData] = useState({
+    name: "",
+    startDate: "",
+    endDate: "",
+    schoolId: "",
+    branchId: "",
+  });
 
   // Fetch academic years
   const fetchAcademicYears = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get('http://localhost:4000/api/academic', {
-        params: {
-          schoolId: selectedSchool || '',
-        }
-      });
-      setAcademicYears(response.data.data);
+      const response = await GetAcademicYearsById({
+        schoolId: selectedSchool || "null",
+      })
+      setAcademicYears(response.data);
       setError(null);
     } catch (err) {
-      setError('Failed to fetch academic years');
+      setError("Failed to fetch academic years");
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -74,10 +46,10 @@ const AcademicYearManagement = () => {
   // Fetch schools for dropdown
   const fetchSchools = async () => {
     try {
-      const response = await axios.get('http://localhost:4000/api/schooladmin-auth');
-      setSchools(response.data.data);
+      const response = await GetSchools();
+      setSchools(response.data);
     } catch (err) {
-      console.error('Failed to fetch schools:', err);
+      console.error("Failed to fetch schools:", err);
     }
   };
 
@@ -85,12 +57,15 @@ const AcademicYearManagement = () => {
   const fetchBranches = async (schoolId) => {
     if (!schoolId) return;
     try {
-      const response = await axios.get(`http://localhost:4000/api/branches/forschool`, {
-        params: { schoolId }
-      });
+      const response = await axios.get(
+        `http://localhost:4000/api/branches/forschool`,
+        {
+          params: { schoolId },
+        }
+      );
       setBranches(response.data.data);
     } catch (err) {
-      console.error('Failed to fetch branches:', err);
+      console.error("Failed to fetch branches:", err);
     }
   };
 
@@ -107,43 +82,78 @@ const AcademicYearManagement = () => {
 
   // For editing
   useEffect(() => {
-    if (view === 'edit' && editItemId) {
+    if (view === "edit" && editItemId) {
       const fetchAcademicYear = async () => {
         try {
-          const response = await axios.get(`http://localhost:4000/api/academic/${editItemId}`);
-          const data = response.data.data;
+          // const response = await axios.get(
+          //   `http://localhost:4000/api/academic/${editItemId}`
+          // );
+          const response = await GetAcademicYearsById(editItemId);
+          const data = response.data;
+          console.log("Fetched academic year data:", data);
           
-          form.setFieldsValue({
+          setFormData({
             name: data.name,
-            startDate: moment(data.startDate),
-            endDate: moment(data.endDate),
+            startDate: format(new Date(data.startDate), "yyyy-MM-dd"),
+            endDate: format(new Date(data.endDate), "yyyy-MM-dd"),
             schoolId: data.schoolId,
-            branchId: data.branchId
+            branchId: data.branchId,
           });
-          
+
           // Fetch branches for the school
           if (data.schoolId) {
             setSelectedSchool(data.schoolId);
             fetchBranches(data.schoolId);
           }
         } catch (err) {
-          setError('Failed to fetch academic year details');
+          setError("Failed to fetch academic year details");
           console.error(err);
         }
       };
-      
+
       fetchAcademicYear();
     }
-  }, [view, editItemId, form]);
+  }, [view, editItemId]);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+
+    // If school is changed, update branches
+    if (name === "schoolId") {
+      setSelectedSchool(value);
+      fetchBranches(value);
+      setFormData((prev) => ({
+        ...prev,
+        branchId: "", // Reset branch when school changes
+      }));
+    }
+  };
 
   const handleAddAcademicYear = () => {
-    form.resetFields();
-    setView('add');
+    setFormData({
+      name: "",
+      startDate: "",
+      endDate: "",
+      schoolId: selectedSchool || "",
+      branchId: "",
+    });
+    setView("add");
   };
 
   const handleEditAcademicYear = (year) => {
     setEditItemId(year._id);
-    setView('edit');
+    setView("edit");
+    setFormData({
+      name: year.name,
+      startDate: format(new Date(year.startDate), "yyyy-MM-dd"),
+      endDate: format(new Date(year.endDate), "yyyy-MM-dd"),
+      schoolId: year.schoolId,
+      branchId: year.branchId,
+    });
   };
 
   const handleViewAcademicYear = (yearId) => {
@@ -153,36 +163,33 @@ const AcademicYearManagement = () => {
   };
 
   const handleCancel = () => {
-    setView('list');
+    setView("list");
     setEditItemId(null);
-    form.resetFields();
   };
 
-  const handleSubmit = async (values) => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setIsLoading(true);
-    
-    try {
-      const formattedData = {
-        ...values,
-        startDate: values.startDate.format('YYYY-MM-DD'),
-        endDate: values.endDate.format('YYYY-MM-DD')
-      };
 
-      if (view === 'add') {
-        await axios.post('http://localhost:4000/api/academic', formattedData);
-      } else if (view === 'edit') {
-        await axios.patch(`http://localhost:4000/api/academic/${editItemId}`, formattedData);
+    try {
+      if (view === "add") {
+        await axios.post("http://localhost:4000/api/academic", formData);
+      } else if (view === "edit") {
+        await axios.patch(
+          `http://localhost:4000/api/academic/${editItemId}`,
+          formData
+        );
       }
-      
-      setView('list');
+
+      setView("list");
       setEditItemId(null);
       fetchAcademicYears();
       setError(null);
     } catch (err) {
       if (err.response && err.response.data) {
-        setError(err.response.data.message || 'An error occurred');
+        setError(err.response.data.message || "An error occurred");
       } else {
-        setError('An error occurred');
+        setError("An error occurred");
       }
       console.error(err);
     } finally {
@@ -191,320 +198,367 @@ const AcademicYearManagement = () => {
   };
 
   const handleDeactivate = async (yearId) => {
-    Modal.confirm({
-      title: 'Are you sure you want to deactivate this academic year?',
-      onOk: async () => {
-        try {
-          // This is a placeholder - backend needs a proper endpoint for deactivation
-          await axios.patch(`/api/academic-years/${yearId}`, { active: false });
-          fetchAcademicYears();
-          setError(null);
-        } catch (err) {
-          setError('Failed to deactivate academic year');
-          console.error(err);
-        }
+    if (
+      window.confirm("Are you sure you want to deactivate this academic year?")
+    ) {
+      try {
+        // This is a placeholder - backend needs a proper endpoint for deactivation
+        await axios.patch(`/api/academic-years/${yearId}`, { active: false });
+        fetchAcademicYears();
+        setError(null);
+      } catch (err) {
+        setError("Failed to deactivate academic year");
+        console.error(err);
       }
-    });
+    }
+  };
+
+  const handleRowsPerPageChange = (e) => {
+    setRowsPerPage(parseInt(e.target.value));
+    setCurrentPage(1);
+  };
+
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(1);
   };
 
   const handleResetFilter = () => {
-    setSearchQuery('');
+    setSearchQuery("");
     setSelectedSchool(null);
   };
 
-  const handleSchoolChange = (value) => {
-    setSelectedSchool(value);
-    fetchBranches(value);
-    form.setFieldsValue({ branchId: undefined });
-  };
-
-  // Filter academic years
-  const filteredAcademicYears = academicYears?.filter(year => {
-    return year.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-           (year.branchName && year.branchName.toLowerCase().includes(searchQuery.toLowerCase()));
+  // Filter and paginate academic years
+  const filteredAcademicYears = academicYears?.filter((year) => {
+    return (
+      year.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (year.branchName &&
+        year.branchName.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
   });
 
-  // Table columns
-  const columns = [
-    {
-      title: 'Sr.No',
-      key: 'index',
-      width: 70,
-      render: (_, __, index) => (currentPage - 1) * rowsPerPage + index + 1,
-    },
-    {
-      title: 'Branch School Name',
-      dataIndex: 'branchName',
-      key: 'branchName',
-      render: (text) => text || 'N/A',
-    },
-    {
-      title: 'Academic Year Name',
-      dataIndex: 'name',
-      key: 'name',
-    },
-    {
-      title: 'Start Date',
-      dataIndex: 'startDate',
-      key: 'startDate',
-      render: (date) => format(new Date(date), 'dd/MM/yyyy'),
-    },
-    {
-      title: 'End Date',
-      dataIndex: 'endDate',
-      key: 'endDate',
-      render: (date) => format(new Date(date), 'dd/MM/yyyy'),
-    },
-    {
-      title: 'Created Date',
-      dataIndex: 'createdAt',
-      key: 'createdAt',
-      render: (date) => format(new Date(date), 'dd/MM/yyyy, h:mm:ss a'),
-    },
-    {
-      title: 'View',
-      key: 'view',
-      width: 70,
-      align: 'center',
-      render: (_, record) => (
-        <Dropdown
-          overlay={
-            <Menu>
-              <Menu.Item key="view" onClick={() => handleViewAcademicYear(record._id)}>
-                <EyeOutlined /> View
-              </Menu.Item>
-              <Menu.Item key="edit" onClick={() => handleEditAcademicYear(record)}>
-                <EditOutlined /> Edit
-              </Menu.Item>
-              <Menu.Item key="deactivate" danger onClick={() => handleDeactivate(record._id)}>
-                <DeleteOutlined /> Deactivate
-              </Menu.Item>
-            </Menu>
-          }
-          trigger={['click']}
-        >
-          <Button type="text" icon={<MoreOutlined />} />
-        </Dropdown>
-      ),
-    },
-    {
-      title: 'Edit',
-      key: 'edit',
-      width: 70,
-      align: 'center',
-      render: (_, record) => (
-        <Button
-          type="text"
-          icon={<EditOutlined />}
-          onClick={() => handleEditAcademicYear(record)}
-        />
-      ),
-    },
-    {
-      title: 'Status',
-      key: 'status',
-      width: 80,
-      align: 'center',
-      render: () => (
-        <div className="flex justify-center">
-          <div className="h-3 w-3 bg-green-500 rounded-full" />
-        </div>
-      ),
-    },
-  ];
+  const indexOfLastRecord = currentPage * rowsPerPage;
+  const indexOfFirstRecord = indexOfLastRecord - rowsPerPage;
+  const currentRecords = filteredAcademicYears?.slice(
+    indexOfFirstRecord,
+    indexOfLastRecord
+  );
+  const totalPages = Math.ceil(filteredAcademicYears?.length / rowsPerPage);
 
   // Render Add/Edit form
   const renderForm = () => {
     return (
-      <Card className="container mx-auto p-4">
-        <Space direction="vertical" size="large" style={{ width: '100%' }}>
-          <Space align="center">
-            <Button 
-              type="text" 
-              icon={<LeftOutlined />} 
-              onClick={handleCancel} 
-            />
-            <Title level={4}>
-              {view === 'add' ? 'Add Academic Year' : 'Edit Academic Year'}
-            </Title>
-          </Space>
-          
-          {error && <Alert message={error} type="error" showIcon />}
-          
-          <Form
-            form={form}
-            layout="vertical"
-            onFinish={handleSubmit}
-            initialValues={{
-              schoolId: selectedSchool || '',
-            }}
-          >
-            <Row gutter={24}>
-              <Col span={12}>
-                <Form.Item
-                  name="name"
-                  label="Name"
-                  rules={[{ required: true, message: 'Please enter a name' }]}
-                >
-                  <Input placeholder="e.g., 2025-2026" />
-                </Form.Item>
-              </Col>
-              
-              <Col span={12}>
-                <Form.Item
-                  name="schoolId"
-                  label="School"
-                >
-                  <Select
-                    placeholder="Select School"
-                    onChange={handleSchoolChange}
-                    allowClear
-                  >
-                    {schools.map(school => (
-                      <Option key={school._id} value={school._id}>
-                        {school.schoolName}
-                      </Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-              </Col>
-              
-              <Col span={12}>
-                <Form.Item
-                  name="branchId"
-                  label="Branch"
-                  rules={[{ required: true, message: 'Please select a branch' }]}
-                >
-                  <Select
-                    placeholder="Select Branch"
-                    allowClear
-                  >
-                    {branches?.map(branch => (
-                      <Option key={branch._id} value={branch._id}>
-                        {branch.name}
-                      </Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-              </Col>
-              
-              <Col span={12}>
-                <Form.Item
-                  name="startDate"
-                  label="Start Date"
-                  rules={[{ required: true, message: 'Please select a start date' }]}
-                >
-                  <DatePicker 
-                    style={{ width: '100%' }} 
-                    format="YYYY-MM-DD" 
-                  />
-                </Form.Item>
-              </Col>
-              
-              <Col span={12}>
-                <Form.Item
-                  name="endDate"
-                  label="End Date"
-                  rules={[{ required: true, message: 'Please select an end date' }]}
-                >
-                  <DatePicker 
-                    style={{ width: '100%' }} 
-                    format="YYYY-MM-DD" 
-                  />
-                </Form.Item>
-              </Col>
-            </Row>
-            
-            <Space>
-              <Button onClick={handleCancel}>
-                Cancel
-              </Button>
-              <Button 
-                type="primary" 
-                htmlType="submit" 
-                loading={isLoading}
+      <div className="container mx-auto p-4">
+        <div className="flex items-center mb-6">
+          <button onClick={handleCancel} className="text-gray-600 mr-2">
+            &lt;
+          </button>
+          <h1 className="text-2xl font-semibold">
+            {view === "add" ? "Add Academic Year" : "Edit Academic Year"}
+          </h1>
+        </div>
+
+        {error && (
+          <div className="bg-red-100 text-red-700 p-3 mb-4 rounded">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block mb-1">
+                Name<span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                required
+                className="w-full border border-gray-300 rounded p-2"
+                placeholder="e.g., 2025-2026"
+              />
+            </div>
+
+            <div>
+              <label className="block mb-1">School</label>
+              <select
+                name="schoolId"
+                value={formData.schoolId}
+                onChange={handleInputChange}
+                className="w-full border border-gray-300 rounded p-2"
               >
-                {view === 'add' ? 'Add' : 'Save'}
-              </Button>
-            </Space>
-          </Form>
-        </Space>
-      </Card>
+                <option value="">Select School</option>
+                {schools.map((school) => (
+                  <option key={school._id} value={school._id}>
+                    {school.schoolName}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block mb-1">
+                Branch<span className="text-red-500">*</span>
+              </label>
+              <select
+                name="branchId"
+                value={formData.branchId}
+                onChange={handleInputChange}
+                required
+                className="w-full border border-gray-300 rounded p-2"
+              >
+                <option value="">Select Branch</option>
+                {branches?.map((branch) => (
+                  <option key={branch._id} value={branch._id}>
+                    {branch.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block mb-1">
+                Start Date<span className="text-red-500">*</span>
+              </label>
+              <input
+                type="date"
+                name="startDate"
+                value={formData.startDate}
+                onChange={handleInputChange}
+                required
+                className="w-full border border-gray-300 rounded p-2"
+              />
+            </div>
+
+            <div>
+              <label className="block mb-1">
+                End Date<span className="text-red-500">*</span>
+              </label>
+              <input
+                type="date"
+                name="endDate"
+                value={formData.endDate}
+                onChange={handleInputChange}
+                required
+                className="w-full border border-gray-300 rounded p-2"
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-start space-x-2 mt-6">
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="bg-gray-300 text-gray-700 px-4 py-2 rounded"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="bg-purple-700 text-white px-6 py-2 rounded"
+            >
+              {isLoading ? "Saving..." : view === "add" ? "Add" : "Save"}
+            </button>
+          </div>
+        </form>
+      </div>
     );
   };
 
   // Render list view
   const renderList = () => {
     return (
-      <Card className="container mx-auto p-4">
-        <Space direction="vertical" size="large" style={{ width: '100%' }}>
-          <Row justify="space-between" align="middle">
-            <Title level={4}>Academic Year ({filteredAcademicYears?.length})</Title>
-            <Space>
-              <Button 
-                type="primary" 
-                icon={<PlusOutlined />} 
-                onClick={handleAddAcademicYear}
-              >
-                Add Academic Year
-              </Button>
-              <Button>
-                Deactivated
-              </Button>
-            </Space>
-          </Row>
-          
-          {error && <Alert message={error} type="error" showIcon />}
-          
-          <Row justify="space-between" align="middle">
-            <Input
-              prefix={<SearchOutlined />}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search"
-              style={{ width: 200 }}
-            />
-            
-            <Button 
-              icon={<ReloadOutlined />} 
-              onClick={handleResetFilter}
+      <div className="p-4 bg-white rounded-md w-full">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-semibold">
+            Academic Year ({filteredAcademicYears?.length})
+          </h1>
+          <div className="flex gap-2 justify-end mb-3">
+            <button
+              onClick={handleAddAcademicYear}
+              className="flex gap-2 mt-4 text-white py-2 px-5 outline-none rounded-sm font-semibold cursor-pointer text-[14px] bg-sky-500"
             >
-              Reset Filter
-            </Button>
-          </Row>
-          
-          <Table
-            rowSelection={{
-              type: 'checkbox',
-            }}
-            columns={columns}
-            dataSource={filteredAcademicYears}
-            rowKey="_id"
-            loading={isLoading}
-            pagination={{
-              current: currentPage,
-              pageSize: rowsPerPage,
-              total: filteredAcademicYears?.length,
-              onChange: (page) => setCurrentPage(page),
-              onShowSizeChange: (_, size) => {
-                setRowsPerPage(size);
-                setCurrentPage(1);
-              },
-              showSizeChanger: true,
-              pageSizeOptions: ['5', '10', '20'],
-              showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
-            }}
-          />
-        </Space>
-      </Card>
+              <PlusCircle /> Add Academic Year
+            </button>
+
+            <button className="flex gap-2 mt-4 text-white py-2 px-5 outline-none rounded-sm font-semibold cursor-pointer text-[14px] bg-red-500">
+              <Trash2 /> Deactivated
+            </button>
+          </div>
+        </div>
+
+        {error && (
+          <div className="bg-red-100 text-red-700 p-3 mb-4 rounded">
+            {error}
+          </div>
+        )}
+
+        <div className="flex items-center justify-between mb-4 bg-blue-400 rounded-sm shadow-md px-2 py-2">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search..."
+              className="w-full bg-white max-w-[250px] p-2 pl-10 border rounded-sm focus:outline-none focus:ring-2 focus:ring-sky-500 transition"
+              value={searchQuery}
+              onChange={handleSearch}
+            />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" size={18} />
+          </div>
+
+          <button
+            onClick={handleResetFilter}
+            className="flex items-center text-gray-500"
+          >
+            ↺ Reset Filter
+          </button>
+        </div>
+
+        {isLoading ? (
+          <div className="flex justify-center items-center h-32">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gray-900"></div>
+          </div>
+        ) : (
+          <>
+            <div className="overflow-x-auto">
+              <table className="min-w-full bg-white">
+                <thead>
+                  <tr className="bg-gray-50 border-b">
+                    <th className="w-10 px-6 py-3 text-left">
+                      <input type="checkbox" />
+                    </th>
+                    <th className="px-6 py-3 text-left">Sr.No</th>
+                    <th className="px-6 py-3 text-left">Branch School Name</th>
+                    <th className="px-6 py-3 text-left">Academic Year Name</th>
+                    <th className="px-6 py-3 text-left">Start Date</th>
+                    <th className="px-6 py-3 text-left">End Date</th>
+                    <th className="px-6 py-3 text-left">Created Date</th>
+                    <th className="px-6 py-3 text-center">Actions</th>
+                    <th className="px-6 py-3 text-center">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentRecords?.length > 0 ? (
+                    currentRecords?.map((year, index) => (
+                      <tr key={year._id} className="border-b hover:bg-gray-50">
+                        <td className="px-6 py-4">
+                          <input type="checkbox" />
+                        </td>
+                        <td className="px-6 py-4">
+                          {indexOfFirstRecord + index + 1}
+                        </td>
+                        <td className="px-6 py-4">
+                          {year.branchName || "N/A"}
+                        </td>
+                        <td className="px-6 py-4">{year.name}</td>
+                        <td className="px-6 py-4">
+                          {format(new Date(year.startDate), "dd/MM/yyyy")}
+                        </td>
+                        <td className="px-6 py-4">
+                          {format(new Date(year.endDate), "dd/MM/yyyy")}
+                        </td>
+                        <td className="px-6 py-4">
+                          {format(
+                            new Date(year.createdAt),
+                            "dd/M/yyyy, h:mm:ss a"
+                          )}
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          <button className="text-gray-500 relative group">
+                            ⋯
+                            <div className="absolute hidden group-hover:block right-0 mt-2 w-24 bg-white border border-gray-200 rounded shadow-lg z-10">
+                              <button
+                                className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                                onClick={() => handleViewAcademicYear(year._id)}
+                              >
+                                View
+                              </button>
+                              <button
+                                className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                                onClick={() => handleEditAcademicYear(year)}
+                              >
+                                Edit
+                              </button>
+                              <button
+                                className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-red-500"
+                                onClick={() => handleDeactivate(year._id)}
+                              >
+                                Deactivate
+                              </button>
+                            </div>
+                          </button>
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          <span className="flex justify-center">
+                            <span className="h-3 w-3 bg-green-500 rounded-full"></span>
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="10" className="px-6 py-4 text-center">
+                        No academic years found
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="flex justify-between items-center mt-4">
+              <div>
+                <span className="mr-2">Rows per page:</span>
+                <select
+                  value={rowsPerPage}
+                  onChange={handleRowsPerPageChange}
+                  className="border border-gray-300 rounded p-1"
+                >
+                  <option value={5}>5</option>
+                  <option value={10}>10</option>
+                  <option value={20}>20</option>
+                </select>
+              </div>
+
+              <div>
+                <span>
+                  {indexOfFirstRecord + 1}-
+                  {Math.min(indexOfLastRecord, filteredAcademicYears?.length)}{" "}
+                  of {filteredAcademicYears?.length}
+                </span>
+                <button
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
+                  disabled={currentPage === 1}
+                  className="ml-2 px-2 py-1 border rounded disabled:opacity-50"
+                >
+                  &lt;
+                </button>
+                <button
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  }
+                  disabled={currentPage === totalPages || totalPages === 0}
+                  className="ml-2 px-2 py-1 border rounded disabled:opacity-50"
+                >
+                  &gt;
+                </button>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
     );
   };
 
   // Main render
   return (
-    <div className="bg-gray-50 min-h-screen p-4">
-      {view === 'list' && renderList()}
-      {(view === 'add' || view === 'edit') && renderForm()}
+    <div className="bg-gray-50 min-h-screen">
+      {view === "list" && renderList()}
+      {(view === "add" || view === "edit") && renderForm()}
     </div>
   );
 };

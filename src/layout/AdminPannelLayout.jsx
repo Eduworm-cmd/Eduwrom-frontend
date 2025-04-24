@@ -13,33 +13,66 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { MangeRoles, Roles } from "@/utils/roles";
+import { GetUser } from "@/Network/Super_Admin/auth";
+import { useSelector } from "react-redux";
 
 export const AdminPannelLayout = () => {
-
   const [roles, setRoles] = useState({});
-  const [path, setpath] = useState({
+  const navigate = useNavigate();
+  const [path, setPath] = useState({
     currentpath: "",
     paths: [],
   });
   const location = useLocation();
-
+  const token = useSelector((state) => state.auth.token);
   useEffect(() => {
-    const userrole = Roles.SUPERADMIN;
-    const paths = MangeRoles(userrole);
-    setRoles(paths);
+    const storedToken = localStorage.getItem('token');
+    if (!token && !storedToken) {
+      navigate("/login", { replace: true });
+      return;
+    }
+
+    const user = GetUser();  
+    if (!user) {
+      localStorage.removeItem('token');
+      navigate("/login", { replace: true });
+      return;
+    }
+    const resolveRole = () => {
+      switch (user.role) {
+        case Roles.SCHOOLADMIN:
+          return Roles.SCHOOLADMIN;
+        case Roles.SUPERADMIN:
+          return Roles.SUPERADMIN;
+        case Roles.TEACHER:
+          return Roles.TEACHER;
+        default:
+          return null;
+      }
+    };
   
-    const pathsarr = location.pathname.split("/").filter(Boolean); 
+    const userRole = resolveRole();
   
-    setpath({
+    try {
+      const roleData = MangeRoles(userRole);
+      setRoles(roleData);
+    } catch (err) {
+      console.error("Invalid role for MangeRoles:", err);
+    }
+  }, []);
+  
+  
+  useEffect(() => {
+    const pathsArr = location.pathname.split("/").filter(Boolean);
+  
+    setPath({
       currentpath: location.pathname,
-      paths: pathsarr,
+      paths: pathsArr,
     });
   }, [location]);
   
-
-
 
   return (
     <SidebarProvider>
@@ -54,7 +87,7 @@ export const AdminPannelLayout = () => {
                 <React.Fragment key={index}>
                   <BreadcrumbItem className="hidden md:block">
                     <BreadcrumbLink href={path.currentpath || "#"}>
-                      {item.title || item}
+                      {item.charAt(0).toUpperCase() + item.slice(1)}
                     </BreadcrumbLink>
                   </BreadcrumbItem>
                   {index < path.paths.length - 1 && (
@@ -63,7 +96,6 @@ export const AdminPannelLayout = () => {
                 </React.Fragment>
               ))}
             </BreadcrumbList>
-
           </Breadcrumb>
         </header>
 

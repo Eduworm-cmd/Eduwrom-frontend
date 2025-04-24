@@ -16,6 +16,8 @@ import {
 import { Link } from "react-router-dom";
 import { GetUser } from "@/Network/Super_Admin/auth";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { logout } from "@/auth/authSlice";
 
 
 const menuItems = [
@@ -51,6 +53,8 @@ const bottomItems = [
 
 export function FooterUserDropdown() {
   const [user, setUser] = useState(null);
+  const dispatch = useDispatch();
+
   useEffect(() => {
     const userData = GetUser();
     if (userData) {
@@ -59,6 +63,12 @@ export function FooterUserDropdown() {
       setUser(null);
     }
   },[])
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    dispatch(logout());
+  }
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -111,12 +121,10 @@ export function FooterUserDropdown() {
 
         {/* Bottom Links */}
         {bottomItems.map(({ label, icon: Icon, to }) => (
-          <Link to={to} key={label}>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout} key={label}>
               <Icon className="mr-2 h-4 w-4" />
               {label}
             </DropdownMenuItem>
-          </Link>
         ))}
       </DropdownMenuContent>
     </DropdownMenu>
