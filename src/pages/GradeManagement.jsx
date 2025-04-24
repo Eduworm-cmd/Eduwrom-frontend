@@ -1,12 +1,50 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+<<<<<<< HEAD
 import { CreateGrade, GetGradeById, GetGrades, GetLevels, GetSchools } from '@/Network/Super_Admin/auth';
 import { toast, ToastContainer } from 'react-toastify';
 import { ChevronLeft, ChevronRight, PlusCircle, Search, Trash, Trash2 } from 'lucide-react';
 import { ExportButton } from '@/components/Buttons/ExportButton/ExportButton';
+=======
+import {
+  Table,
+  Button,
+  Input,
+  Form,
+  Select,
+  Slider,
+  Card,
+  Checkbox,
+  Dropdown,
+  Menu,
+  Space,
+  Spin,
+  Typography,
+  Row,
+  Col,
+  Divider,
+  Badge,
+  Modal
+} from 'antd';
+import {
+  LeftOutlined,
+  PlusOutlined,
+  SearchOutlined,
+  ReloadOutlined,
+  EditOutlined,
+  MoreOutlined,
+  EyeOutlined,
+  DeleteOutlined,
+  CheckCircleFilled,
+  CloseCircleFilled
+} from '@ant-design/icons';
 
-// Main component that handles all grade management functionality
+const { Title, Text } = Typography;
+const { Option } = Select;
+>>>>>>> af3b61b3814bfbcf0a4f72d250121c46f3fa7d31
+
 const GradeManagement = () => {
+<<<<<<< HEAD
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 4;
     const [grades, setGrades] = useState([]);
@@ -25,14 +63,25 @@ const GradeManagement = () => {
         school: '',
         level: ''
     });
+=======
+  const [grades, setGrades] = useState([]);
+  const [schools, setSchools] = useState([]);
+  const [levels, setLevels] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentView, setCurrentView] = useState('list'); // list, add, edit, view
+  const [currentGradeId, setCurrentGradeId] = useState(null);
+  const [form] = Form.useForm();
+>>>>>>> af3b61b3814bfbcf0a4f72d250121c46f3fa7d31
 
-    // Fetch initial data
-    useEffect(() => {
-        fetchGrades();
-        fetchSchools();
-        fetchLevels();
-    }, []);
+  // Fetch initial data
+  useEffect(() => {
+    fetchGrades();
+    fetchSchools();
+    fetchLevels();
+  }, []);
 
+<<<<<<< HEAD
     // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = () => {
@@ -55,9 +104,26 @@ const GradeManagement = () => {
         } catch (error) {
             console.error('Error fetching grades:', error);
             setLoading(false);
+=======
+  // Fetch grades from API
+  const fetchGrades = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get('http://localhost:4000/api/grade', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+>>>>>>> af3b61b3814bfbcf0a4f72d250121c46f3fa7d31
         }
-    };
+      });
+      setGrades(response.data.data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching grades:', error);
+      setLoading(false);
+    }
+  };
 
+<<<<<<< HEAD
     // Fetch schools from API with updated endpoint
     const fetchSchools = async () => {
         try {
@@ -69,9 +135,28 @@ const GradeManagement = () => {
             setSchools(mappedSchools);
         } catch (error) {
             console.error('Error fetching schools:', error);
+=======
+  // Fetch schools from API with updated endpoint
+  const fetchSchools = async () => {
+    try {
+      const response = await axios.get('http://localhost:4000/api/schooladmin-auth', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+>>>>>>> af3b61b3814bfbcf0a4f72d250121c46f3fa7d31
         }
-    };
+      });
+      // Map the response to match our expected format
+      const mappedSchools = response.data.data.map(school => ({
+        _id: school._id,
+        name: school.schoolName // Adjust for different property name
+      }));
+      setSchools(mappedSchools);
+    } catch (error) {
+      console.error('Error fetching schools:', error);
+    }
+  };
 
+<<<<<<< HEAD
     // Fetch levels from API
     const fetchLevels = async () => {
         try {
@@ -79,9 +164,23 @@ const GradeManagement = () => {
             setLevels(response);
         } catch (error) {
             console.error('Error fetching levels:', error);
+=======
+  // Fetch levels from API
+  const fetchLevels = async () => {
+    try {
+      const response = await axios.get('http://localhost:4000/api/level', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+>>>>>>> af3b61b3814bfbcf0a4f72d250121c46f3fa7d31
         }
-    };
+      });
+      setLevels(response.data);
+    } catch (error) {
+      console.error('Error fetching levels:', error);
+    }
+  };
 
+<<<<<<< HEAD
 
     // Fetch single grade by ID
     const fetchGradeById = async (id) => {
@@ -106,67 +205,87 @@ const GradeManagement = () => {
             console.error('Error fetching grade:', error);
             setLoading(false);
             return null;
+=======
+  // Fetch single grade by ID
+ // Fetch single grade by ID
+const fetchGradeById = async (id) => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`http://localhost:4000/api/grade/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+>>>>>>> af3b61b3814bfbcf0a4f72d250121c46f3fa7d31
         }
-    };
+      });
+      const grade = response.data.data;
+      
+      // Log the grade data to see its structure
+      console.log('Fetched grade:', grade);
+      
+      // Handle both object and string reference formats
+      const schoolId = typeof grade.school === 'object' ? grade.school?._id : grade.school;
+      const levelId = typeof grade.level === 'object' ? grade.level?._id : grade.level;
+      
+      // Set form data with all the necessary fields
+      form.setFieldsValue({
+        name: grade.name || '',
+        type: grade.type || '',
+        minAge: grade.minAge || 3,
+        maxAge: grade.maxAge || 3,
+        school: schoolId || '',
+        level: levelId || ''
+      });
+      
+      setLoading(false);
+      return grade;
+    } catch (error) {
+      console.error('Error fetching grade:', error);
+      setLoading(false);
+      return null;
+    }
+  };
 
-    // Handle form input changes
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-    };
+  // Handle search input
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+  };
 
-    // Handle slider changes for age inputs
-    const handleSliderChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: parseInt(value) });
-    };
+  // Reset search filter
+  const resetFilter = () => {
+    setSearchTerm('');
+  };
 
-    // Handle search input
-    const handleSearch = (e) => {
-        setSearchTerm(e.target.value);
-    };
+  // Navigate to add grade view
+  const handleAddGrade = () => {
+    form.resetFields();
+    setCurrentView('add');
+  };
 
-    // Reset search filter
-    const resetFilter = () => {
-        setSearchTerm('');
-    };
+  // Navigate to edit grade view
+  const handleEditGrade = async (id) => {
+    await fetchGradeById(id);
+    setCurrentGradeId(id);
+    setCurrentView('edit');
+  };
 
-    // Toggle dropdown menu for a specific row
-    const toggleDropdown = (e, id) => {
-        e.stopPropagation(); // Prevent triggering document click
-        setActiveDropdown(activeDropdown === id ? null : id);
-    };
+  // Navigate to view grade details
+  const handleViewGrade = async (id) => {
+    await fetchGradeById(id);
+    setCurrentGradeId(id);
+    setCurrentView('view');
+  };
 
-    // Navigate to add grade view
-    const handleAddGrade = () => {
-        setFormData({
-            name: '',
-            type: '',
-            minAge: 3,
-            maxAge: 3,
-            school: '',
-            level: ''
-        });
-        setCurrentView('add');
-    };
-
-    // Navigate to edit grade view
-    const handleEditGrade = async (id) => {
-        await fetchGradeById(id);
-        setCurrentGradeId(id);
-        setCurrentView('edit');
-    };
-
-    // Navigate to view grade details
-    const handleViewGrade = async (id) => {
-        await fetchGradeById(id);
-        setCurrentGradeId(id);
-        setCurrentView('view');
-    };
-
-    // Handle deactivate grade
-    const handleDeactivateGrade = async (id) => {
+  // Handle deactivate grade
+  const handleDeactivateGrade = async (id) => {
+    Modal.confirm({
+      title: 'Are you sure you want to deactivate this grade?',
+      content: 'This action will deactivate the selected grade.',
+      okText: 'Yes',
+      okType: 'danger',
+      cancelText: 'No',
+      onOk: async () => {
         try {
+<<<<<<< HEAD
             await axios.put(`http://localhost:4000/api/grade/${id}`, { isActive: false }, {
                 headers: {
                     'Content-Type': 'application/json',
@@ -207,25 +326,359 @@ const GradeManagement = () => {
             await fetchGrades();
             setCurrentView('list');
             setCurrentGradeId(null);
+=======
+          await axios.put(`http://localhost:4000/api/grade/${id}`, { isActive: false }, {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+          });
+          // Refresh grades list
+          await fetchGrades();
+>>>>>>> af3b61b3814bfbcf0a4f72d250121c46f3fa7d31
         } catch (error) {
-            console.error('Error saving grade:', error);
-        } finally {
-            setLoading(false);
+          console.error('Error deactivating grade:', error);
         }
-    };
+      }
+    });
+  };
 
-    // Filter grades based on search term
-    const filteredGrades = grades.filter(grade =>
-        grade.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (grade.school?.name && grade.school.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (grade.type && grade.type.toLowerCase().includes(searchTerm.toLowerCase()))
+  // Navigate back to list view
+  const handleBackToList = () => {
+    setCurrentView('list');
+    setCurrentGradeId(null);
+    form.resetFields();
+  };
+
+  // Submit form for create/update
+  const handleSubmit = async (values) => {
+    setLoading(true);
+
+    try {
+      if (currentView === 'add') {
+        // Create new grade
+        await axios.post('http://localhost:4000/api/grade', values, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+      } else if (currentView === 'edit') {
+        // Update existing grade
+        await axios.put(`http://localhost:4000/api/grade/${currentGradeId}`, values, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+      }
+
+      // Refresh grades list and go back to list view
+      await fetchGrades();
+      setCurrentView('list');
+      setCurrentGradeId(null);
+    } catch (error) {
+      console.error('Error saving grade:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Filter grades based on search term
+  const filteredGrades = grades.filter(grade =>
+    grade.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (grade.school?.name && grade.school.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (grade.type && grade.type.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+
+  // Find current grade for view/edit
+  const currentGrade = currentGradeId
+    ? grades.find(grade => grade._id === currentGradeId)
+    : null;
+
+  // Table columns
+  const columns = [
+    {
+      title: 'Sr.No',
+      key: 'index',
+      render: (_, __, index) => index + 1,
+      width: 80,
+    },
+    {
+      title: 'School Name',
+      dataIndex: ['school', 'name'],
+      key: 'schoolName',
+      render: (text) => text || 'N/A',
+    },
+    {
+      title: 'Grade Name',
+      dataIndex: 'name',
+      key: 'name',
+    },
+    {
+      title: 'Type',
+      dataIndex: 'type',
+      key: 'type',
+    },
+    {
+      title: 'No.of Classes',
+      dataIndex: ['classes', 'length'],
+      key: 'classes',
+      render: (text) => text || 0,
+    },
+    {
+      title: 'No.of Students',
+      dataIndex: ['students', 'length'],
+      key: 'students',
+      render: (text) => text || 0,
+    },
+    {
+      title: 'Created Date',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      render: (date) => (
+        <>
+          {new Date(date).toLocaleDateString()},{' '}
+          {new Date(date).toLocaleTimeString()}
+        </>
+      ),
+    },
+    {
+      title: 'Status',
+      dataIndex: 'isActive',
+      key: 'status',
+      align: 'center',
+      render: (isActive) => (
+        <Badge
+          status={isActive ? 'success' : 'error'}
+          text=""
+        />
+      ),
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      align: 'center',
+      render: (_, record) => (
+        <Dropdown
+          overlay={
+            <Menu>
+              <Menu.Item key="view" onClick={() => handleViewGrade(record._id)}>
+                <EyeOutlined /> View
+              </Menu.Item>
+              <Menu.Item key="edit" onClick={() => handleEditGrade(record._id)}>
+                <EditOutlined /> Edit
+              </Menu.Item>
+              <Menu.Item 
+                key="deactivate" 
+                danger 
+                onClick={() => handleDeactivateGrade(record._id)}
+              >
+                <DeleteOutlined /> Deactivate
+              </Menu.Item>
+            </Menu>
+          }
+          trigger={['click']}
+        >
+          <Button type="text" icon={<MoreOutlined />} />
+        </Dropdown>
+      ),
+    },
+  ];
+
+  // Render list view
+  const renderListView = () => {
+    return (
+      <Card>
+        <Space direction="vertical" size="large" style={{ width: '100%' }}>
+          <Row justify="space-between" align="middle">
+            <Title level={4}>Grade ({grades.length})</Title>
+            <Space>
+              <Button 
+                type="primary" 
+                icon={<PlusOutlined />} 
+                onClick={handleAddGrade}
+              >
+                Add Grade
+              </Button>
+              <Button>Deactivated</Button>
+            </Space>
+          </Row>
+
+          <Row justify="space-between" align="middle">
+            <Input
+              prefix={<SearchOutlined />}
+              placeholder="Search"
+              value={searchTerm}
+              onChange={handleSearch}
+              style={{ width: 250 }}
+            />
+            <Button 
+              icon={<ReloadOutlined />} 
+              onClick={resetFilter}
+            >
+              Reset Filter
+            </Button>
+          </Row>
+
+          <Table
+            rowSelection={{
+              type: 'checkbox',
+            }}
+            columns={columns}
+            dataSource={filteredGrades}
+            rowKey="_id"
+            loading={loading}
+            pagination={{
+              pageSize: 10,
+              showSizeChanger: true,
+              pageSizeOptions: ['10', '20', '50'],
+            }}
+          />
+        </Space>
+      </Card>
     );
+  };
 
-    // Find current grade for view/edit
-    const currentGrade = currentGradeId
-        ? grades.find(grade => grade._id === currentGradeId)
-        : null;
+  // Render form view (used for both add and edit)
+  const renderFormView = (title) => {
+    return (
+      <Card>
+        <Space direction="vertical" size="large" style={{ width: '100%' }}>
+          <Space align="center">
+            <Button 
+              type="text" 
+              icon={<LeftOutlined />} 
+              onClick={handleBackToList} 
+            />
+            <Title level={4}>{title}</Title>
+          </Space>
+          
+          <Form
+            form={form}
+            layout="vertical"
+            onFinish={handleSubmit}
+          >
+            <Row gutter={24}>
+              <Col span={12}>
+                <Form.Item
+                  name="name"
+                  label="Name"
+                  rules={[{ required: true, message: 'Please enter a name' }]}
+                >
+                  <Input placeholder="Grade name" />
+                </Form.Item>
+              </Col>
+              
+              <Col span={12}>
+                <Form.Item
+                  name="type"
+                  label="Type"
+                  rules={[{ required: true, message: 'Please select a type' }]}
+                >
+                  <Select placeholder="Select type">
+                    <Option value="General">GENERAL</Option>
+                    <Option value="Special">SPECIAL</Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+              
+              <Col span={12}>
+                <Form.Item
+                  name="minAge"
+                  label="Min Age"
+                  rules={[{ required: true, message: 'Please select minimum age' }]}
+                >
+                  <Slider
+                    min={1}
+                    max={18}
+                    marks={{
+                      1: '1',
+                      9: '9',
+                      18: '18'
+                    }}
+                    tooltip={{
+                      formatter: (value) => `${value} years`
+                    }}
+                  />
+                </Form.Item>
+              </Col>
+              
+              <Col span={12}>
+                <Form.Item
+                  name="maxAge"
+                  label="Max Age"
+                  rules={[{ required: true, message: 'Please select maximum age' }]}
+                >
+                  <Slider
+                    min={1}
+                    max={18}
+                    marks={{
+                      1: '1',
+                      9: '9',
+                      18: '18'
+                    }}
+                    tooltip={{
+                      formatter: (value) => `${value} years`
+                    }}
+                  />
+                </Form.Item>
+              </Col>
+              
+              <Col span={12}>
+                <Form.Item
+                  name="school"
+                  label="School"
+                  rules={[{ required: true, message: 'Please select a school' }]}
+                >
+                  <Select placeholder="Select school">
+                    {schools.map(school => (
+                      <Option key={school._id} value={school._id}>
+                        {school.name}
+                      </Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Col>
+              
+              <Col span={12}>
+                <Form.Item
+                  name="level"
+                  label="Level"
+                  rules={[{ required: true, message: 'Please select a level' }]}
+                >
+                  <Select placeholder="Select level">
+                    {levels.map(level => (
+                      <Option key={level._id} value={level._id}>
+                        {level.name}
+                      </Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Col>
+            </Row>
+            
+            <Form.Item>
+              <Space>
+                <Button onClick={handleBackToList}>
+                  {currentView === 'add' ? 'Back' : 'Cancel'}
+                </Button>
+                <Button 
+                  type="primary" 
+                  htmlType="submit" 
+                  loading={loading}
+                >
+                  {currentView === 'add' ? 'Add' : 'Save'}
+                </Button>
+              </Space>
+            </Form.Item>
+          </Form>
+        </Space>
+      </Card>
+    );
+  };
 
+<<<<<<< HEAD
     // Render different views based on currentView state
     const renderView = () => {
         switch (currentView) {
@@ -677,7 +1130,147 @@ const GradeManagement = () => {
             <ToastContainer />
             {renderView()}
         </div>
+=======
+  // Render detail view for viewing a grade
+  const renderDetailView = () => {
+    if (!currentGrade) {
+      return (
+        <Card>
+          <div className="text-center py-8">
+            Grade not found. <Button type="link" onClick={handleBackToList}>Back to list</Button>
+          </div>
+        </Card>
+      );
+    }
+
+    return (
+      <Card>
+        <Space direction="vertical" size="large" style={{ width: '100%' }}>
+          <Row justify="space-between" align="middle">
+            <Space align="center">
+              <Button 
+                type="text" 
+                icon={<LeftOutlined />} 
+                onClick={handleBackToList} 
+              />
+              <Title level={4}>Grade Details</Title>
+            </Space>
+            <Button 
+              type="primary" 
+              icon={<EditOutlined />} 
+              onClick={() => handleEditGrade(currentGrade._id)}
+            >
+              Edit
+            </Button>
+          </Row>
+          
+          <Card>
+            <Row gutter={[24, 24]}>
+              <Col span={12}>
+                <Text type="secondary">Name</Text>
+                <div>
+                  <Text strong>{currentGrade.name}</Text>
+                </div>
+              </Col>
+              
+              <Col span={12}>
+                <Text type="secondary">Type</Text>
+                <div>
+                  <Text strong>{currentGrade.type}</Text>
+                </div>
+              </Col>
+              
+              <Col span={12}>
+                <Text type="secondary">Age Range</Text>
+                <div>
+                  <Text strong>{currentGrade.minAge} - {currentGrade.maxAge} years</Text>
+                </div>
+              </Col>
+              
+              <Col span={12}>
+                <Text type="secondary">School</Text>
+                <div>
+                  <Text strong>{currentGrade.school?.name || 'N/A'}</Text>
+                </div>
+              </Col>
+              
+              <Col span={12}>
+                <Text type="secondary">Level</Text>
+                <div>
+                  <Text strong>{currentGrade.level?.name || 'N/A'}</Text>
+                </div>
+              </Col>
+              
+              <Col span={12}>
+                <Text type="secondary">Status</Text>
+                <div>
+                  <Space>
+                    <Badge 
+                      status={currentGrade.isActive ? 'success' : 'error'} 
+                    />
+                    <Text strong>{currentGrade.isActive ? 'Active' : 'Inactive'}</Text>
+                  </Space>
+                </div>
+              </Col>
+            </Row>
+            
+            <Divider />
+            
+            <Row gutter={[24, 24]}>
+              <Col span={12}>
+                <Text type="secondary">Created By</Text>
+                <div>
+                  <Text>{currentGrade.createdBy?.name || 'Unknown'} ({currentGrade.createdBy?.role || 'N/A'})</Text>
+                  <div>
+                    <Text type="secondary">
+                      {new Date(currentGrade.createdAt).toLocaleDateString()},{' '}
+                      {new Date(currentGrade.createdAt).toLocaleTimeString()}
+                    </Text>
+                  </div>
+                </div>
+              </Col>
+              
+              {currentGrade.updatedBy && (
+                <Col span={12}>
+                  <Text type="secondary">Last Updated By</Text>
+                  <div>
+                    <Text>{currentGrade.updatedBy?.name || 'Unknown'} ({currentGrade.updatedBy?.role || 'N/A'})</Text>
+                    <div>
+                      <Text type="secondary">
+                        {new Date(currentGrade.updatedAt).toLocaleDateString()},{' '}
+                        {new Date(currentGrade.updatedAt).toLocaleTimeString()}
+                      </Text>
+                    </div>
+                  </div>
+                </Col>
+              )}
+            </Row>
+          </Card>
+        </Space>
+      </Card>
+>>>>>>> af3b61b3814bfbcf0a4f72d250121c46f3fa7d31
     );
+  };
+
+  // Render different views based on currentView state
+  const renderView = () => {
+    switch (currentView) {
+      case 'add':
+        return renderFormView('Add Grade');
+      case 'edit':
+        return renderFormView('Edit Grade');
+      case 'view':
+        return renderDetailView();
+      default:
+        return renderListView();
+    }
+  };
+
+  return (
+    <div className="p-4">
+      {renderView()}
+    </div>
+  );
 };
 
 export default GradeManagement;
