@@ -32,13 +32,17 @@ import ScheduleList from "./pages/Teacheradmin/InteractiveContent/ScheduleList";
 import { Assigements_Playlist } from "./pages/super-admin-pannel/LMS/Assigements_Playlist";
 import { SP_ScheduleList } from "./pages/super-admin-pannel/ScheduleList/SP_ScheduleList";
 import { SchoolAdminLogin } from "./auth/SchoolAdminLogin";
+import { School_Teacher_Login } from "./auth/School_Teacher_Login";
+import { SchoolAdminProtected, SuperAdminProtected } from "./auth/Proctected";
+import PageNotFound from "./components/PageNotFound/PageNotFound";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<Login_SignUp />} />
-        <Route path="/Schooladmin/login" element={<SchoolAdminLogin />} />
+        <Route path="/SPlogin" element={<Login_SignUp />} />
+        <Route path="/login" element={<School_Teacher_Login />} />
+        <Route path="*" element={<PageNotFound />} />
         <Route element={<Layout />}>
           <Route path="/" element={<TeacherHomePage />} />
           <Route path="/books" element={<BookHomePage />} />
@@ -51,7 +55,7 @@ function App() {
           <Route path="/unit" element={<UnitSummary />} />
         </Route>
 
-        <Route path="/eduworm-admin" element={<AdminPannelLayout />}>
+        <Route path="/eduworm-admin" element={<SuperAdminProtected><AdminPannelLayout /></SuperAdminProtected>}>
           <Route index element={<SAHomePage />} />
           <Route path="home" element={<SAHomePage />} />
           <Route path="Admin" element={<SALSHome />} />
@@ -81,8 +85,10 @@ function App() {
           <Route path="content/add" element={<Add_Content />} />
         </Route>
 
-        <Route path="/eduworm-school" element={<AdminPannelLayout />}>
+
+        <Route path="/eduworm-school" element={<SchoolAdminProtected><AdminPannelLayout /></SchoolAdminProtected>}>
           <Route index element={<SAHomePage />} />
+          <Route path="home" element={<SAHomePage />} />
           <Route path="playlist" element={<PlayListAssignment />} />
           <Route path="content" element={<Content />} />
           <Route path="scheduleList" element={<ScheduleList />} />
