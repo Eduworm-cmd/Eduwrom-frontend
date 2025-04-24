@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
-  Table, Button, Input, Select, Form, DatePicker, Checkbox, 
-  Card, Space, Tag, Avatar, Typography, Modal, Tabs, 
+  Table, Button, Input, Select, Form, DatePicker, Checkbox,
+  Card, Space, Tag, Avatar, Typography, Modal, Tabs,
   Upload, Row, Col, Divider, Spin, message, Dropdown, Menu,
-  Badge, Tooltip, Pagination
+  Badge, Tooltip, Pagination,
+  Alert
 } from 'antd';
 import {
   UserOutlined, PhoneOutlined, MailOutlined, EditOutlined,
-  DeleteOutlined, SearchOutlined, PlusOutlined, FileOutlined, 
+  DeleteOutlined, SearchOutlined, PlusOutlined, FileOutlined,
   ExportOutlined, DownloadOutlined, LoginOutlined, IdcardOutlined,
   EyeOutlined, UserSwitchOutlined, MoreOutlined, UploadOutlined,
   SaveOutlined, RollbackOutlined, FilterOutlined, ClearOutlined
@@ -21,14 +22,27 @@ const { TabPane } = Tabs;
 
 const StaffManagement = () => {
   const [staff, setStaff] = useState([]);
+  const [schools, setSchools] = useState([]);
+  const [branches, setBranches] = useState([]);
+
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [selectedSchool, setSelectedSchool] = useState(null);
+
   const [viewMode, setViewMode] = useState('table'); // 'table', 'create', 'edit'
   const [selectedStaff, setSelectedStaff] = useState(null);
   const [form] = Form.useForm();
+  const getBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  };
   const [filters, setFilters] = useState({
     grade: '',
     class: '',
@@ -40,7 +54,17 @@ const StaffManagement = () => {
     aadhaarCard: [],
     panCard: []
   });
-  
+  const fetchSchools = async () => {
+    try {
+      const response = await axios.get('http://localhost:4000/api/schooladmin-auth');
+      setSchools(response.data.data);
+    } catch (err) {
+      console.error('Failed to fetch schools:', err);
+    }
+  };
+  useEffect(() => {
+    fetchSchools();
+  }, []);
   const fetchStaff = async () => {
     try {
       setLoading(true);
@@ -48,18 +72,18 @@ const StaffManagement = () => {
       const params = new URLSearchParams();
       params.append('page', currentPage);
       params.append('limit', pageSize);
-      
+
       if (filters.grade) params.append('grade', filters.grade);
       if (filters.class) params.append('class', filters.class);
       if (filters.role) params.append('role', filters.role);
       if (searchTerm) params.append('search', searchTerm);
-      
-      const response = await axios.get(`/api/staff?${params.toString()}`, {
+
+      const response = await axios.get(`http://localhost:4000/api/staff?${params.toString()}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
-      
+
       setStaff(response.data.data);
       setTotalItems(response.data.count);
       setLoading(false);
@@ -69,20 +93,20 @@ const StaffManagement = () => {
       message.error('Failed to fetch staff data');
     }
   };
-  
+
   useEffect(() => {
     fetchStaff();
   }, [currentPage, pageSize]);
-  
+
   const handleTableChange = (pagination) => {
     setCurrentPage(pagination.current);
     setPageSize(pagination.pageSize);
   };
-  
+
   const handleInputChange = (e) => {
     setSearchTerm(e.target.value);
   };
-  
+
   const handleReset = () => {
     setFilters({
       grade: '',
@@ -95,22 +119,32 @@ const StaffManagement = () => {
       fetchStaff();
     }, 0);
   };
-  
+
   const handleSearch = () => {
     setCurrentPage(1);
     fetchStaff();
   };
-  
+
   const handleFilterChange = (name, value) => {
     setFilters(prev => ({
       ...prev,
       [name]: value
     }));
   };
-  
+  const fetchBranches = async (schoolId) => {
+    if (!schoolId) return;
+    try {
+      const response = await axios.get(`http://localhost:4000/api/branches/forschool`, {
+        params: { schoolId }
+      });
+      setBranches(response.data.data);
+    } catch (err) {
+      console.error('Failed to fetch branches:', err);
+    }
+  };
   const handleEdit = (record) => {
     setSelectedStaff(record);
-    
+
     // Set initial form values
     form.setFieldsValue({
       firstName: record.firstName,
@@ -143,7 +177,7 @@ const StaffManagement = () => {
       'bankDetails.bankBranch': record.bankDetails?.bankBranch,
       'bankDetails.ifscCode': record.bankDetails?.ifscCode,
     });
-    
+
     // Set file lists if available
     if (record.photoUrl) {
       setFileList(prev => ({
@@ -156,7 +190,7 @@ const StaffManagement = () => {
         }]
       }));
     }
-    
+
     if (record.aadhaarCardUrl) {
       setFileList(prev => ({
         ...prev,
@@ -168,7 +202,7 @@ const StaffManagement = () => {
         }]
       }));
     }
-    
+
     if (record.panCardUrl) {
       setFileList(prev => ({
         ...prev,
@@ -180,10 +214,14 @@ const StaffManagement = () => {
         }]
       }));
     }
-    
+
     setViewMode('edit');
   };
-  
+  const handleSchoolChange = (value) => {
+    setSelectedSchool(value);
+    fetchBranches(value);
+    form.setFieldsValue({ branchId: undefined });
+  };
   const handleAdd = () => {
     form.resetFields();
     setSelectedStaff(null);
@@ -194,94 +232,128 @@ const StaffManagement = () => {
     });
     setViewMode('create');
   };
-  
+
   const handleFormSubmit = async (values) => {
     setLoading(true);
     try {
-      const formData = new FormData();
-      
-      // Append text fields
-      Object.keys(values).forEach(key => {
-        if (key === 'dateOfBirth' || key === 'marriageAnniversary') {
-          // Format dates
-          if (values[key]) {
-            formData.append(key, values[key].format('YYYY-MM-DD'));
-          }
-        } else if (key.startsWith('bankDetails.')) {
-          // Skip bankDetails here, we'll handle them separately
-        } else if (values[key] !== undefined && values[key] !== null) {
-          formData.append(key, values[key]);
+      // Create a data object that will be sent directly as JSON
+      const staffData = {
+        // Basic info
+        firstName: values.firstName,
+        lastName: values.lastName,
+        dateOfBirth: values.dateOfBirth ? values.dateOfBirth.format('YYYY-MM-DD') : null,
+        phoneNumber: values.phoneNumber,
+        emailIDOfficial: values.emailIDOfficial,
+        gender: values.gender,
+        employeeRole: values.employeeRole,
+        school: values.school,
+        branch: values.branch,
+        title: values.title,
+        emailIDPersonal: values.emailIDPersonal,
+
+        // Additional info
+        bloodGroup: values.bloodGroup,
+        maritalStatus: values.maritalStatus,
+        marriageAnniversary: values.marriageAnniversary ? values.marriageAnniversary.format('YYYY-MM-DD') : null,
+        department: values.department,
+        subDepartment: values.subDepartment,
+        emergencyContact: values.emergencyContact,
+        nationality: values.nationality,
+        religion: values.religion,
+        fatherName: values.fatherName,
+
+        // Addresses
+        currentAddress: values.currentAddress,
+        permanentAddress: values.permanentAddress,
+
+        // Bank details as an object
+        bankDetails: {
+          accountNumber: values['bankDetails.accountNumber'],
+          nameAsPerBank: values['bankDetails.nameAsPerBank'],
+          bankName: values['bankDetails.bankName'],
+          bankBranch: values['bankDetails.bankBranch'],
+          ifscCode: values['bankDetails.ifscCode']
+        },
+
+        // Base64 data for documents
+        photoBase64: values.photoBase64,
+        aadhaarCardBase64: values.aadhaarCardBase64,
+        panCardBase64: values.panCardBase64
+      };
+
+      let response;
+
+      // Remove null/undefined values to keep the request payload clean
+      Object.keys(staffData).forEach(key => {
+        if (staffData[key] === undefined || staffData[key] === null) {
+          delete staffData[key];
         }
       });
-      
-      // Handle bank details
-      const bankDetails = {
-        accountNumber: values['bankDetails.accountNumber'],
-        nameAsPerBank: values['bankDetails.nameAsPerBank'],
-        bankName: values['bankDetails.bankName'],
-        bankBranch: values['bankDetails.bankBranch'],
-        ifscCode: values['bankDetails.ifscCode']
-      };
-      
-      formData.append('bankDetails', JSON.stringify(bankDetails));
-      
-      // Append files if they exist and have been changed
-      if (fileList.photo && fileList.photo.length > 0 && fileList.photo[0].originFileObj) {
-        formData.append('photo', fileList.photo[0].originFileObj);
-      }
-      
-      if (fileList.aadhaarCard && fileList.aadhaarCard.length > 0 && fileList.aadhaarCard[0].originFileObj) {
-        formData.append('aadhaarCard', fileList.aadhaarCard[0].originFileObj);
-      }
-      
-      if (fileList.panCard && fileList.panCard.length > 0 && fileList.panCard[0].originFileObj) {
-        formData.append('panCard', fileList.panCard[0].originFileObj);
-      }
-      
-      let response;
-      
+
       if (viewMode === 'edit' && selectedStaff) {
         // Update existing staff
-        response = await axios.put(`/api/staff/${selectedStaff._id}`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
+        response = await axios.put(
+          `http://localhost:4000/api/staff/${selectedStaff._id}`,
+          staffData,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
           }
-        });
+        );
         message.success('Staff updated successfully');
       } else {
         // Create new staff
-        response = await axios.post('/api/staff', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
+        response = await axios.post(
+          'http://localhost:4000/api/staff',
+          staffData,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
           }
-        });
+        );
         message.success('Staff added successfully');
       }
-      
+
       setViewMode('table');
       fetchStaff();
-      
+
     } catch (err) {
+      console.error("Submit error:", err);
       setError(err.response?.data?.message || 'Operation failed');
       message.error('Operation failed: ' + (err.response?.data?.message || 'Unknown error'));
     } finally {
       setLoading(false);
     }
   };
-  
-  const handleUploadChange = ({ fileList }, type) => {
+
+  const handleUploadChange = async ({ fileList }, type) => {
     setFileList(prev => ({
       ...prev,
       [type]: fileList
     }));
+
+    // If there's a new file, convert it to base64
+    if (fileList.length > 0 && fileList[0].originFileObj) {
+      try {
+        const base64Data = await getBase64(fileList[0].originFileObj);
+        // Store base64 data in form
+        form.setFieldsValue({
+          [`${type}Base64`]: base64Data
+        });
+      } catch (error) {
+        console.error(`Error converting ${type} to base64:`, error);
+      }
+    }
   };
-  
+
   const handleBack = () => {
     setViewMode('table');
   };
-  
+
   // Define columns for the table
   const columns = [
     {
@@ -340,10 +412,10 @@ const StaffManagement = () => {
       key: 'classrooms',
       render: (_, record) => (
         <Space size={[0, 8]} wrap>
-          {record.classrooms?.length > 0 ? 
+          {record.classrooms?.length > 0 ?
             record.classrooms.map(classroom => (
               <Tag color="blue" key={classroom._id}>{classroom.name}</Tag>
-            )) : 
+            )) :
             <Text type="secondary">No classrooms</Text>
           }
         </Space>
@@ -360,9 +432,9 @@ const StaffManagement = () => {
       key: 'login',
       render: () => (
         <Tooltip title="Login as this user">
-          <Button 
-            type="text" 
-            icon={<LoginOutlined />} 
+          <Button
+            type="text"
+            icon={<LoginOutlined />}
             shape="circle"
           />
         </Tooltip>
@@ -374,9 +446,9 @@ const StaffManagement = () => {
       key: 'idCard',
       render: () => (
         <Tooltip title="Download ID Card">
-          <Button 
-            type="text" 
-            icon={<IdcardOutlined />} 
+          <Button
+            type="text"
+            icon={<IdcardOutlined />}
             shape="circle"
           />
         </Tooltip>
@@ -388,11 +460,11 @@ const StaffManagement = () => {
       key: 'profile',
       render: (_, record) => (
         <Tooltip title="View/Edit Profile">
-          <Button 
-            type="text" 
-            icon={<EyeOutlined />} 
-            shape="circle" 
-            onClick={() => handleEdit(record)} 
+          <Button
+            type="text"
+            icon={<EyeOutlined />}
+            shape="circle"
+            onClick={() => handleEdit(record)}
           />
         </Tooltip>
       ),
@@ -403,7 +475,7 @@ const StaffManagement = () => {
       key: 'actions',
       render: (_, record) => (
         <Space>
-          <Dropdown 
+          <Dropdown
             overlay={
               <Menu>
                 <Menu.Item key="1" icon={<EditOutlined />}>Edit</Menu.Item>
@@ -421,7 +493,7 @@ const StaffManagement = () => {
       width: 100,
     },
   ];
-  
+
   // Staff Data Table Component
   const StaffTable = () => (
     <Card bordered={false}>
@@ -431,8 +503,8 @@ const StaffManagement = () => {
           <Space>
             <Button icon={<DownloadOutlined />}>ID Card</Button>
             <Button icon={<ExportOutlined />}>Export</Button>
-            <Button 
-              type="primary" 
+            <Button
+              type="primary"
               icon={<PlusOutlined />}
               onClick={handleAdd}
             >
@@ -441,7 +513,7 @@ const StaffManagement = () => {
             <Button icon={<UserSwitchOutlined />}>Deactivated</Button>
           </Space>
         </div>
-        
+
         <div style={{ display: 'flex', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
           <Select
             placeholder="Grade"
@@ -454,7 +526,7 @@ const StaffManagement = () => {
             <Option value="KG-2">KG-2</Option>
             <Option value="Nursery">Nursery</Option>
           </Select>
-          
+
           <Select
             placeholder="Class"
             style={{ width: 120 }}
@@ -465,7 +537,7 @@ const StaffManagement = () => {
             <Option value="All Classes">All Classes</Option>
             <Option value="Nursery">Nursery</Option>
           </Select>
-          
+
           <Select
             placeholder="Role"
             style={{ width: 150 }}
@@ -476,7 +548,7 @@ const StaffManagement = () => {
             <Option value="BRANCH_ADMIN">BRANCH_ADMIN</Option>
             <Option value="TEACHER">TEACHER</Option>
           </Select>
-          
+
           <Input
             placeholder="Search"
             value={searchTerm}
@@ -485,23 +557,23 @@ const StaffManagement = () => {
             suffix={<SearchOutlined />}
             onPressEnter={handleSearch}
           />
-          
-          <Button 
-            type="primary" 
+
+          <Button
+            type="primary"
             icon={<SearchOutlined />}
             onClick={handleSearch}
           >
             Search
           </Button>
-          
-          <Button 
+
+          <Button
             icon={<ClearOutlined />}
             onClick={handleReset}
           >
             Reset
           </Button>
         </div>
-        
+
         <Table
           columns={columns}
           dataSource={staff}
@@ -521,7 +593,7 @@ const StaffManagement = () => {
       </Space>
     </Card>
   );
-  
+
   // Staff Form Component (Create/Edit)
   const StaffForm = () => (
     <Card bordered={false}>
@@ -529,7 +601,7 @@ const StaffManagement = () => {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Title level={4}>{viewMode === 'edit' ? 'Edit Staff Information' : 'Add Staff Information'}</Title>
         </div>
-        
+
         <Form
           form={form}
           layout="vertical"
@@ -565,7 +637,7 @@ const StaffManagement = () => {
                   </Form.Item>
                 </Col>
               </Row>
-              
+
               <Row gutter={16}>
                 <Col span={12}>
                   <Form.Item
@@ -581,18 +653,18 @@ const StaffManagement = () => {
                     label="Phone Number"
                     rules={[{ required: true, message: 'Please enter phone number' }]}
                   >
-                    <Input 
+                    <Input
                       addonBefore={
                         <Select defaultValue="+91" style={{ width: 80 }}>
                           <Option value="+91">+91</Option>
                         </Select>
                       }
-                      placeholder="Phone Number" 
+                      placeholder="Phone Number"
                     />
                   </Form.Item>
                 </Col>
               </Row>
-              
+
               <Row gutter={16}>
                 <Col span={12}>
                   <Form.Item
@@ -620,7 +692,7 @@ const StaffManagement = () => {
                   </Form.Item>
                 </Col>
               </Row>
-              
+
               <Row gutter={16}>
                 <Col span={12}>
                   <Form.Item
@@ -638,24 +710,38 @@ const StaffManagement = () => {
                   <Form.Item
                     name="school"
                     label="School"
-                    rules={[{ required: true, message: 'Please select school' }]}
                   >
-                    <Select placeholder="Select School">
-                      <Option value="Toondemy SnC">Toondemy SnC</Option>
+                    <Select
+                      placeholder="Select School"
+                      onChange={handleSchoolChange}
+                      allowClear
+                    >
+                      {schools.map(school => (
+                        <Option key={school._id} value={school._id}>
+                          {school.schoolName}
+                        </Option>
+                      ))}
                     </Select>
                   </Form.Item>
                 </Col>
               </Row>
-              
+
               <Row gutter={16}>
                 <Col span={12}>
                   <Form.Item
                     name="branch"
-                    label="Branch"
-                    rules={[{ required: true, message: 'Please select branch' }]}
+                    label="branch"
+                    rules={[{ required: true, message: 'Please select a branch' }]}
                   >
-                    <Select placeholder="Select Branch">
-                      <Option value="Toondemy SnC">Toondemy SnC</Option>
+                    <Select
+                      placeholder="Select Branch"
+                      allowClear
+                    >
+                      {branches?.map(branch => (
+                        <Option key={branch._id} value={branch._id}>
+                          {branch.name}
+                        </Option>
+                      ))}
                     </Select>
                   </Form.Item>
                 </Col>
@@ -669,7 +755,7 @@ const StaffManagement = () => {
                 </Col>
               </Row>
             </TabPane>
-            
+
             <TabPane tab="Additional Information" key="2">
               <Row gutter={16}>
                 <Col span={12}>
@@ -692,7 +778,7 @@ const StaffManagement = () => {
                   </Form.Item>
                 </Col>
               </Row>
-              
+
               <Row gutter={16}>
                 <Col span={12}>
                   <Form.Item
@@ -725,7 +811,7 @@ const StaffManagement = () => {
                   </Form.Item>
                 </Col>
               </Row>
-              
+
               {form.getFieldValue('maritalStatus') === 'Married' && (
                 <Row gutter={16}>
                   <Col span={12}>
@@ -738,7 +824,7 @@ const StaffManagement = () => {
                   </Col>
                 </Row>
               )}
-              
+
               <Row gutter={16}>
                 <Col span={12}>
                   <Form.Item
@@ -757,7 +843,7 @@ const StaffManagement = () => {
                   </Form.Item>
                 </Col>
               </Row>
-              
+
               <Row gutter={16}>
                 <Col span={12}>
                   <Form.Item
@@ -776,7 +862,7 @@ const StaffManagement = () => {
                   </Form.Item>
                 </Col>
               </Row>
-              
+
               <Row gutter={16}>
                 <Col span={12}>
                   <Form.Item
@@ -796,7 +882,7 @@ const StaffManagement = () => {
                 </Col>
               </Row>
             </TabPane>
-            
+
             <TabPane tab="Bank Details" key="3">
               <Row gutter={16}>
                 <Col span={12}>
@@ -816,7 +902,7 @@ const StaffManagement = () => {
                   </Form.Item>
                 </Col>
               </Row>
-              
+
               <Row gutter={16}>
                 <Col span={12}>
                   <Form.Item
@@ -835,7 +921,7 @@ const StaffManagement = () => {
                   </Form.Item>
                 </Col>
               </Row>
-              
+
               <Row gutter={16}>
                 <Col span={12}>
                   <Form.Item
@@ -847,7 +933,7 @@ const StaffManagement = () => {
                 </Col>
               </Row>
             </TabPane>
-            
+
             <TabPane tab="Address" key="4">
               <Form.Item
                 name="currentAddress"
@@ -855,7 +941,7 @@ const StaffManagement = () => {
               >
                 <Input.TextArea rows={4} placeholder="Current Address" />
               </Form.Item>
-              
+
               <Form.Item
                 name="permanentAddress"
                 label="Permanent Address"
@@ -863,7 +949,7 @@ const StaffManagement = () => {
                 <Input.TextArea rows={4} placeholder="Permanent Address" />
               </Form.Item>
             </TabPane>
-            
+
             <TabPane tab="Documents" key="5">
               <Form.Item
                 name="photo"
@@ -871,7 +957,7 @@ const StaffManagement = () => {
                 valuePropName="fileList"
                 getValueFromEvent={(e) => e && e.fileList}
               >
-                <Upload 
+                <Upload
                   listType="picture-card"
                   fileList={fileList.photo}
                   beforeUpload={() => false}
@@ -886,14 +972,14 @@ const StaffManagement = () => {
                   )}
                 </Upload>
               </Form.Item>
-              
+
               <Form.Item
                 name="aadhaarCard"
                 label="Aadhaar Card"
                 valuePropName="fileList"
                 getValueFromEvent={(e) => e && e.fileList}
               >
-                <Upload 
+                <Upload
                   listType="picture-card"
                   fileList={fileList.aadhaarCard}
                   beforeUpload={() => false}
@@ -908,20 +994,20 @@ const StaffManagement = () => {
                   )}
                 </Upload>
               </Form.Item>
-              
+
               <Form.Item
                 name="panCard"
                 label="PAN Card"
                 valuePropName="fileList"
                 getValueFromEvent={(e) => e && e.fileList}
               >
-                <Upload 
+                <Upload
                   listType="picture-card"
                   fileList={fileList.panCard}
                   beforeUpload={() => false}
                   onChange={(info) => handleUploadChange(info, 'panCard')}
                   maxCount={1}
-                  >
+                >
                   {fileList.panCard.length === 0 && (
                     <div>
                       <PlusOutlined />
@@ -932,9 +1018,9 @@ const StaffManagement = () => {
               </Form.Item>
             </TabPane>
           </Tabs>
-          
+
           <Divider />
-          
+
           <Form.Item>
             <Space>
               <Button type="primary" htmlType="submit" icon={<SaveOutlined />} loading={loading}>
@@ -945,24 +1031,33 @@ const StaffManagement = () => {
               </Button>
             </Space>
           </Form.Item>
+          <Form.Item name="photoBase64" hidden={true}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="aadhaarCardBase64" hidden={true}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="panCardBase64" hidden={true}>
+            <Input />
+          </Form.Item>
         </Form>
       </Space>
     </Card>
   );
-  
+
   return (
     <div className="staff-management-container">
       {error && (
-        <Alert 
-          message="Error" 
-          description={error} 
-          type="error" 
-          closable 
-          onClose={() => setError(null)} 
+        <Alert
+          message="Error"
+          description={error}
+          type="error"
+          closable
+          onClose={() => setError(null)}
           style={{ marginBottom: 16 }}
         />
       )}
-      
+
       {viewMode === 'table' ? <StaffTable /> : <StaffForm />}
     </div>
   );
