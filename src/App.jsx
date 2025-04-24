@@ -31,10 +31,14 @@ import Content from "./pages/Teacheradmin/InteractiveContent/Content";
 import ScheduleList from "./pages/Teacheradmin/InteractiveContent/ScheduleList";
 import { Assigements_Playlist } from "./pages/super-admin-pannel/LMS/Assigements_Playlist";
 import { SP_ScheduleList } from "./pages/super-admin-pannel/ScheduleList/SP_ScheduleList";
-import { SchoolAdminLogin } from "./auth/SchoolAdminLogin";
 import { School_Teacher_Login } from "./auth/School_Teacher_Login";
 import { SchoolAdminProtected, SuperAdminProtected } from "./auth/Proctected";
 import PageNotFound from "./components/PageNotFound/PageNotFound";
+import StudentData from "./pages/StudentData";
+import StaffData from "./pages/StaffData";
+import AcademicData from "./pages/AcademicData";
+import GradeManagement from "./pages/GradeManagement";
+import ClassRoomMangement from "./pages/ClassRoomMangement";
 
 function App() {
   return (
@@ -64,13 +68,14 @@ function App() {
           <Route path="school/edit/:id" element={<AddSchool />} />
           <Route path="school/view/:id" element={<SchoolView />} />
 
-          <Route path="staff/list" element={<StaffList />} />
-          <Route path="staff/add" element={<AddStaff />} />
-          <Route path="staff/edit/:id" element={<AddStaff />} />
-          <Route path="staff/view/:id" element={<StaffView />} />
+          <Route path="student" element={<StudentData />} />
+          <Route path="staff" element={<StaffData />} />
+          <Route path="academic Year" element={<AcademicData />} />
+          <Route path="grade" element={<GradeManagement />} />
+          <Route path="classroom" element={<ClassRoomMangement />} />
 
-          <Route path="schedule/List" element={<SP_ScheduleList/>} />
-          <Route path="assigements&playlist" element={<Assigements_Playlist/>} />
+          <Route path="schedule/List" element={<SP_ScheduleList />} />
+          <Route path="assigements&playlist" element={<Assigements_Playlist />} />
           <Route path="lms" element={<Lms />} />
           <Route path="video-chapter-upload" element={<Add_Vedio />} />
           <Route path="curriculum" element={<Curriculum />} />
