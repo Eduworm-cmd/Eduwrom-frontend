@@ -82,11 +82,10 @@ export const Login_SignUp = () => {
   
         toast.success("Login successfully!", {
           onClose: () => navigate("/eduworm-admin/home"),
-          autoClose: 3000,
+          autoClose: 1000,
         });
       }
     } catch (error) {
-      toast.error(error.message || "Login failed");
       console.error("Login error:", error);
     }
   };

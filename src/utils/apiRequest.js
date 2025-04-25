@@ -1,5 +1,4 @@
 // src/utils/apiRequest.js
-
 import { toast } from "react-toastify";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
@@ -10,6 +9,7 @@ const apiRequest = async (
     method = "GET",
     headers = {},
     body = null,
+    params = null,
     credentials = "include",
   } = {}
 ) => {
@@ -19,7 +19,15 @@ const apiRequest = async (
       headers.Authorization = `Bearer ${token}`;
     }
 
-    const fullUrl = `${BASE_URL}${url}`;
+    // Clean up query params and append to URL
+    let fullUrl = `${BASE_URL}${url}`;
+    if (params && method === "GET") {
+      const cleanParams = Object.fromEntries(
+        Object.entries(params).filter(([_, value]) => value != null)
+      );
+      const queryString = new URLSearchParams(cleanParams).toString();
+      fullUrl += `?${queryString}`;
+    }
 
     const options = {
       method,

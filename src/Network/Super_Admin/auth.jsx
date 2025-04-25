@@ -71,10 +71,10 @@ const GetGrades = async (body) => {
     });
 }
 // Grade By Id
-const GetGradeById = async (body) => {
-    return await apiRequest(`grade/${body}`, {
+const GetGradeById = async (id) => {
+    return await apiRequest(`grade/${id}`, {
         method: "GET",
-        body,
+        body: {},
     });
 }
 
@@ -85,6 +85,21 @@ const CreateGrade = async (body) => {
         body,
     });
 }
+// Update Grade
+const UpdateGrade = async (id, body) => {
+    return await apiRequest(`grade/${id}`, {
+        method: "PUT",
+        body,
+    });
+};
+
+// Deactivate Grade
+const DeactivateGrade = async ({ id, isActive }) => {
+    return await apiRequest(`grade/${id}`, {
+        method: "PUT",
+        body: { isActive },
+    });
+};
 
 //Get All Schools
 const GetSchools = async (body) => {
@@ -94,13 +109,15 @@ const GetSchools = async (body) => {
     });
 }
 
+
+
 // Get School Branches
-const GetSchoolBranches = async (body) => {
+const GetSchoolBranches = async (schoolId) => {
     return await apiRequest("branches/forschool", {
         method: "GET",
-        body,
+        params: { schoolId },
     });
-}
+};
 
 
 // Get All Levels
@@ -118,13 +135,30 @@ const CreateAcademicYear = async (body) => {
     });
 }
 
-// Get Academic Year By School Id
-const GetAcademicYearsById = async (params = "") => {
-    const query = new URLSearchParams({ params }).toString();
-    return await apiRequest(`academic?${query}`, {
-        method: "GET",
+// Update AcademicYear
+const UpdateAcademicYear = async (id, body) => {
+    return await apiRequest(`academic/${id}`, {
+        method: "PATCH",
+        body,
     });
 };
+
+const DeactivateAcademicYear = async (yearId) => {
+    return await apiRequest(`/api/academic-years/${yearId}`, {
+        method: "PATCH",
+        body: { active: false },
+    });
+};
+
+// Get Academic Year By School Id
+const GetAcademicYearsById = async (schoolId) => {
+    return await apiRequest("academic", {
+        method: "GET",
+        params: { schoolId },
+    });
+};
+
+
 
 
 export {
@@ -138,8 +172,13 @@ export {
     GetGrades,
     GetGradeById,
     CreateGrade,
+    DeactivateGrade,
+    UpdateGrade,
     GetSchools,
     GetLevels,
     GetAcademicYearsById,
+    CreateAcademicYear,
+    DeactivateAcademicYear,
+    UpdateAcademicYear,
     GetSchoolBranches,
 };

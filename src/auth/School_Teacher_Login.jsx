@@ -52,7 +52,6 @@ export const School_Teacher_Login = () => {
             if (showForm) {
                 try {
                     const response = await SchoolAdminLoginByEmail({ email, password });
-                    console.log(response.status);
                     
                     if (response?.message === "Login successful") {
                         SetLocalStorage("token", response.token);  

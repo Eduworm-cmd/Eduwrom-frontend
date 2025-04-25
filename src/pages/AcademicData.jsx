@@ -2,15 +2,16 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { format } from "date-fns";
 import { PlusCircle, Search, Trash2 } from "lucide-react";
-import { GetAcademicYearsById, GetSchools } from "@/Network/Super_Admin/auth";
+import { CreateAcademicYear, DeactivateAcademicYear, GetAcademicYearsById, GetSchoolBranches, GetSchools, UpdateAcademicYear } from "@/Network/Super_Admin/auth";
 
 const AcademicYearManagement = () => {
-  const [view, setView] = useState("list"); // 'list', 'add', 'edit'
+  const [view, setView] = useState("list");
   const [academicYears, setAcademicYears] = useState([]);
   const [schools, setSchools] = useState([]);
   const [branches, setBranches] = useState([]);
   const [selectedSchool, setSelectedSchool] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedViewItem, setSelectedViewItem] = useState(null);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -30,9 +31,7 @@ const AcademicYearManagement = () => {
   const fetchAcademicYears = async () => {
     setIsLoading(true);
     try {
-      const response = await GetAcademicYearsById({
-        schoolId: selectedSchool || "null",
-      })
+      const response = await GetAcademicYearsById(selectedSchool);
       setAcademicYears(response.data);
       setError(null);
     } catch (err) {
@@ -57,13 +56,10 @@ const AcademicYearManagement = () => {
   const fetchBranches = async (schoolId) => {
     if (!schoolId) return;
     try {
-      const response = await axios.get(
-        `http://localhost:4000/api/branches/forschool`,
-        {
-          params: { schoolId },
-        }
-      );
-      setBranches(response.data.data);
+      const response = await GetSchoolBranches(schoolId)
+      console.log(response);
+
+      setBranches(response.data);
     } catch (err) {
       console.error("Failed to fetch branches:", err);
     }
@@ -85,13 +81,12 @@ const AcademicYearManagement = () => {
     if (view === "edit" && editItemId) {
       const fetchAcademicYear = async () => {
         try {
-          // const response = await axios.get(
+          const response = await GetAcademicYearsById(editItemId)
+          // axios.get(
           //   `http://localhost:4000/api/academic/${editItemId}`
           // );
-          const response = await GetAcademicYearsById(editItemId);
-          const data = response.data;
-          console.log("Fetched academic year data:", data);
-          
+          const data = response;
+
           setFormData({
             name: data.name,
             startDate: format(new Date(data.startDate), "yyyy-MM-dd"),
@@ -157,14 +152,15 @@ const AcademicYearManagement = () => {
   };
 
   const handleViewAcademicYear = (yearId) => {
-    // Implement view functionality here if needed
-    console.log("Viewing academic year:", yearId);
-    // For now, we'll just log it
+    const item = academicYears.find((y) => y._id === yearId);
+    setSelectedViewItem(item); 
+    setView("view");
   };
 
   const handleCancel = () => {
     setView("list");
     setEditItemId(null);
+    setSelectedViewItem(null);
   };
 
   const handleSubmit = async (e) => {
@@ -173,12 +169,14 @@ const AcademicYearManagement = () => {
 
     try {
       if (view === "add") {
-        await axios.post("http://localhost:4000/api/academic", formData);
+        await CreateAcademicYear(formData);
+        //  axios.post("http://localhost:4000/api/academic", formData);
       } else if (view === "edit") {
-        await axios.patch(
-          `http://localhost:4000/api/academic/${editItemId}`,
-          formData
-        );
+        await UpdateAcademicYear(editItemId, formData)
+        // axios.patch(
+        //   `http://localhost:4000/api/academic/${editItemId}`,
+        //   formData
+        // );
       }
 
       setView("list");
@@ -202,8 +200,8 @@ const AcademicYearManagement = () => {
       window.confirm("Are you sure you want to deactivate this academic year?")
     ) {
       try {
-        // This is a placeholder - backend needs a proper endpoint for deactivation
-        await axios.patch(`/api/academic-years/${yearId}`, { active: false });
+        await DeactivateAcademicYear(yearId);
+        // axios.patch(`/api/academic-years/${yearId}`, { active: false });
         fetchAcademicYears();
         setError(null);
       } catch (err) {
@@ -244,6 +242,7 @@ const AcademicYearManagement = () => {
     indexOfLastRecord
   );
   const totalPages = Math.ceil(filteredAcademicYears?.length / rowsPerPage);
+
 
   // Render Add/Edit form
   const renderForm = () => {
@@ -468,7 +467,7 @@ const AcademicYearManagement = () => {
                         <td className="px-6 py-4 text-center">
                           <button className="text-gray-500 relative group">
                             ⋯
-                            <div className="absolute hidden group-hover:block right-0 mt-2 w-24 bg-white border border-gray-200 rounded shadow-lg z-10">
+                            <div className="absolute hidden group-hover:block right-0 mt-0 w-24 bg-white border border-gray-200 rounded shadow-lg z-10">
                               <button
                                 className="block w-full text-left px-4 py-2 hover:bg-gray-100"
                                 onClick={() => handleViewAcademicYear(year._id)}
@@ -554,11 +553,87 @@ const AcademicYearManagement = () => {
     );
   };
 
+
+  // Render View Academic Year
+  const renderViewAcademicYear = () => {
+    if (!selectedViewItem) return null;
+
+    const year = selectedViewItem;
+
+    const getSchoolName = (id) =>
+      schools.find((school) => school._id === id)?.schoolName || "N/A";
+
+    const getBranchName = (id) =>
+      branches.find((branch) => branch._id === id)?.name || "N/A";
+
+    return (
+      <div className="max-w-8xl w-full mx-auto py-6">
+        <div className="flex items-center gap-2 mb-6">
+          <button
+            onClick={handleCancel}
+            className="text-gray-600 hover:text-sky-600 transition font-medium flex items-center"
+          >
+            &larr; Back
+          </button>
+        </div>
+
+        <div className="bg-white p-6 rounded-md shadow-md max-w-8xl mx-auto space-y-4 border border-gray-200">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div>
+              <p className="text-gray-500 text-sm">Name</p>
+              <p className="text-lg font-semibold text-gray-800">{year.name}</p>
+            </div>
+            <div>
+              <p className="text-gray-500 text-sm">School</p>
+              <p className="text-lg font-semibold text-gray-800">
+                {getSchoolName(year.schoolId)}
+              </p>
+            </div>
+            <div>
+              <p className="text-gray-500 text-sm">Branch</p>
+              <p className="text-lg font-semibold text-gray-800">
+                {getBranchName(year.branchId)}
+              </p>
+            </div>
+            <div>
+              <p className="text-gray-500 text-sm">Start Date</p>
+              <p className="text-lg font-semibold text-gray-800">
+                {format(new Date(year.startDate), "dd/MM/yyyy")}
+              </p>
+            </div>
+            <div>
+              <p className="text-gray-500 text-sm">End Date</p>
+              <p className="text-lg font-semibold text-gray-800">
+                {format(new Date(year.endDate), "dd/MM/yyyy")}
+              </p>
+            </div>
+            <div>
+              <p className="text-gray-500 text-sm">Created At</p>
+              <p className="text-lg font-semibold text-gray-800">
+                {format(new Date(year.createdAt), "dd/MM/yyyy, h:mm a")}
+              </p>
+            </div>
+          </div>
+
+          <div className="pt-4 flex justify-end">
+            <button
+              onClick={handleCancel}
+              className="bg-purple-600 text-white px-5 py-2 rounded hover:bg-purple-700 transition"
+            >
+              Back to List
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // Main render
   return (
     <div className="bg-gray-50 min-h-screen">
       {view === "list" && renderList()}
       {(view === "add" || view === "edit") && renderForm()}
+      {view === "view" && renderViewAcademicYear()}
     </div>
   );
 };
