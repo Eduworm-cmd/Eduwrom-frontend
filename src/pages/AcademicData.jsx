@@ -3,6 +3,7 @@ import axios from "axios";
 import { format } from "date-fns";
 import { PlusCircle, Search, Trash2 } from "lucide-react";
 import { CreateAcademicYear, DeactivateAcademicYear, GetAcademicYearsById, GetSchoolBranches, GetSchools, UpdateAcademicYear } from "@/Network/Super_Admin/auth";
+import DownloadButton from "@/components/Buttons/DownloadButton/DownloadButton";
 
 const AcademicYearManagement = () => {
   const [view, setView] = useState("list");
@@ -382,10 +383,7 @@ const AcademicYearManagement = () => {
             >
               <PlusCircle /> Add Academic Year
             </button>
-
-            <button className="flex gap-2 mt-4 text-white py-2 px-5 outline-none rounded-sm font-semibold cursor-pointer text-[14px] bg-red-500">
-              <Trash2 /> Deactivated
-            </button>
+            <DownloadButton/>
           </div>
         </div>
 
@@ -618,7 +616,7 @@ const AcademicYearManagement = () => {
           <div className="pt-4 flex justify-end">
             <button
               onClick={handleCancel}
-              className="bg-purple-600 text-white px-5 py-2 rounded hover:bg-purple-700 transition"
+              className="bg-sky-600 text-white px-5 py-2 rounded hover:bg-sky-300 cursor-pointer transition"
             >
               Back to List
             </button>

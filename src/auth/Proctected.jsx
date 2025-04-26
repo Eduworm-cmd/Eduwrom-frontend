@@ -40,4 +40,23 @@ const SchoolAdminProtected = ({ children }) => {
   return children;
 };
 
-export { SuperAdminProtected, SchoolAdminProtected };
+const TeacherAdminProtected = ({ children }) => {
+  const token = useSelector((state) => state.auth.token);
+  const user = useSelector((state) => state.auth.user);
+  const storedToken = localStorage.getItem('token');
+  const isAuthenticated = token || storedToken;
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!isAuthenticated || user?.role !== 'teacher') {
+      localStorage.setItem('redirectUrl', location.pathname);
+    }
+  }, [isAuthenticated, location.pathname]);
+
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (user?.role !== 'schooladmin') return <Navigate to="/404" replace />;
+
+  return children;
+};
+
+export { SuperAdminProtected, SchoolAdminProtected,TeacherAdminProtected };

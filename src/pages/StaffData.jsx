@@ -15,6 +15,7 @@ import {
   SaveOutlined, RollbackOutlined, FilterOutlined, ClearOutlined
 } from '@ant-design/icons';
 import moment from 'moment';
+import { GetSchools } from '@/Network/Super_Admin/auth';
 
 const { Option } = Select;
 const { Title, Text } = Typography;
@@ -32,7 +33,7 @@ const StaffManagement = () => {
   const [error, setError] = useState(null);
   const [selectedSchool, setSelectedSchool] = useState(null);
 
-  const [viewMode, setViewMode] = useState('table'); // 'table', 'create', 'edit'
+  const [viewMode, setViewMode] = useState('table'); 
   const [selectedStaff, setSelectedStaff] = useState(null);
   const [form] = Form.useForm();
   const getBase64 = (file) => {
@@ -56,8 +57,8 @@ const StaffManagement = () => {
   });
   const fetchSchools = async () => {
     try {
-      const response = await axios.get('http://localhost:4000/api/schooladmin-auth');
-      setSchools(response.data.data);
+      const response = await GetSchools();
+      setSchools(response.data);
     } catch (err) {
       console.error('Failed to fetch schools:', err);
     }
@@ -68,7 +69,6 @@ const StaffManagement = () => {
   const fetchStaff = async () => {
     try {
       setLoading(true);
-      // Construct query params for filters and pagination
       const params = new URLSearchParams();
       params.append('page', currentPage);
       params.append('limit', pageSize);
