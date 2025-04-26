@@ -63,6 +63,14 @@ const CreateStafff = async (body) => {
     });
 }
 
+// Get All Classes 
+const GetClasses = async (body) =>{
+    return await apiRequest("class",{
+        method: "GET",
+        body
+    })
+}
+
 // Get All Grades
 const GetGrades = async (body) => {
     return await apiRequest("grade", {
@@ -109,6 +117,7 @@ const GetSchools = async (body) => {
     });
 }
 
+// Create School
 
 
 // Get School Branches
@@ -127,6 +136,14 @@ const GetLevels = async (body) => {
         body,
     });
 }
+
+// Get All Academic Year
+const GetAcademicYear = async (body) =>{
+    return await apiRequest("academic",{
+        method:"GET",
+        body,
+    })
+}
 // Create Academic Year
 const CreateAcademicYear = async (body) => {
     return await apiRequest("academic", {
@@ -143,10 +160,10 @@ const UpdateAcademicYear = async (id, body) => {
     });
 };
 
-const DeactivateAcademicYear = async (yearId) => {
-    return await apiRequest(`/api/academic-years/${yearId}`, {
+const DeactivateAcademicYear = async (yearId, isActive) => {
+    return await apiRequest(`academic-years/${yearId}`, {
         method: "PATCH",
-        body: { active: false },
+        body: { active: isActive },
     });
 };
 
@@ -161,12 +178,29 @@ const GetAcademicYearsById = async (schoolId) => {
 
 
 
+
+
+
+
+// Content Management APIS
+
+// Add Content 
+const AddContent = async (body) => {
+    return await apiRequest("content", {
+      method: "POST",  
+      body: body, 
+    });
+  };
+  
+
+
 export {
     SetLocalStorage,
     ConvertImageToBase64,
     GetUser,
     SuperAdminRegister,
     SuperAdminLogin,
+    GetClasses,
     CreateSchool,
     CreateStafff,
     GetGrades,
@@ -176,9 +210,11 @@ export {
     UpdateGrade,
     GetSchools,
     GetLevels,
+    GetAcademicYear,
     GetAcademicYearsById,
     CreateAcademicYear,
     DeactivateAcademicYear,
     UpdateAcademicYear,
     GetSchoolBranches,
+    AddContent,
 };

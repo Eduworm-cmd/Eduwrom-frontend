@@ -357,7 +357,7 @@ const StaffManagement = () => {
   // Define columns for the table
   const columns = [
     {
-      title: '#',
+      title: 'Sno',
       dataIndex: 'index',
       key: 'index',
       render: (_, __, index) => (currentPage - 1) * pageSize + index + 1,
@@ -498,7 +498,7 @@ const StaffManagement = () => {
   const StaffTable = () => (
     <Card bordered={false}>
       <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap:"295px", alignItems: 'center' }}>
           <Title level={4}>Staff Management ({totalItems})</Title>
           <Space>
             <Button icon={<DownloadOutlined />}>ID Card</Button>
@@ -510,7 +510,6 @@ const StaffManagement = () => {
             >
               Add Staff
             </Button>
-            <Button icon={<UserSwitchOutlined />}>Deactivated</Button>
           </Space>
         </div>
 

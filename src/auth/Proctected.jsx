@@ -54,9 +54,15 @@ const TeacherAdminProtected = ({ children }) => {
   }, [isAuthenticated, location.pathname]);
 
   if (!isAuthenticated) return <Navigate to="/login" replace />;
-  if (user?.role !== 'schooladmin') return <Navigate to="/404" replace />;
+  if (user?.role !== 'teacher') return <Navigate to="/404" replace />;
 
   return children;
 };
 
-export { SuperAdminProtected, SchoolAdminProtected,TeacherAdminProtected };
+
+const isSuperAdmin = () =>{
+  const user = useSelector((state) => state.auth.user);
+  return user.role.includes('superadmin');
+}
+
+export { SuperAdminProtected, SchoolAdminProtected,TeacherAdminProtected, isSuperAdmin };

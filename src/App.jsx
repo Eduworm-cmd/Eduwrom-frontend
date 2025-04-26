@@ -85,6 +85,9 @@ function App() {
           <Route path="Invoice-List" element={<InvoiceList />} />
           <Route path="Create/Invoice" element={<Invoice />} />
           <Route path="Notification" element={<Notification />} />
+          <Route path="playlist" element={<PlayListAssignment />} />
+          <Route path="content" element={<Content />} />
+          <Route path="scheduleList" element={<ScheduleList />} />
 
 
           {/* Teacher Admin Panel Routes */}

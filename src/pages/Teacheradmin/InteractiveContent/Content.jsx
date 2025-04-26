@@ -1,15 +1,21 @@
 import React, { useState } from 'react';
 import {
     Table, Button, Input, Select, DatePicker, TimePicker,
-    Modal, Card, Tabs, Badge
+    Modal, Card, Tabs, Badge, Form, Row, Col,
+    Upload
 } from 'antd';
 import {
     SearchOutlined, FilterOutlined, ReloadOutlined,
     BookOutlined, UserOutlined,
+    FileAddOutlined,
+    UploadOutlined,
 
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { Gamepad } from 'lucide-react';
+import { AddContent } from '@/Network/Super_Admin/auth';
+import { toast, ToastContainer } from 'react-toastify';
+import { isSuperAdmin } from '@/auth/Proctected';
 
 const { TabPane } = Tabs;
 const { Option } = Select;
@@ -134,12 +140,15 @@ const ContentManagement = () => {
     // State variables
     const [expandedRowKeys, setExpandedRowKeys] = useState([]);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+    const [addcontentVisible, setAddContentVisible] = useState(false);
     const [assignModalVisible, setAssignModalVisible] = useState(false);
     const [assignType, setAssignType] = useState('');
     const [assignFilteredInfo, setAssignFilteredInfo] = useState({});
     const [currentDate, setCurrentDate] = useState(dayjs());
     const [currentTime, setCurrentTime] = useState(dayjs('01:50:00', 'HH:mm:ss'));
     const [activeTab, setActiveTab] = useState('1');
+    const [image, setImage] = useState(null);
+    const [form] = Form.useForm();
 
     // Domain counts
     const domainCounts = {
@@ -167,6 +176,10 @@ const ContentManagement = () => {
         setAssignModalVisible(true);
         setActiveTab('1');
     };
+
+    const openContentModel = () => {
+        setAddContentVisible(true)
+    }
 
     // Reset filters
     const resetFilters = () => {
@@ -304,12 +317,63 @@ const ContentManagement = () => {
         }
     };
 
+
+
+    const handleImageUpload = (e) => {
+        const file = e.file;
+        if (file) {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                const base64String = reader.result.split(',')[1]; // Extract base64 string
+                setImage(base64String); // Store base64 string in the state
+            };
+        }
+        return false;
+    };
+
+    // Add Content API Here 
+    const handleAddContent = async () => {
+        try {
+            const values = await form.validateFields();
+
+            const formData = {
+                ...values,
+                grade: "60d49d5b2e1b2f000f8d9c52",
+                previewImageBuffer: image,
+            };
+
+            const response = await AddContent(formData);
+            if (response) {
+                toast.success("Content Added Successfully");
+            }
+            setAddContentVisible(false);
+            form.resetFields();
+
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     return (
-        <div className="bg-gray-50 min-h-screen p-6">
+        <div className="bg-gray-50 min-h-screen">
+            <ToastContainer />
             <Card className="mb-6">
                 <div className="flex justify-between items-center mb-4">
                     <h1 className="text-2xl font-semibold text-gray-700">Content</h1>
                     <div>
+                        {
+                            isSuperAdmin() && (
+                                <Button
+                                    type="primary"
+                                    icon={<FileAddOutlined />}
+                                    className="mr-2 bg-blue-500"
+                                    onClick={openContentModel}
+                                >
+                                    Add Content
+                                </Button>
+                            )
+                        }
                         <Button
                             type="primary"
                             icon={<BookOutlined />}
@@ -352,6 +416,13 @@ const ContentManagement = () => {
                             </div>
                         </Badge>
                     ))}
+                    <Button
+                        icon={<ReloadOutlined />}
+                        onClick={resetFilters}
+                        className="ml-auto"
+                    >
+                        Reset Filter
+                    </Button>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
@@ -390,13 +461,6 @@ const ContentManagement = () => {
                         <Option value="match">Match objects</Option>
                         <Option value="learn">Learn facts</Option>
                     </Select>
-                    <Button
-                        icon={<ReloadOutlined />}
-                        onClick={resetFilters}
-                        className="ml-auto"
-                    >
-                        Reset Filter
-                    </Button>
                 </div>
 
                 <Table
@@ -529,8 +593,91 @@ const ContentManagement = () => {
                     />
                 )}
             </Modal>
+
+
+            {/* Add Content Model */}
+            <Modal
+                title="Add Content"
+                open={addcontentVisible}
+                onCancel={() => setAddContentVisible(false)}
+                width={900}
+                footer={[
+                    <Button key="back" onClick={() => setAddContentVisible(false)}>
+                        Back
+                    </Button>,
+                    <Button key="submit" type="primary" className="bg-sky-600" onClick={handleAddContent}>
+                        Confirm
+                    </Button>
+                ]}
+            >
+                <Form form={form} layout="vertical">
+                    <Row gutter={16}>
+                        <Col span={12}>
+                            <Form.Item label="Content Type" name="contentType" rules={[{ required: true }]}>
+                                <Select placeholder="Select content type">
+                                    <Option value="video">Video</Option>
+                                    <Option value="game">Game</Option>
+                                    <Option value="pdf">PDF</Option>
+                                </Select>
+                            </Form.Item>
+                        </Col>
+                        <Col span={12}>
+                            <Form.Item label="Title" name="title" rules={[{ required: true }]}>
+                                <Input placeholder="Enter content title" />
+                            </Form.Item>
+                        </Col>
+                    </Row>
+
+                    <Row gutter={16}>
+                        <Col span={12}>
+                            <Form.Item label="Domain" name="domain" rules={[{ required: true }]}>
+                                <Input placeholder="Enter domain" />
+                            </Form.Item>
+                        </Col>
+                        <Col span={12}>
+                            <Form.Item label="Subdomain" name="subdomain" rules={[{ required: true }]}>
+                                <Input placeholder="Enter subdomain" />
+                            </Form.Item>
+                        </Col>
+                    </Row>
+
+                    <Row gutter={16}>
+                        <Col span={12}>
+                            <Form.Item label="Grade" >
+                                <Input placeholder="Enter grade ID" />
+                            </Form.Item>
+                        </Col>
+                        <Col span={12}>
+                            <Form.Item label="Learning Objective" name="learningObjective" rules={[{ required: true }]}>
+                                <Input placeholder="Enter learning objective" />
+                            </Form.Item>
+                        </Col>
+                    </Row>
+
+                    <Row gutter={16}>
+                        <Col span={12}>
+                            <Form.Item label="Redirect Link" name="redirectLink" rules={[{ required: true, type: 'url', message: 'Enter a valid URL' }]}>
+                                <Input placeholder="https://example.com/..." />
+                            </Form.Item>
+                        </Col>
+                        <Col span={12}>
+                            <Form.Item label="Preview Image" name="previewImageBuffer" valuePropName="file">
+                                <Upload
+                                    beforeUpload={handleImageUpload}
+                                    showUploadList={false}
+                                    accept="image/*"
+                                >
+                                    <Button icon={<UploadOutlined />}>Click to Upload</Button>
+                                </Upload>
+                            </Form.Item>
+
+
+                        </Col>
+                    </Row>
+                </Form>
+            </Modal>
         </div>
     );
-};
+}
 
 export default ContentManagement;

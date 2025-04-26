@@ -41,9 +41,9 @@ const adminData = {
       title: "LMS Management",
       icon: NotebookPen,
       items: [
-        { title: "Playlists & Assigement", url: "/eduworm-admin/assigements&playlist" },
-        { title: "Add Content", url: "/eduworm-admin/lms" },
-        { title: "Sheduled List", url: "/eduworm-admin/schedule/List" },
+        { title: "Playlists & Assigement", url: "/eduworm-admin/playlist" },
+        { title: "Content", url: "/eduworm-admin/content" },
+        { title: "Sheduled List", url: "/eduworm-admin/scheduleList" },
         { title: "Assignment History", url: "/admin/teachers/add" },
         { title: "Result & Summary", url: "/admin/teachers/add" },
       ]
@@ -127,9 +127,9 @@ const schoolAdminData = {
       title: "LMS Management",
       icon: NotebookPen,
       items: [
-        { title: "Playlist/ Assignment", url: "/eduworm-admin/lms" },
-        { title: "Content", url: "/admin/teachers/add" },
-        { title: "Scheduled List", url: "/admin/teachers/add" },
+        { title: "Playlist/ Assignment", url: "/eduworm-school/playlist" },
+        { title: "Content", url: "/eduworm-school/content" },
+        { title: "Scheduled List", url:"/eduworm-school/scheduleList" },
         { title: "Assignment History", url: "/admin/teachers/add" },
       ]
     },
