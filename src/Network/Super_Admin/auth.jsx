@@ -30,7 +30,6 @@ const GetUser = () => {
     return user || null;
 };
 
-
 //Super Admin Register
 const SuperAdminRegister = async (body) => {
     return await apiRequest("superadmin-auth/register", {

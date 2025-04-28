@@ -49,7 +49,7 @@ function App() {
         <Route path="*" element={<PageNotFound />} />
         <Route path="/" element={<School_Teacher_Login />} />
 
-        <Route path="eduworm-Teacher" element={<TeacherAdminProtected><Layout /></TeacherAdminProtected>}>
+        <Route path="eduworm-Teacher" element={<Layout />}>
           <Route index element={<TeacherHomePage />} />
           <Route path="books" element={<BookHomePage />} />
           <Route path="book/preview/:id" element={<BookPreview />} />

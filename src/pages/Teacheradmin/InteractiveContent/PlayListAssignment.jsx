@@ -20,6 +20,7 @@ const { Title } = Typography;
 const { Option } = Select;
 
 const App = () => {
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [addplaylistvisible, setAddPlaylistVisible] = useState(false);
   const [currentView, setCurrentView] = useState('playlist');
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
@@ -132,6 +133,11 @@ const App = () => {
       learningObjective: 'To be able to identify and name domestic animals (N12022)',
     },
   ];
+
+   // Handle row selection
+   const onSelectChange = (selectedKeys) => {
+    setSelectedRowKeys(selectedKeys);
+};
 
   const handleViewPlaylist = (record) => {
     setSelectedPlaylist(record);
@@ -274,6 +280,7 @@ const App = () => {
       console.log(error);
     }
   };
+
   return (
     <div className="bg-gray-100 min-h-screen p-6">
       {currentView === 'playlist' ? (
@@ -346,7 +353,11 @@ const App = () => {
           </div>
 
           <Table
-            dataSource={playlistData}
+            rowSelection={{
+              type: 'checkbox',
+              selectedRowKeys,
+              onChange: setSelectedRowKeys, 
+            }} dataSource={playlistData}
             columns={playlistColumns}
             pagination={{
               position: ['bottomRight'],
@@ -356,7 +367,6 @@ const App = () => {
               total: playlistData.length,
               showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
             }}
-            rowSelection={{ type: 'checkbox', selectedRowKeys: [] }}
             className="custom-table"
           />
         </Card>
@@ -451,7 +461,7 @@ const App = () => {
                     const reader = new FileReader();
                     reader.readAsDataURL(file);
                     reader.onload = () => {
-                      const base64String = reader.result; // keep full "data:image/jpeg;base64,..." format
+                      const base64String = reader.result;
                       form.setFieldsValue({ thumbnail: base64String });
                     };
                     return false;
