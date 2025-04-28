@@ -39,6 +39,7 @@ import StaffData from "./pages/StaffData";
 import AcademicData from "./pages/AcademicData";
 import GradeManagement from "./pages/GradeManagement";
 import ClassRoomMangement from "./pages/ClassRoomMangement";
+import ToogleTabs from "./pages/super-admin-pannel/ToogleTabs";
 
 function App() {
   return (
@@ -61,7 +62,7 @@ function App() {
           <Route path="/unit" element={<UnitSummary />} />
         </Route>
 
-        <Route path="/eduworm-admin" element={<SuperAdminProtected><AdminPannelLayout /></SuperAdminProtected>}>
+        <Route path="/eduworm-admin" element={<AdminPannelLayout />}>
           <Route index element={<SAHomePage />} />
           <Route path="home" element={<SAHomePage />} />
           <Route path="Admin" element={<SALSHome />} />
@@ -88,6 +89,7 @@ function App() {
           <Route path="playlist" element={<PlayListAssignment />} />
           <Route path="content" element={<Content />} />
           <Route path="scheduleList" element={<ScheduleList />} />
+          <Route path="toogletabs" element={<ToogleTabs />} />
 
 
           {/* Teacher Admin Panel Routes */}
@@ -96,7 +98,7 @@ function App() {
         </Route>
 
 
-        <Route path="/eduworm-school" element={<SchoolAdminProtected><AdminPannelLayout /></SchoolAdminProtected>}>
+        <Route path="/eduworm-school" element={<AdminPannelLayout />}>
           <Route index element={<SAHomePage />} />
           <Route path="home" element={<SAHomePage />} />
           <Route path="playlist" element={<PlayListAssignment />} />
