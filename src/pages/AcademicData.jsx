@@ -3,6 +3,8 @@ import axios from "axios";
 import { format } from "date-fns";
 import { PlusCircle, Search, Trash2 } from "lucide-react";
 import { CreateAcademicYear, DeactivateAcademicYear, GetAcademicYearsById, GetSchoolBranches, GetSchools, UpdateAcademicYear } from "@/Network/Super_Admin/auth";
+import DownloadButton from "@/components/Buttons/DownloadButton/DownloadButton";
+import { toast, ToastContainer } from "react-toastify";
 
 const AcademicYearManagement = () => {
   const [view, setView] = useState("list");
@@ -153,7 +155,7 @@ const AcademicYearManagement = () => {
 
   const handleViewAcademicYear = (yearId) => {
     const item = academicYears.find((y) => y._id === yearId);
-    setSelectedViewItem(item); 
+    setSelectedViewItem(item);
     setView("view");
   };
 
@@ -196,446 +198,470 @@ const AcademicYearManagement = () => {
   };
 
   const handleDeactivate = async (yearId) => {
-    if (
-      window.confirm("Are you sure you want to deactivate this academic year?")
-    ) {
-      try {
-        await DeactivateAcademicYear(yearId);
-        // axios.patch(`/api/academic-years/${yearId}`, { active: false });
-        fetchAcademicYears();
-        setError(null);
-      } catch (err) {
-        setError("Failed to deactivate academic year");
-        console.error(err);
+
+    toast.info(
+      ({ closeToast }) => (
+        <div>
+          <p>Are you sure you want to deactivate this grade?</p>
+          <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
+            <button
+              style={{ backgroundColor: '#d9534f', color: 'white', border: 'none', padding: '6px 12px' }}
+              onClick={async () => {
+                closeToast();
+                try {
+                  // await DeactivateAcademicYear(yearId, { isActive: false });
+                  axios.patch(`/api/academic-years/${yearId}`, { active: false });
+                  toast.success('Grade Deactivate successfully');
+                  await fetchAcademicYears();
+                  setError(null);
+                } catch (error) {
+                  console.error('Error deactivating grade:', error);
+                }
+              }}
+            >
+              Yes
+            </button>
+            <button
+              style={{ backgroundColor: '#6c757d', color: 'white', border: 'none', padding: '6px 12px' }}
+              onClick={closeToast}
+            >
+              No
+            </button>
+          </div>
+        </div>
+      ),
+      {
+        autoClose: false,
+        closeOnClick: false,
+        closeButton: false,
       }
-    }
-  };
-
-  const handleRowsPerPageChange = (e) => {
-    setRowsPerPage(parseInt(e.target.value));
-    setCurrentPage(1);
-  };
-
-  const handleSearch = (e) => {
-    setSearchQuery(e.target.value);
-    setCurrentPage(1);
-  };
-
-  const handleResetFilter = () => {
-    setSearchQuery("");
-    setSelectedSchool(null);
-  };
-
-  // Filter and paginate academic years
-  const filteredAcademicYears = academicYears?.filter((year) => {
-    return (
-      year.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (year.branchName &&
-        year.branchName.toLowerCase().includes(searchQuery.toLowerCase()))
     );
-  });
+   
+  };
 
-  const indexOfLastRecord = currentPage * rowsPerPage;
-  const indexOfFirstRecord = indexOfLastRecord - rowsPerPage;
-  const currentRecords = filteredAcademicYears?.slice(
-    indexOfFirstRecord,
-    indexOfLastRecord
+const handleRowsPerPageChange = (e) => {
+  setRowsPerPage(parseInt(e.target.value));
+  setCurrentPage(1);
+};
+
+const handleSearch = (e) => {
+  setSearchQuery(e.target.value);
+  setCurrentPage(1);
+};
+
+const handleResetFilter = () => {
+  setSearchQuery("");
+  setSelectedSchool(null);
+};
+
+// Filter and paginate academic years
+const filteredAcademicYears = academicYears?.filter((year) => {
+  return (
+    year.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (year.branchName &&
+      year.branchName.toLowerCase().includes(searchQuery.toLowerCase()))
   );
-  const totalPages = Math.ceil(filteredAcademicYears?.length / rowsPerPage);
+});
+
+const indexOfLastRecord = currentPage * rowsPerPage;
+const indexOfFirstRecord = indexOfLastRecord - rowsPerPage;
+const currentRecords = filteredAcademicYears?.slice(
+  indexOfFirstRecord,
+  indexOfLastRecord
+);
+const totalPages = Math.ceil(filteredAcademicYears?.length / rowsPerPage);
 
 
-  // Render Add/Edit form
-  const renderForm = () => {
-    return (
-      <div className="container mx-auto p-4">
-        <div className="flex items-center mb-6">
-          <button onClick={handleCancel} className="text-gray-600 mr-2">
-            &lt;
-          </button>
-          <h1 className="text-2xl font-semibold">
-            {view === "add" ? "Add Academic Year" : "Edit Academic Year"}
-          </h1>
-        </div>
-
-        {error && (
-          <div className="bg-red-100 text-red-700 p-3 mb-4 rounded">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block mb-1">
-                Name<span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                required
-                className="w-full border border-gray-300 rounded p-2"
-                placeholder="e.g., 2025-2026"
-              />
-            </div>
-
-            <div>
-              <label className="block mb-1">School</label>
-              <select
-                name="schoolId"
-                value={formData.schoolId}
-                onChange={handleInputChange}
-                className="w-full border border-gray-300 rounded p-2"
-              >
-                <option value="">Select School</option>
-                {schools.map((school) => (
-                  <option key={school._id} value={school._id}>
-                    {school.schoolName}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block mb-1">
-                Branch<span className="text-red-500">*</span>
-              </label>
-              <select
-                name="branchId"
-                value={formData.branchId}
-                onChange={handleInputChange}
-                required
-                className="w-full border border-gray-300 rounded p-2"
-              >
-                <option value="">Select Branch</option>
-                {branches?.map((branch) => (
-                  <option key={branch._id} value={branch._id}>
-                    {branch.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block mb-1">
-                Start Date<span className="text-red-500">*</span>
-              </label>
-              <input
-                type="date"
-                name="startDate"
-                value={formData.startDate}
-                onChange={handleInputChange}
-                required
-                className="w-full border border-gray-300 rounded p-2"
-              />
-            </div>
-
-            <div>
-              <label className="block mb-1">
-                End Date<span className="text-red-500">*</span>
-              </label>
-              <input
-                type="date"
-                name="endDate"
-                value={formData.endDate}
-                onChange={handleInputChange}
-                required
-                className="w-full border border-gray-300 rounded p-2"
-              />
-            </div>
-          </div>
-
-          <div className="flex justify-start space-x-2 mt-6">
-            <button
-              type="button"
-              onClick={handleCancel}
-              className="bg-gray-300 text-gray-700 px-4 py-2 rounded"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="bg-purple-700 text-white px-6 py-2 rounded"
-            >
-              {isLoading ? "Saving..." : view === "add" ? "Add" : "Save"}
-            </button>
-          </div>
-        </form>
+// Render Add/Edit form
+const renderForm = () => {
+  return (
+    <div className="container mx-auto p-4">
+      <div className="flex items-center mb-6">
+        <button onClick={handleCancel} className="text-gray-600 mr-2">
+          &lt;
+        </button>
+        <h1 className="text-2xl font-semibold">
+          {view === "add" ? "Add Academic Year" : "Edit Academic Year"}
+        </h1>
       </div>
-    );
-  };
 
-  // Render list view
-  const renderList = () => {
-    return (
-      <div className="p-4 bg-white rounded-md w-full">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-semibold">
-            Academic Year ({filteredAcademicYears?.length})
-          </h1>
-          <div className="flex gap-2 justify-end mb-3">
-            <button
-              onClick={handleAddAcademicYear}
-              className="flex gap-2 mt-4 text-white py-2 px-5 outline-none rounded-sm font-semibold cursor-pointer text-[14px] bg-sky-500"
-            >
-              <PlusCircle /> Add Academic Year
-            </button>
-
-            <button className="flex gap-2 mt-4 text-white py-2 px-5 outline-none rounded-sm font-semibold cursor-pointer text-[14px] bg-red-500">
-              <Trash2 /> Deactivated
-            </button>
-          </div>
+      {error && (
+        <div className="bg-red-100 text-red-700 p-3 mb-4 rounded">
+          {error}
         </div>
+      )}
 
-        {error && (
-          <div className="bg-red-100 text-red-700 p-3 mb-4 rounded">
-            {error}
-          </div>
-        )}
-
-        <div className="flex items-center justify-between mb-4 bg-blue-400 rounded-sm shadow-md px-2 py-2">
-          <div className="relative">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block mb-1">
+              Name<span className="text-red-500">*</span>
+            </label>
             <input
               type="text"
-              placeholder="Search..."
-              className="w-full bg-white max-w-[250px] p-2 pl-10 border rounded-sm focus:outline-none focus:ring-2 focus:ring-sky-500 transition"
-              value={searchQuery}
-              onChange={handleSearch}
+              name="name"
+              value={formData.name}
+              onChange={handleInputChange}
+              required
+              className="w-full border border-gray-300 rounded p-2"
+              placeholder="e.g., 2025-2026"
             />
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" size={18} />
           </div>
 
-          <button
-            onClick={handleResetFilter}
-            className="flex items-center text-gray-500"
-          >
-            ↺ Reset Filter
-          </button>
-        </div>
-
-        {isLoading ? (
-          <div className="flex justify-center items-center h-32">
-            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gray-900"></div>
-          </div>
-        ) : (
-          <>
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white">
-                <thead>
-                  <tr className="bg-gray-50 border-b">
-                    <th className="w-10 px-6 py-3 text-left">
-                      <input type="checkbox" />
-                    </th>
-                    <th className="px-6 py-3 text-left">Sr.No</th>
-                    <th className="px-6 py-3 text-left">Branch School Name</th>
-                    <th className="px-6 py-3 text-left">Academic Year Name</th>
-                    <th className="px-6 py-3 text-left">Start Date</th>
-                    <th className="px-6 py-3 text-left">End Date</th>
-                    <th className="px-6 py-3 text-left">Created Date</th>
-                    <th className="px-6 py-3 text-center">Actions</th>
-                    <th className="px-6 py-3 text-center">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {currentRecords?.length > 0 ? (
-                    currentRecords?.map((year, index) => (
-                      <tr key={year._id} className="border-b hover:bg-gray-50">
-                        <td className="px-6 py-4">
-                          <input type="checkbox" />
-                        </td>
-                        <td className="px-6 py-4">
-                          {indexOfFirstRecord + index + 1}
-                        </td>
-                        <td className="px-6 py-4">
-                          {year.branchName || "N/A"}
-                        </td>
-                        <td className="px-6 py-4">{year.name}</td>
-                        <td className="px-6 py-4">
-                          {format(new Date(year.startDate), "dd/MM/yyyy")}
-                        </td>
-                        <td className="px-6 py-4">
-                          {format(new Date(year.endDate), "dd/MM/yyyy")}
-                        </td>
-                        <td className="px-6 py-4">
-                          {format(
-                            new Date(year.createdAt),
-                            "dd/M/yyyy, h:mm:ss a"
-                          )}
-                        </td>
-                        <td className="px-6 py-4 text-center">
-                          <button className="text-gray-500 relative group">
-                            ⋯
-                            <div className="absolute hidden group-hover:block right-0 mt-0 w-24 bg-white border border-gray-200 rounded shadow-lg z-10">
-                              <button
-                                className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                                onClick={() => handleViewAcademicYear(year._id)}
-                              >
-                                View
-                              </button>
-                              <button
-                                className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                                onClick={() => handleEditAcademicYear(year)}
-                              >
-                                Edit
-                              </button>
-                              <button
-                                className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-red-500"
-                                onClick={() => handleDeactivate(year._id)}
-                              >
-                                Deactivate
-                              </button>
-                            </div>
-                          </button>
-                        </td>
-                        <td className="px-6 py-4 text-center">
-                          <span className="flex justify-center">
-                            <span className="h-3 w-3 bg-green-500 rounded-full"></span>
-                          </span>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="10" className="px-6 py-4 text-center">
-                        No academic years found
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="flex justify-between items-center mt-4">
-              <div>
-                <span className="mr-2">Rows per page:</span>
-                <select
-                  value={rowsPerPage}
-                  onChange={handleRowsPerPageChange}
-                  className="border border-gray-300 rounded p-1"
-                >
-                  <option value={5}>5</option>
-                  <option value={10}>10</option>
-                  <option value={20}>20</option>
-                </select>
-              </div>
-
-              <div>
-                <span>
-                  {indexOfFirstRecord + 1}-
-                  {Math.min(indexOfLastRecord, filteredAcademicYears?.length)}{" "}
-                  of {filteredAcademicYears?.length}
-                </span>
-                <button
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.max(prev - 1, 1))
-                  }
-                  disabled={currentPage === 1}
-                  className="ml-2 px-2 py-1 border rounded disabled:opacity-50"
-                >
-                  &lt;
-                </button>
-                <button
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                  }
-                  disabled={currentPage === totalPages || totalPages === 0}
-                  className="ml-2 px-2 py-1 border rounded disabled:opacity-50"
-                >
-                  &gt;
-                </button>
-              </div>
-            </div>
-          </>
-        )}
-      </div>
-    );
-  };
-
-
-  // Render View Academic Year
-  const renderViewAcademicYear = () => {
-    if (!selectedViewItem) return null;
-
-    const year = selectedViewItem;
-
-    const getSchoolName = (id) =>
-      schools.find((school) => school._id === id)?.schoolName || "N/A";
-
-    const getBranchName = (id) =>
-      branches.find((branch) => branch._id === id)?.name || "N/A";
-
-    return (
-      <div className="max-w-8xl w-full mx-auto py-6">
-        <div className="flex items-center gap-2 mb-6">
-          <button
-            onClick={handleCancel}
-            className="text-gray-600 hover:text-sky-600 transition font-medium flex items-center"
-          >
-            &larr; Back
-          </button>
-        </div>
-
-        <div className="bg-white p-6 rounded-md shadow-md max-w-8xl mx-auto space-y-4 border border-gray-200">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div>
-              <p className="text-gray-500 text-sm">Name</p>
-              <p className="text-lg font-semibold text-gray-800">{year.name}</p>
-            </div>
-            <div>
-              <p className="text-gray-500 text-sm">School</p>
-              <p className="text-lg font-semibold text-gray-800">
-                {getSchoolName(year.schoolId)}
-              </p>
-            </div>
-            <div>
-              <p className="text-gray-500 text-sm">Branch</p>
-              <p className="text-lg font-semibold text-gray-800">
-                {getBranchName(year.branchId)}
-              </p>
-            </div>
-            <div>
-              <p className="text-gray-500 text-sm">Start Date</p>
-              <p className="text-lg font-semibold text-gray-800">
-                {format(new Date(year.startDate), "dd/MM/yyyy")}
-              </p>
-            </div>
-            <div>
-              <p className="text-gray-500 text-sm">End Date</p>
-              <p className="text-lg font-semibold text-gray-800">
-                {format(new Date(year.endDate), "dd/MM/yyyy")}
-              </p>
-            </div>
-            <div>
-              <p className="text-gray-500 text-sm">Created At</p>
-              <p className="text-lg font-semibold text-gray-800">
-                {format(new Date(year.createdAt), "dd/MM/yyyy, h:mm a")}
-              </p>
-            </div>
-          </div>
-
-          <div className="pt-4 flex justify-end">
-            <button
-              onClick={handleCancel}
-              className="bg-purple-600 text-white px-5 py-2 rounded hover:bg-purple-700 transition"
+          <div>
+            <label className="block mb-1">School</label>
+            <select
+              name="schoolId"
+              value={formData.schoolId}
+              onChange={handleInputChange}
+              className="w-full border border-gray-300 rounded p-2"
             >
-              Back to List
-            </button>
+              <option value="">Select School</option>
+              {schools.map((school) => (
+                <option key={school._id} value={school._id}>
+                  {school.schoolName}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block mb-1">
+              Branch<span className="text-red-500">*</span>
+            </label>
+            <select
+              name="branchId"
+              value={formData.branchId}
+              onChange={handleInputChange}
+              required
+              className="w-full border border-gray-300 rounded p-2"
+            >
+              <option value="">Select Branch</option>
+              {branches?.map((branch) => (
+                <option key={branch._id} value={branch._id}>
+                  {branch.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block mb-1">
+              Start Date<span className="text-red-500">*</span>
+            </label>
+            <input
+              type="date"
+              name="startDate"
+              value={formData.startDate}
+              onChange={handleInputChange}
+              required
+              className="w-full border border-gray-300 rounded p-2"
+            />
+          </div>
+
+          <div>
+            <label className="block mb-1">
+              End Date<span className="text-red-500">*</span>
+            </label>
+            <input
+              type="date"
+              name="endDate"
+              value={formData.endDate}
+              onChange={handleInputChange}
+              required
+              className="w-full border border-gray-300 rounded p-2"
+            />
           </div>
         </div>
-      </div>
-    );
-  };
 
-  // Main render
-  return (
-    <div className="bg-gray-50 min-h-screen">
-      {view === "list" && renderList()}
-      {(view === "add" || view === "edit") && renderForm()}
-      {view === "view" && renderViewAcademicYear()}
+        <div className="flex justify-start space-x-2 mt-6">
+          <button
+            type="button"
+            onClick={handleCancel}
+            className="bg-gray-300 text-gray-700 px-4 py-2 rounded"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="bg-purple-700 text-white px-6 py-2 rounded"
+          >
+            {isLoading ? "Saving..." : view === "add" ? "Add" : "Save"}
+          </button>
+        </div>
+      </form>
     </div>
   );
+};
+
+// Render list view
+const renderList = () => {
+  return (
+    <div className="p-4 bg-white rounded-md w-full">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-semibold">
+          Academic Year ({filteredAcademicYears?.length})
+        </h1>
+        <div className="flex gap-2 justify-end mb-3">
+          <button
+            onClick={handleAddAcademicYear}
+            className="flex gap-2 mt-4 text-white py-2 px-5 outline-none rounded-sm font-semibold cursor-pointer text-[14px] bg-sky-500"
+          >
+            <PlusCircle /> Add Academic Year
+          </button>
+          <DownloadButton />
+        </div>
+      </div>
+
+      {error && (
+        <div className="bg-red-100 text-red-700 p-3 mb-4 rounded">
+          {error}
+        </div>
+      )}
+
+      <div className="flex items-center justify-between mb-4 bg-blue-400 rounded-sm shadow-md px-2 py-2">
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Search..."
+            className="w-full bg-white max-w-[250px] p-2 pl-10 border rounded-sm focus:outline-none focus:ring-2 focus:ring-sky-500 transition"
+            value={searchQuery}
+            onChange={handleSearch}
+          />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" size={18} />
+        </div>
+
+        <button
+          onClick={handleResetFilter}
+          className="flex items-center text-gray-500"
+        >
+          ↺ Reset Filter
+        </button>
+      </div>
+
+      {isLoading ? (
+        <div className="flex justify-center items-center h-32">
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gray-900"></div>
+        </div>
+      ) : (
+        <>
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white">
+              <thead>
+                <tr className="bg-gray-50 border-b">
+                  <th className="w-10 px-6 py-3 text-left">
+                    <input type="checkbox" />
+                  </th>
+                  <th className="px-6 py-3 text-left">Sr.No</th>
+                  <th className="px-6 py-3 text-left">Branch School Name</th>
+                  <th className="px-6 py-3 text-left">Academic Year Name</th>
+                  <th className="px-6 py-3 text-left">Start Date</th>
+                  <th className="px-6 py-3 text-left">End Date</th>
+                  <th className="px-6 py-3 text-left">Created Date</th>
+                  <th className="px-6 py-3 text-center">Actions</th>
+                  <th className="px-6 py-3 text-center">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentRecords?.length > 0 ? (
+                  currentRecords?.map((year, index) => (
+                    <tr key={year._id} className="border-b hover:bg-gray-50">
+                      <td className="px-6 py-4">
+                        <input type="checkbox" />
+                      </td>
+                      <td className="px-6 py-4">
+                        {indexOfFirstRecord + index + 1}
+                      </td>
+                      <td className="px-6 py-4">
+                        {year.branchName || "N/A"}
+                      </td>
+                      <td className="px-6 py-4">{year.name}</td>
+                      <td className="px-6 py-4">
+                        {format(new Date(year.startDate), "dd/MM/yyyy")}
+                      </td>
+                      <td className="px-6 py-4">
+                        {format(new Date(year.endDate), "dd/MM/yyyy")}
+                      </td>
+                      <td className="px-6 py-4">
+                        {format(
+                          new Date(year.createdAt),
+                          "dd/M/yyyy, h:mm:ss a"
+                        )}
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <button className="text-gray-500 relative group">
+                          ⋯
+                          <div className="absolute hidden group-hover:block right-0 mt-0 w-24 bg-white border border-gray-200 rounded shadow-lg z-10">
+                            <button
+                              className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                              onClick={() => handleViewAcademicYear(year._id)}
+                            >
+                              View
+                            </button>
+                            <button
+                              className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                              onClick={() => handleEditAcademicYear(year)}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-red-500"
+                              onClick={() => handleDeactivate(year._id)}
+                            >
+                              Deactivate
+                            </button>
+                          </div>
+                        </button>
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <span className="flex justify-center">
+                          <span className="h-3 w-3 bg-green-500 rounded-full"></span>
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="10" className="px-6 py-4 text-center">
+                      No academic years found
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="flex justify-between items-center mt-4">
+            <div>
+              <span className="mr-2">Rows per page:</span>
+              <select
+                value={rowsPerPage}
+                onChange={handleRowsPerPageChange}
+                className="border border-gray-300 rounded p-1"
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+              </select>
+            </div>
+
+            <div>
+              <span>
+                {indexOfFirstRecord + 1}-
+                {Math.min(indexOfLastRecord, filteredAcademicYears?.length)}{" "}
+                of {filteredAcademicYears?.length}
+              </span>
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) => Math.max(prev - 1, 1))
+                }
+                disabled={currentPage === 1}
+                className="ml-2 px-2 py-1 border rounded disabled:opacity-50"
+              >
+                &lt;
+              </button>
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
+                disabled={currentPage === totalPages || totalPages === 0}
+                className="ml-2 px-2 py-1 border rounded disabled:opacity-50"
+              >
+                &gt;
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
+
+// Render View Academic Year
+const renderViewAcademicYear = () => {
+  if (!selectedViewItem) return null;
+
+  const year = selectedViewItem;
+
+  const getSchoolName = (id) =>
+    schools.find((school) => school._id === id)?.schoolName || "N/A";
+
+  const getBranchName = (id) =>
+    branches.find((branch) => branch._id === id)?.name || "N/A";
+
+  return (
+    <div className="max-w-8xl w-full mx-auto py-6">
+      <div className="flex items-center gap-2 mb-6">
+        <button
+          onClick={handleCancel}
+          className="text-gray-600 hover:text-sky-600 transition font-medium flex items-center"
+        >
+          &larr; Back
+        </button>
+      </div>
+
+      <div className="bg-white p-6 rounded-md shadow-md max-w-8xl mx-auto space-y-4 border border-gray-200">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div>
+            <p className="text-gray-500 text-sm">Name</p>
+            <p className="text-lg font-semibold text-gray-800">{year.name}</p>
+          </div>
+          <div>
+            <p className="text-gray-500 text-sm">School</p>
+            <p className="text-lg font-semibold text-gray-800">
+              {getSchoolName(year.schoolId)}
+            </p>
+          </div>
+          <div>
+            <p className="text-gray-500 text-sm">Branch</p>
+            <p className="text-lg font-semibold text-gray-800">
+              {getBranchName(year.branchId)}
+            </p>
+          </div>
+          <div>
+            <p className="text-gray-500 text-sm">Start Date</p>
+            <p className="text-lg font-semibold text-gray-800">
+              {format(new Date(year.startDate), "dd/MM/yyyy")}
+            </p>
+          </div>
+          <div>
+            <p className="text-gray-500 text-sm">End Date</p>
+            <p className="text-lg font-semibold text-gray-800">
+              {format(new Date(year.endDate), "dd/MM/yyyy")}
+            </p>
+          </div>
+          <div>
+            <p className="text-gray-500 text-sm">Created At</p>
+            <p className="text-lg font-semibold text-gray-800">
+              {format(new Date(year.createdAt), "dd/MM/yyyy, h:mm a")}
+            </p>
+          </div>
+        </div>
+
+        <div className="pt-4 flex justify-end">
+          <button
+            onClick={handleCancel}
+            className="bg-sky-600 text-white px-5 py-2 rounded hover:bg-sky-300 cursor-pointer transition"
+          >
+            Back to List
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Main render
+return (
+  <div className="bg-gray-50 min-h-screen">
+    <ToastContainer />
+    {view === "list" && renderList()}
+    {(view === "add" || view === "edit") && renderForm()}
+    {view === "view" && renderViewAcademicYear()}
+  </div>
+);
 };
 
 export default AcademicYearManagement;

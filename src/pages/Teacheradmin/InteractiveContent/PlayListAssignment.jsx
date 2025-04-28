@@ -1,22 +1,29 @@
 import React, { useState } from 'react';
-import { 
-  Table, Button, Input, Select, Space, Card, Typography, 
-  Badge, Checkbox, Breadcrumb, Row, Col 
+import {
+  Table, Button, Input, Select, Space, Card, Typography,
+  Badge, Checkbox, Breadcrumb, Row, Col,
+  Modal,
+  Form,
+  Upload
 } from 'antd';
-import { 
-  SearchOutlined, 
-  EyeOutlined, 
-  ArrowLeftOutlined, 
-  ReloadOutlined 
+import {
+  SearchOutlined,
+  EyeOutlined,
+  ArrowLeftOutlined,
+  ReloadOutlined,
+  FileAddOutlined,
+  UploadOutlined
 } from '@ant-design/icons';
+import { isSuperAdmin } from '@/auth/Proctected';
 
 const { Title } = Typography;
 const { Option } = Select;
 
 const App = () => {
+  const [addplaylistvisible, setAddPlaylistVisible] = useState(false);
   const [currentView, setCurrentView] = useState('playlist');
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
-  
+  const [form] = Form.useForm();
   // Mock data for playlists
   const playlistData = [
     {
@@ -233,15 +240,62 @@ const App = () => {
     },
   ];
 
+  const handleImageUpload = (e) => {
+    const file = e.file;
+    if (file) {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        const base64String = reader.result.split(',')[1];
+        setImage(base64String);
+      };
+    }
+    return false;
+  };
+
+  const handleAddContent = async () => {
+    try {
+      const values = await form.validateFields();
+
+      const formData = {
+        ...values,
+        grade: "60d49d5b2e1b2f000f8d9c52",
+        previewImageBuffer: image,
+      };
+
+      const response = await AddContent(formData);
+      if (response) {
+        toast.success("Content Added Successfully");
+      }
+      setAddContentVisible(false);
+      form.resetFields();
+
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div className="bg-gray-100 min-h-screen p-6">
       {currentView === 'playlist' ? (
-        <Card bordered={false} className="rounded-lg shadow">
+        <Card className="rounded-lg shadow">
           <div className="flex justify-between items-center mb-6">
             <Title level={3} className="m-0">Playlist ({playlistData.length})</Title>
             <div className="flex space-x-2">
-              <Button 
-                type="default" 
+              {
+                isSuperAdmin() && (
+                  <Button
+                    type="primary"
+                    icon={<FileAddOutlined />}
+                    className="mr-2 bg-blue-500"
+                    onClick={() => setAddPlaylistVisible(true)}
+                  >
+                    Add Content
+                  </Button>
+
+                )
+              }
+              <Button
+                type="default"
                 className="border-purple-800 text-purple-800 flex items-center"
               >
                 <span className="mr-2">📚</span>
@@ -250,7 +304,7 @@ const App = () => {
               <Button type="link" className="text-purple-800">More</Button>
             </div>
           </div>
-          
+
           <div className="mb-6">
             <Row gutter={16}>
               <Col span={5}>
@@ -281,8 +335,8 @@ const App = () => {
                 />
               </Col>
               <Col span={4}>
-                <Button 
-                  icon={<ReloadOutlined />} 
+                <Button
+                  icon={<ReloadOutlined />}
                   className="flex items-center"
                 >
                   Reset Filter
@@ -294,7 +348,7 @@ const App = () => {
           <Table
             dataSource={playlistData}
             columns={playlistColumns}
-            pagination={{ 
+            pagination={{
               position: ['bottomRight'],
               showSizeChanger: true,
               pageSizeOptions: ['10', '20', '50', '100'],
@@ -311,11 +365,11 @@ const App = () => {
           <div className="mb-6">
             <Title level={3}>Animals of World({animalsOfWorldDetails.length})</Title>
           </div>
-          
+
           <Table
             dataSource={animalsOfWorldDetails}
             columns={detailColumns}
-            pagination={{ 
+            pagination={{
               position: ['bottomRight'],
               showSizeChanger: true,
               pageSizeOptions: ['10', '20', '50'],
@@ -325,10 +379,10 @@ const App = () => {
             }}
             className="custom-table"
           />
-          
+
           <div className="mt-6">
-            <Button 
-              type="primary" 
+            <Button
+              type="primary"
               icon={<ArrowLeftOutlined />}
               onClick={() => setCurrentView('playlist')}
               className="bg-purple-800 hover:bg-purple-700 border-purple-800"
@@ -338,40 +392,90 @@ const App = () => {
           </div>
         </Card>
       )}
+
+      {/* Add Playlist Model */}
+      <Modal
+        title="Add Content"
+        open={addplaylistvisible}
+        onCancel={() => setAddPlaylistVisible(false)}
+        width={900}
+        footer={[
+          <Button key="back" onClick={() => setAddPlaylistVisible(false)}>
+            Back
+          </Button>,
+          <Button key="submit" type="primary" className="bg-sky-600" onClick={handleAddContent}>
+            Confirm
+          </Button>
+        ]}
+      >
+        <Form form={form} layout="vertical">
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item label="Playlist Name" name="name" rules={[{ required: true }]}>
+                <Input placeholder="Enter playlist name" />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item label="Branch ID" name="author" rules={[{ required: true }]}>
+                <Input placeholder="Enter branch ID (author)" />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item label="Grade ID" name="grade" rules={[{ required: true }]}>
+                <Input placeholder="Enter grade ID" />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item label="School ID" name="schoolId" rules={[{ required: true }]}>
+                <Input placeholder="Enter school ID" />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Row gutter={16}>
+            <Col span={24}>
+              <Form.Item label="Description" name="description" rules={[{ required: true }]}>
+                <Input.TextArea rows={3} placeholder="Enter playlist description" />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item label="Thumbnail" name="thumbnail">
+                <Upload
+                  beforeUpload={(file) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = () => {
+                      const base64String = reader.result; // keep full "data:image/jpeg;base64,..." format
+                      form.setFieldsValue({ thumbnail: base64String });
+                    };
+                    return false;
+                  }}
+                  showUploadList={false}
+                  accept="image/*"
+                >
+                  <Button icon={<UploadOutlined />}>Upload Thumbnail</Button>
+                </Upload>
+              </Form.Item>
+            </Col>
+
+            <Col span={12}>
+              <Form.Item label="Content IDs (comma separated)" name="contents" rules={[{ required: true }]}>
+                <Input placeholder="e.g. 680c909fcf846f58445bfcaa,680c915ecf846f58445bfcac" />
+              </Form.Item>
+            </Col>
+          </Row>
+        </Form>
+
+      </Modal>
     </div>
   );
 };
 
-// CSS that would be imported to customize Ant Design with Tailwind
-const CustomStyles = () => {
-  return (
-    <style jsx global>{`
-      /* Override Ant Design styles with Tailwind-like customizations */
-      .ant-select-selector {
-        @apply border border-gray-300 rounded;
-      }
-      
-      .ant-table-thead > tr > th {
-        @apply bg-gray-50 text-xs font-medium text-gray-500 uppercase tracking-wider;
-      }
-      
-      .ant-table-tbody > tr > td {
-        @apply py-4 whitespace-nowrap text-sm;
-      }
-      
-      .ant-btn-primary {
-        @apply bg-purple-800 border-purple-800;
-      }
-      
-      .ant-btn-primary:hover {
-        @apply bg-purple-700 border-purple-700;
-      }
-      
-      .custom-table .ant-table-pagination {
-        @apply mt-4;
-      }
-    `}</style>
-  );
-};
 
 export default App;

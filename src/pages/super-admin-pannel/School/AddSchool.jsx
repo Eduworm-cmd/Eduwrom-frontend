@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Upload } from "lucide-react";
-import Select from "react-select";
-import { toast, ToastContainer } from "react-toastify";
+import { UploadOutlined } from "@ant-design/icons";
+import { Button, Input, Form, Select, DatePicker, message, Upload, Space, Row, Col } from "antd";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import { CreateSchool, GetAcademicYear, GetClasses } from "@/Network/Super_Admin/auth";
 
 export const AddSchool = () => {
   const [logoPreview, setLogoPreview] = useState(null);
@@ -12,7 +13,8 @@ export const AddSchool = () => {
   const [classOptions, setClassOptions] = useState([]);
   const [academicYearOptions, setAcademicYearOptions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  
+  const [form] = Form.useForm();
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -36,23 +38,22 @@ export const AddSchool = () => {
     branches: [],
   });
 
-  // Fetch classes and academic years from API
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
         // Fetch classes
-        const classesResponse = await axios.get("http://localhost:4000/api/class");
+        const classesResponse = await GetClasses();
         const classesData = classesResponse?.data?.map(cls => ({
           value: cls._id,
           label: cls.className || cls.name
         }));
         setClassOptions(classesData || []);
-        
+
         // Fetch academic years
-        const academicYearsResponse = await axios.get("http://localhost:4000/api/academic");
-        console.log("Academic Years Data:", academicYearsResponse.data);
-        const academicYearsData = academicYearsResponse?.data.map(year => ({
+        const academicYearsResponse = await GetAcademicYear();
+        // Accessing the data from the response and using map correctly
+        const academicYearsData = academicYearsResponse?.data?.map(year => ({
           value: year._id,
           label: year.name || `AY ${year.startYear} - ${year.endYear}`
         }));
@@ -67,6 +68,43 @@ export const AddSchool = () => {
 
     fetchData();
   }, []);
+
+  const handleLogoChange = async (file) => {
+    if (file) {
+      const previewURL = URL.createObjectURL(file);
+      setLogoPreview(previewURL);
+      setLogoName(file.name);
+
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        const base64String = reader.result.split(",")[1];
+        setLogoBuffer(base64String);
+      };
+    }
+
+    return false;
+  };
+
+
+
+  const handleSubmit = async (values) => {
+    const submissionData = {
+      ...values,
+      classes: selectedClasses.map((c) => c.value),
+      schoolLogoBuffer: logoBuffer,
+    };
+    try {
+      const response = await CreateSchool(submissionData);
+      toast.success(response.message);
+      form.resetFields();
+      setLogoPreview(null);
+      setLogoName("");
+      setLogoBuffer(null);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const countryOptions = [
     { value: "India", label: "India" },
@@ -86,101 +124,6 @@ export const AddSchool = () => {
     { value: "Los Angeles", label: "Los Angeles" },
   ];
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSelectChange = (selectedOption, fieldName) => {
-    setFormData((prev) => ({
-      ...prev,
-      [fieldName]: selectedOption ? selectedOption.value : "",
-    }));
-  };
-
-  const handleLogoChange = async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      // Set file preview
-      setLogoPreview(URL.createObjectURL(file));
-      setLogoName(file.name);
-      
-      // Convert to base64 buffer
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        // Extract base64 string without the data:image prefix
-        const base64String = reader.result.split(',')[1];
-        setLogoBuffer(base64String);
-      };
-    }
-  };
-
-  const createSchool = async (data) => {
-    try {
-      const response = await axios.post(
-        "http://localhost:4000/api/schooladmin-auth/create-by-superadmin",
-        data
-      );
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    // Prepare API data with all required fields and ObjectIDs
-    const submissionData = {
-      ...formData,
-      // Using array of class ObjectIDs from selected options
-      classes: selectedClasses.map((c) => c.value),
-      // academicYear is already an ObjectID from handleSelectChange
-      schoolLogoBuffer: logoBuffer,
-    };
-    
-    try {
-      const response = await createSchool(submissionData);
-      console.log("API Response:", response);
-      toast.success("School added successfully!");
-    } catch (error) {
-      console.error("Error adding school:", error);
-      const errorMessage = error.response?.data?.message || error.message || "Error adding school.";
-      toast.error(errorMessage);
-    }
-  };
-
-  const selectStyles = {
-    control: (base, state) => ({
-      ...base,
-      padding: "2px",
-      borderRadius: "0.5rem",
-      borderColor: state.isFocused ? "#3b82f6" : "#d1d5db",
-      boxShadow: state.isFocused ? "0 0 0 1px #3b82f6" : "none",
-      "&:hover": {
-        borderColor: "#3b82f6",
-      },
-      minHeight: "42px",
-    }),
-    valueContainer: (base) => ({
-      ...base,
-      padding: "0 8px",
-    }),
-    input: (base) => ({
-      ...base,
-      margin: 0,
-      padding: 0,
-    }),
-    indicatorsContainer: (base) => ({
-      ...base,
-      height: "42px",
-    }),
-  };
-
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -190,368 +133,192 @@ export const AddSchool = () => {
   }
 
   return (
-    <div className="">
+    <div className="container p-2">
       <ToastContainer />
-      <form className="max-w-4xl mx-auto p-6 shadow-md">
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={handleSubmit}
+        initialValues={{
+          startDate: null,
+          endDate: null,
+        }}
+        className="form-container"
+      >
         {/* Logo Upload */}
-        <div className="mb-6">
-          <label className="block text-lg font-medium text-gray-700 mb-2">
-            School Logo <span className="text-red-500">*</span>
-          </label>
-          <div className="border-2 border-dashed border-gray-300 rounded-md p-4 flex flex-col items-center justify-center gap-4">
-            {logoPreview && (
-              <>
-                <img
-                  src={logoPreview}
-                  alt="Logo Preview"
-                  className="h-32 object-contain rounded-md"
-                />
-                <p className="text-sm text-gray-600">{logoName}</p>
-              </>
-            )}
-            <label className="cursor-pointer w-full text-center flex items-center justify-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-md hover:bg-blue-200 transition">
-              <Upload className="w-5 h-5" />
-              <span>{logoName || "Upload Logo"}</span>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleLogoChange}
-                className="hidden"
-              />
-            </label>
-          </div>
-        </div>
+        <Form.Item label="School Logo" className="flex justify-center " required>
+          <Upload
+            customRequest={({ file }) => handleLogoChange(file)}
+            showUploadList={false}
+            accept="image/*"
+          >
+            <div className="relative w-100 h-28 rounded-md border-2 border-dashed border-gray-300 bg-gray-100 overflow-hidden group cursor-pointer mx-auto">
+              {!logoPreview ? (
+                <div className="flex items-center justify-center h-full text-gray-400">
+                  <UploadOutlined className="text-2xl" />
+                </div>
+              ) : (
+                <>
+                  <img
+                    src={logoPreview}
+                    alt="Logo Preview"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-50 text-white flex items-center justify-center text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    Re-upload
+                  </div>
+                </>
+              )}
+            </div>
+          </Upload>
+
+          {logoPreview && (
+            <p className="text-center mt-2 text-sm text-gray-700">{logoName}</p>
+          )}
+        </Form.Item>
+
 
         {/* School Admin Info */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div>
-            <label className="block mb-2 text-lg font-medium text-gray-700">
-              First Name <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              name="firstName"
-              value={formData.firstName}
-              onChange={handleInputChange}
-              className="p-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-sky-500 outline-none"
-              required
-            />
-          </div>
-          <div>
-            <label className="block mb-2 text-lg font-medium text-gray-700">
-              Last Name <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              name="lastName"
-              value={formData.lastName}
-              onChange={handleInputChange}
-              className="p-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-sky-500 outline-none"
-              required
-            />
-          </div>
-          <div>
-            <label className="block mb-2 text-lg font-medium text-gray-700">
-              Email <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              className="p-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-sky-500 outline-none"
-              required
-            />
-          </div>
-          <div>
-            <label className="block mb-2 text-lg font-medium text-gray-700">
-              Password <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleInputChange}
-              className="p-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-sky-500 outline-none"
-              required
-            />
-          </div>
-          <div>
-            <label className="block mb-2 text-lg font-medium text-gray-700">
-              Phone Number <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="tel"
-              name="phoneNumber"
-              value={formData.phoneNumber}
-              onChange={handleInputChange}
-              className="p-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-sky-500 outline-none"
-              required
-            />
-          </div>
-        </div>
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item label="First Name" name="firstName" rules={[{ required: true, message: "Please enter first name" }]}>
+              <Input />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item label="Last Name" name="lastName" rules={[{ required: true, message: "Please enter last name" }]}>
+              <Input />
+            </Form.Item>
+          </Col>
+        </Row>
 
-        {/* School Info */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div>
-            <label className="block mb-2 text-lg font-medium text-gray-700">
-              School Name <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              name="schoolName"
-              value={formData.schoolName}
-              onChange={handleInputChange}
-              className="p-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-sky-500 outline-none"
-              required
-            />
-          </div>
-          <div>
-            <label className="block mb-2 text-lg font-medium text-gray-700">
-              Display Name <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              name="displayName"
-              value={formData.displayName}
-              onChange={handleInputChange}
-              className="p-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-sky-500 outline-none"
-              required
-            />
-          </div>
-        </div>
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item label="Email" name="email" rules={[{ required: true, message: "Please enter email" }]}>
+              <Input />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item label="Password" name="password" rules={[{ required: true, message: "Please enter password" }]}>
+              <Input.Password />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item label="Phone Number" name="phoneNumber" rules={[{ required: true, message: "Please enter phone number" }]}>
+              <Input />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item label="School Name" name="schoolName" rules={[{ required: true, message: "Please enter school name" }]}>
+              <Input />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item label="Display Name" name="displayName" rules={[{ required: true, message: "Please enter display name" }]}>
+              <Input />
+            </Form.Item>
+          </Col>
+        </Row>
 
         {/* Classes & Academic Year */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div>
-            <label className="block text-lg font-medium text-gray-700 mb-2">
-              Select Classes <span className="text-red-500">*</span>
-            </label>
-            <Select
-              isMulti
-              options={classOptions}
-              value={selectedClasses}
-              onChange={setSelectedClasses}
-              styles={selectStyles}
-              placeholder={classOptions.length ? "Select Classes" : "Loading classes..."}
-              isDisabled={!classOptions.length}
-            />
-          </div>
-          <div>
-            <label className="block mb-2 text-lg font-medium text-gray-700">
-              Academic Year <span className="text-red-500">*</span>
-            </label>
-            <Select
-              options={academicYearOptions}
-              value={academicYearOptions.find(opt => opt.value === formData.academicYear)}
-              onChange={(opt) => handleSelectChange(opt, "academicYear")}
-              placeholder={academicYearOptions.length ? "Select Academic Year" : "Loading academic years..."}
-              styles={selectStyles}
-              isDisabled={!academicYearOptions.length}
-            />
-          </div>
-        </div>
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item label="Select Classes" name="classes" rules={[{ required: true, message: "Please select classes" }]}>
+              <Select
+                mode="multiple"
+                options={classOptions}
+                placeholder="Select Classes"
+                onChange={setSelectedClasses}
+              />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item label="Academic Year" name="academicYear" rules={[{ required: true, message: "Please select academic year" }]}>
+              <Select options={academicYearOptions} placeholder="Select Academic Year" />
+            </Form.Item>
+          </Col>
+        </Row>
 
         {/* Dates */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div>
-            <label className="block mb-2 text-lg font-medium text-gray-700">
-              Start Date <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="date"
-              name="startDate"
-              value={formData.startDate}
-              onChange={handleInputChange}
-              className="p-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-sky-500 outline-none"
-              required
-            />
-          </div>
-          <div>
-            <label className="block mb-2 text-lg font-medium text-gray-700">
-              End Date <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="date"
-              name="endDate"
-              value={formData.endDate}
-              onChange={handleInputChange}
-              className="p-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-sky-500 outline-none"
-              required
-            />
-          </div>
-        </div>
-
-        {/* Contact Info */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div>
-            <label className="block mb-2 text-lg font-medium text-gray-700">
-              Phone Number <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="tel"
-              name="phone"
-              value={formData.phone}
-              onChange={handleInputChange}
-              className="p-2 w-full border border-gray-300 rounded-md"
-              required
-            />
-          </div>
-          <div>
-            <label className="block mb-2 text-lg font-medium text-gray-700">
-              Email Address <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              className="p-2 w-full border border-gray-300 rounded-md"
-              required
-            />
-          </div>
-        </div>
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item label="Start Date" name="startDate" rules={[{ required: true, message: "Please select start date" }]}>
+              <DatePicker style={{ width: "100%" }} />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item label="End Date" name="endDate" rules={[{ required: true, message: "Please select end date" }]}>
+              <DatePicker style={{ width: "100%" }} />
+            </Form.Item>
+          </Col>
+        </Row>
 
         {/* Location Info */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div>
-            <label className="block mb-2 text-lg font-medium text-gray-700">
-              Country
-            </label>
-            <Select
-              options={countryOptions}
-              value={countryOptions.find(opt => opt.value === formData.country)}
-              onChange={(opt) => handleSelectChange(opt, "country")}
-              styles={selectStyles}
-            />
-          </div>
-          <div>
-            <label className="block mb-2 text-lg font-medium text-gray-700">
-              State
-            </label>
-            <Select
-              options={stateOptions}
-              value={stateOptions.find(opt => opt.value === formData.state)}
-              onChange={(opt) => handleSelectChange(opt, "state")}
-              styles={selectStyles}
-            />
-          </div>
-          <div>
-            <label className="block mb-2 text-lg font-medium text-gray-700">
-              City
-            </label>
-            <Select
-              options={cityOptions}
-              value={cityOptions.find(opt => opt.value === formData.city)}
-              onChange={(opt) => handleSelectChange(opt, "city")}
-              styles={selectStyles}
-            />
-          </div>
-          <div>
-            <label className="block mb-2 text-lg font-medium text-gray-700">
-              Pincode
-            </label>
-            <input
-              type="text"
-              name="pincode"
-              value={formData.pincode}
-              onChange={handleInputChange}
-              className="p-2 w-full border border-gray-300 rounded-md"
-            />
-          </div>
-        </div>
+        <Row gutter={16}>
+          <Col span={8}>
+            <Form.Item label="Country" name="country">
+              <Select options={countryOptions} />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item label="State" name="state">
+              <Select options={stateOptions} />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item label="City" name="city">
+              <Select options={cityOptions} />
+            </Form.Item>
+          </Col>
+        </Row>
 
-        {/* Address */}
-        <div className="mb-6">
-          <label className="block mb-2 text-lg font-medium text-gray-700">
-            Address
-          </label>
-          <textarea
-            name="address"
-            value={formData.address}
-            onChange={handleInputChange}
-            className="p-2 w-full border border-gray-300 rounded-md"
-            required
-          ></textarea>
-        </div>
+        <Row gutter={16}>
+          <Col span={8}>
+            <Form.Item label="Pincode" name="pincode">
+              <Input />
+            </Form.Item>
+          </Col>
+          <Col span={16}>
+            <Form.Item label="Address" name="address">
+              <Input.TextArea />
+            </Form.Item>
+          </Col>
+        </Row>
 
-        {/* Map */}
-        <div className="mb-6">
-          <label className="block mb-2 text-lg font-medium text-gray-700">
-            School Location on Map
-          </label>
-          <div className="w-full h-[200px] overflow-hidden rounded-md border">
-            <iframe
-              title="School Location"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2734.2862581827308!2d77.1350949!3d28.693044300000015!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390d03ffa2cad31d%3A0xcfc0692e9870bf55!2sEduworm!5e1!3m2!1sen!2sin!4v1744444825160!5m2!1sen!2sin"
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            ></iframe>
-          </div>
-        </div>
-
-      <div className="max-w-4xl mx-auto p-6 shadow-md mt-10">
-        <h1 className="text-2xl font-bold text-sky-500 mb-8">Branch Admin Information</h1>
         {/* Branch Info */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div>
-            <label className="block mb-2 text-lg font-medium text-gray-700">
-              Name <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              name="branchName"
-              value={formData.branchName}
-              onChange={handleInputChange}
-              className="p-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-sky-500 outline-none"
-              required
-            />
-          </div>
-          <div>
-            <label className="block mb-2 text-lg font-medium text-gray-700">
-              Password <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="password"
-              name="branchPassword"
-              value={formData.branchPassword}
-              onChange={handleInputChange}
-              className="p-2 w-full border border-gray-300 rounded-md"
-              required
-            />
-          </div>
-          <div>
-            <label className="block mb-2 text-lg font-medium text-gray-700">
-              Email <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="email"
-              name="branchEmail"
-              value={formData.branchEmail}
-              onChange={handleInputChange}
-              className="p-2 w-full border border-gray-300 rounded-md"
-              required
-            />
-          </div>
-        </div>
+        <h3 className="branch-title mb-3">Branch Admin Information</h3>
+        <Row gutter={24}>
+          <Col span={8}>
+            <Form.Item label="Branch Name" name="branchName" rules={[{ required: true, message: "Please enter branch name" }]}>
+              <Input />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item label="Branch Email" name="branchEmail" rules={[{ required: true, message: "Please enter branch email" }]}>
+              <Input />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item label="Branch Password" name="branchPassword" rules={[{ required: true, message: "Please enter branch password" }]}>
+              <Input.Password />
+            </Form.Item>
+          </Col>
 
-        {/* Submit */}
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            onClick={handleSubmit}
-            className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition"
-          >
+        </Row>
+
+        {/* Submit Button */}
+        <Form.Item>
+          <Button type="primary" htmlType="submit">
             Submit
-          </button>
-        </div>
-      </div>
-      </form>
-
+          </Button>
+        </Form.Item>
+      </Form>
     </div>
   );
 };

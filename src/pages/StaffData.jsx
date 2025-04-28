@@ -15,6 +15,7 @@ import {
   SaveOutlined, RollbackOutlined, FilterOutlined, ClearOutlined
 } from '@ant-design/icons';
 import moment from 'moment';
+import { GetSchools } from '@/Network/Super_Admin/auth';
 
 const { Option } = Select;
 const { Title, Text } = Typography;
@@ -32,7 +33,7 @@ const StaffManagement = () => {
   const [error, setError] = useState(null);
   const [selectedSchool, setSelectedSchool] = useState(null);
 
-  const [viewMode, setViewMode] = useState('table'); // 'table', 'create', 'edit'
+  const [viewMode, setViewMode] = useState('table'); 
   const [selectedStaff, setSelectedStaff] = useState(null);
   const [form] = Form.useForm();
   const getBase64 = (file) => {
@@ -56,8 +57,8 @@ const StaffManagement = () => {
   });
   const fetchSchools = async () => {
     try {
-      const response = await axios.get('http://localhost:4000/api/schooladmin-auth');
-      setSchools(response.data.data);
+      const response = await GetSchools();
+      setSchools(response.data);
     } catch (err) {
       console.error('Failed to fetch schools:', err);
     }
@@ -68,7 +69,6 @@ const StaffManagement = () => {
   const fetchStaff = async () => {
     try {
       setLoading(true);
-      // Construct query params for filters and pagination
       const params = new URLSearchParams();
       params.append('page', currentPage);
       params.append('limit', pageSize);
@@ -357,7 +357,7 @@ const StaffManagement = () => {
   // Define columns for the table
   const columns = [
     {
-      title: '#',
+      title: 'Sno',
       dataIndex: 'index',
       key: 'index',
       render: (_, __, index) => (currentPage - 1) * pageSize + index + 1,
@@ -498,7 +498,7 @@ const StaffManagement = () => {
   const StaffTable = () => (
     <Card bordered={false}>
       <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap:"295px", alignItems: 'center' }}>
           <Title level={4}>Staff Management ({totalItems})</Title>
           <Space>
             <Button icon={<DownloadOutlined />}>ID Card</Button>
@@ -510,7 +510,6 @@ const StaffManagement = () => {
             >
               Add Staff
             </Button>
-            <Button icon={<UserSwitchOutlined />}>Deactivated</Button>
           </Space>
         </div>
 

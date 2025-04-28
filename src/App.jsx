@@ -32,7 +32,7 @@ import ScheduleList from "./pages/Teacheradmin/InteractiveContent/ScheduleList";
 import { Assigements_Playlist } from "./pages/super-admin-pannel/LMS/Assigements_Playlist";
 import { SP_ScheduleList } from "./pages/super-admin-pannel/ScheduleList/SP_ScheduleList";
 import { School_Teacher_Login } from "./auth/School_Teacher_Login";
-import { SchoolAdminProtected, SuperAdminProtected } from "./auth/Proctected";
+import { SchoolAdminProtected, SuperAdminProtected, TeacherAdminProtected } from "./auth/Proctected";
 import PageNotFound from "./components/PageNotFound/PageNotFound";
 import StudentData from "./pages/StudentData";
 import StaffData from "./pages/StaffData";
@@ -47,10 +47,12 @@ function App() {
         <Route path="/SPlogin" element={<Login_SignUp />} />
         <Route path="/login" element={<School_Teacher_Login />} />
         <Route path="*" element={<PageNotFound />} />
-        <Route element={<Layout />}>
-          <Route path="/" element={<TeacherHomePage />} />
-          <Route path="/books" element={<BookHomePage />} />
-          <Route path="/book/preview/:id" element={<BookPreview />} />
+        <Route path="/" element={<School_Teacher_Login />} />
+
+        <Route path="eduworm-Teacher" element={<TeacherAdminProtected><Layout /></TeacherAdminProtected>}>
+          <Route index element={<TeacherHomePage />} />
+          <Route path="books" element={<BookHomePage />} />
+          <Route path="book/preview/:id" element={<BookPreview />} />
         </Route>
 
         <Route element={<MainLayout />}>
@@ -83,6 +85,9 @@ function App() {
           <Route path="Invoice-List" element={<InvoiceList />} />
           <Route path="Create/Invoice" element={<Invoice />} />
           <Route path="Notification" element={<Notification />} />
+          <Route path="playlist" element={<PlayListAssignment />} />
+          <Route path="content" element={<Content />} />
+          <Route path="scheduleList" element={<ScheduleList />} />
 
 
           {/* Teacher Admin Panel Routes */}
