@@ -59,7 +59,7 @@ function App() {
           <Route path="/unit" element={<UnitSummary />} />
         </Route>
 
-        <Route path="/eduworm-admin" element={<SuperAdminProtected><AdminPannelLayout /></SuperAdminProtected>}>
+        <Route path="/eduworm-admin" element={<AdminPannelLayout />}>
           <Route index element={<SAHomePage />} />
           <Route path="home" element={<SAHomePage />} />
           <Route path="Admin" element={<SALSHome />} />
@@ -91,7 +91,7 @@ function App() {
         </Route>
 
 
-        <Route path="/eduworm-school" element={<SchoolAdminProtected><AdminPannelLayout /></SchoolAdminProtected>}>
+        <Route path="/eduworm-school" element={<AdminPannelLayout />}>
           <Route index element={<SAHomePage />} />
           <Route path="home" element={<SAHomePage />} />
           <Route path="playlist" element={<PlayListAssignment />} />
