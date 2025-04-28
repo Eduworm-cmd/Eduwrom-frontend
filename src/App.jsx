@@ -39,6 +39,7 @@ import StaffData from "./pages/StaffData";
 import AcademicData from "./pages/AcademicData";
 import GradeManagement from "./pages/GradeManagement";
 import ClassRoomMangement from "./pages/ClassRoomMangement";
+import ToogleTabs from "./pages/super-admin-pannel/ToogleTabs";
 
 function App() {
   return (
@@ -88,6 +89,7 @@ function App() {
           <Route path="playlist" element={<PlayListAssignment />} />
           <Route path="content" element={<Content />} />
           <Route path="scheduleList" element={<ScheduleList />} />
+          <Route path="toogletabs" element={<ToogleTabs />} />
 
 
           {/* Teacher Admin Panel Routes */}
