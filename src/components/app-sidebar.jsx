@@ -27,7 +27,7 @@ const iconMap = {
 };
 
 export function AppSidebar(props) {
-  const role = "schooladmin";
+  const role = "superadmin";
   const [openMenu, setOpenMenu] = useState(null);
   const [menuData, setMenuData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -42,9 +42,7 @@ export function AppSidebar(props) {
     return words.slice(0, wordLimit).join(" ") + "...";
   }
 
-  // Function to transform array data into hierarchical structure
   const transformMenuData = (data) => {
-    // Handle the pre-structured object format
     if (data && typeof data === 'object' && 'buttons' in data && 'navMain' in data) {
       return data;
     }
@@ -97,9 +95,7 @@ export function AppSidebar(props) {
       try {
         setLoading(true);
         const response = await axios.get(`http://localhost:4000/api/menu/${role}`);
-        console.log("Raw API response:", response.data.data);
         const transformedData = transformMenuData(response.data.data);
-        console.log("Transformed data:", transformedData);
         setMenuData(transformedData);
         setLoading(false);
       } catch (error) {

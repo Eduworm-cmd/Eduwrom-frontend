@@ -23,7 +23,26 @@ const ConvertImageToBase64 = (file) => {
     });
 };
 
+const FetchMenuItems = async(body) =>{
+    return await apiRequest("menu/items/all",{
+        method:"GET",
+        body,
+    })
+}
 
+const UpdateMenuItems = async (id,body) =>{
+    return await apiRequest(`menu/item/${id}`,{
+        method:"PUT",
+        body,
+    })
+}
+
+const ToogleMenuItem = async(id) =>{
+    return await apiRequest(`menu/item/${id}/toggle`,{
+        method:"PATCH",
+        body,
+    })
+}
 // Get User From Store
 const GetUser = () => {
     const user = store.getState()?.auth?.user;
@@ -197,6 +216,9 @@ export {
     SetLocalStorage,
     ConvertImageToBase64,
     GetUser,
+    FetchMenuItems,
+    UpdateMenuItems,
+    ToogleMenuItem,
     SuperAdminRegister,
     SuperAdminLogin,
     GetClasses,

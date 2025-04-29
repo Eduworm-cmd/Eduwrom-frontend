@@ -28,6 +28,7 @@ import {
   LeftOutlined,
   RightOutlined
 } from '@ant-design/icons';
+import { GetAcademicYear, GetClasses, GetGrades, GetSchoolBranches, GetSchools } from '@/Network/Super_Admin/auth';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -74,8 +75,8 @@ const ClassManagement = () => {
   const fetchClasses = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('http://localhost:4000/api/class');
-      const data = response.data.data;
+      const response = await GetClasses();
+      const data = response.data;
       setClasses(data);
       setPagination({
         ...pagination,
@@ -92,8 +93,8 @@ const ClassManagement = () => {
   // Fetch schools API
   const fetchSchools = async () => {
     try {
-      const response = await axios.get('http://localhost:4000/api/schooladmin-auth');
-      setSchools(response.data.data);
+      const response = await GetSchools();
+      setSchools(response.data);
     } catch (error) {
       message.error('Failed to fetch schools');
       console.error('Error fetching schools:', error);
@@ -108,10 +109,8 @@ const ClassManagement = () => {
     }
     
     try {
-      const response = await axios.get(`http://localhost:4000/api/branches/forschool`, {
-        params: { schoolId }
-      });
-      setBranches(response.data.data);
+      const response = await GetSchoolBranches(schoolId);
+      setBranches(response.data);
     } catch (error) {
       message.error('Failed to fetch branches');
       console.error('Error fetching branches:', error);
@@ -121,8 +120,8 @@ const ClassManagement = () => {
   // Fetch academic years API
   const fetchAcademicYears = async () => {
     try {
-      const response = await axios.get('http://localhost:4000/api/academic');
-      setAcademicYears(response.data.data);
+      const response = await GetAcademicYear();
+      setAcademicYears(response.data);
     } catch (error) {
       message.error('Failed to fetch academic years');
       console.error('Error fetching academic years:', error);
@@ -132,8 +131,8 @@ const ClassManagement = () => {
   // Fetch grades API
   const fetchGrades = async () => {
     try {
-      const response = await axios.get('http://localhost:4000/api/grade');
-      setGrades(response.data.data);
+      const response = await GetGrades();
+      setGrades(response.data);
     } catch (error) {
       message.error('Failed to fetch grades');
       console.error('Error fetching grades:', error);

@@ -1,167 +1,41 @@
-import React, { useState } from 'react';
-import {
-  Table, Button, Input, Select, Space, Card, Typography,
-  Badge, Checkbox, Breadcrumb, Row, Col,
-  Modal,
-  Form,
-  Upload
-} from 'antd';
-import {
-  SearchOutlined,
-  EyeOutlined,
-  ArrowLeftOutlined,
-  ReloadOutlined,
-  FileAddOutlined,
-  UploadOutlined
-} from '@ant-design/icons';
-import { isSuperAdmin } from '@/auth/Proctected';
+import { GetGrades, GetSchools } from '@/Network/Super_Admin/auth';
+import { BookOutlined, EyeOutlined, FileAddOutlined, ReloadOutlined, SearchOutlined, UploadOutlined } from '@ant-design/icons';
+import { Button, Col, Form, Input, Modal, Row, Select, Table, Upload } from 'antd';
+import { Option } from 'antd/es/mentions';
+import { Gamepad2, Youtube } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 
-const { Title } = Typography;
-const { Option } = Select;
-
-const App = () => {
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [addplaylistvisible, setAddPlaylistVisible] = useState(false);
-  const [currentView, setCurrentView] = useState('playlist');
-  const [selectedPlaylist, setSelectedPlaylist] = useState(null);
+export const PlayListAssignment = () => {
   const [form] = Form.useForm();
-  // Mock data for playlists
-  const playlistData = [
+  const [school, setSchools] = useState();
+  const [addplaylistvisible, setAddPlaylistVisible] = useState(false);
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [grade, setGrade] = useState();
+  const [showPlaylists, setShowPlaylists] = useState(false);
+  const dataSource = [
     {
       key: '1',
       title: 'Animals of World',
-      id: 'P-2090',
       description: 'Learn about animals',
-      activityCount: 5,
-      status: 'active',
+      activitycount: 5,
+      status: 'Active',
     },
     {
       key: '2',
-      title: 'Demo Playlist',
-      id: 'P-2175',
-      description: 'Demo',
-      activityCount: 26,
-      status: 'active',
-    },
-    {
-      key: '3',
       title: 'Earth Facts',
-      id: 'P-2088',
-      description: 'Learn about earth',
-      activityCount: 3,
-      status: 'active',
-    },
-    {
-      key: '4',
-      title: "Guransh's Playlist",
-      id: 'P-2618',
-      description: 'This playlist has all my counselling activities.',
-      activityCount: 5,
-      status: 'active',
-    },
-    {
-      key: '5',
-      title: 'Letter A to F',
-      id: 'P-2623',
-      description: 'A to F',
-      activityCount: 4,
-      status: 'active',
-    },
-    {
-      key: '6',
-      title: 'Logic time',
-      id: 'P-2087',
-      description: 'This is logic test',
-      activityCount: 3,
-      status: 'active',
-    },
-    {
-      key: '7',
-      title: 'Modes of transport',
-      id: 'P-2617',
-      description: 'Unit 1',
-      activityCount: 3,
-      status: 'active',
+      description: 'Interesting facts about Earth',
+      activitycount: 3,
+      status: 'Inactive',
     },
   ];
 
-  // Mock data for playlist details (Animals of World)
-  const animalsOfWorldDetails = [
-    {
-      key: '1',
-      type: 'game',
-      title: 'Aquatic Animals',
-      id: 'G-7326',
-      domain: 'General Awareness',
-      subdomain: 'Under the sea',
-      learningObjective: 'identify and classify sea animals (N1291)',
-    },
-    {
-      key: '2',
-      type: 'video',
-      title: 'Introduction of aquatic animal',
-      id: 'V-7835',
-      domain: 'Motor Skills',
-      subdomain: 'Fine motor skills',
-      learningObjective: 'Not Available (N1605)',
-    },
-    {
-      key: '3',
-      type: 'game',
-      title: 'Wild Animals',
-      id: 'G-7320',
-      domain: 'General Awareness',
-      subdomain: 'Life Science: Animals',
-      learningObjective: 'To be able to identify and name Wild animals (N12032)',
-    },
-    {
-      key: '4',
-      type: 'game',
-      title: 'Farm Animals',
-      id: 'G-7256',
-      domain: 'General Awareness',
-      subdomain: 'Life Science: Animals',
-      learningObjective: 'To be able to identify and name domestic animals (N12022)',
-    },
-    {
-      key: '5',
-      type: 'game',
-      title: 'Farm Animals',
-      id: 'G-7324',
-      domain: 'General Awareness',
-      subdomain: 'Life Science: Animals',
-      learningObjective: 'To be able to identify and name domestic animals (N12022)',
-    },
-  ];
+  const [filteredData, setfilteredData] = useState(dataSource);
 
-   // Handle row selection
-   const onSelectChange = (selectedKeys) => {
-    setSelectedRowKeys(selectedKeys);
-};
-
-  const handleViewPlaylist = (record) => {
-    setSelectedPlaylist(record);
-    setCurrentView('details');
-  };
-
-  const playlistColumns = [
+  const columns = [
     {
-      title: '',
-      dataIndex: 'checkbox',
-      key: 'checkbox',
-      width: 50,
-      render: () => <Checkbox />,
-    },
-    {
-      title: 'Title Of Playlist',
+      title: 'Title of Playlist',
       dataIndex: 'title',
       key: 'title',
-      render: (text, record) => (
-        <div>
-          <div className="text-purple-800 font-medium">{text}</div>
-          <div className="text-sm text-gray-500">{record.id}</div>
-        </div>
-      ),
       sorter: (a, b) => a.title.localeCompare(b.title),
     },
     {
@@ -171,63 +45,68 @@ const App = () => {
     },
     {
       title: 'Activity Count',
-      dataIndex: 'activityCount',
-      key: 'activityCount',
-      align: 'center',
+      dataIndex: 'activitycount',
+      key: 'activitycount',
       render: (count, record) => (
-        <Space>
-          <span>{count}</span>
+        <span>
+          {count}{' '}
           <Button
             type="text"
-            icon={<EyeOutlined className="text-gray-600 hover:text-purple-800" />}
-            onClick={() => handleViewPlaylist(record)}
-            className="flex items-center justify-center"
+            icon={<EyeOutlined />}
+            onClick={() => setShowPlaylists(true, record.id)}
           />
-        </Space>
-      ),
+        </span>
+
+      )
     },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      align: 'center',
-      render: () => <Badge color="green" />,
     },
   ];
 
-  const detailColumns = [
+  const playlistViewDatalist = [
+    {
+      key: '1',
+      type: <Gamepad2 />, // React component for game icon
+      typeLabel: 'game', // Add a label for sorting purposes
+      title: 'Aquatic Animals',
+      preview: '🎮',
+      domain: 'General Awareness',
+      subdomain: 'Under the sea',
+      learningObjective: 'Identify and classify sea animals',
+    },
+    {
+      key: '2',
+      type: <Youtube />,
+      typeLabel: 'video',
+      title: 'Wildlife Wonders',
+      preview: '',
+      domain: 'Science',
+      subdomain: 'Ecology',
+      learningObjective: 'Understand different ecosystems',
+    },
+  ];
+
+  const PlaylistViewColumns = [
     {
       title: 'Type',
       dataIndex: 'type',
       key: 'type',
-      width: 80,
-      render: (type) => (
-        <div className="text-center text-xl">
-          {type === 'game' ? '🎮' : type === 'video' ? '📹' : '📄'}
-        </div>
-      ),
+      render: (text) => <span>{text}</span>,
+      sorter: (a, b) => a.typeLabel.localeCompare(b.typeLabel),
     },
     {
       title: 'Title',
       dataIndex: 'title',
       key: 'title',
-      render: (text, record) => (
-        <div>
-          <div className="text-purple-800 font-medium">{text}</div>
-          <div className="text-sm text-gray-500">{record.id}</div>
-        </div>
-      ),
     },
     {
       title: 'Preview',
       dataIndex: 'preview',
       key: 'preview',
-      width: 100,
-      render: (_, record) => (
-        <div className="w-16 h-10 bg-gray-100 rounded flex items-center justify-center text-lg">
-          {record.type === 'game' ? '🎮' : '📹'}
-        </div>
-      ),
+      render: (preview) => <span>{preview || '📹'}</span>,
     },
     {
       title: 'Domain',
@@ -246,212 +125,203 @@ const App = () => {
     },
   ];
 
-  const handleImageUpload = (e) => {
-    const file = e.file;
-    if (file) {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        const base64String = reader.result.split(',')[1];
-        setImage(base64String);
-      };
-    }
-    return false;
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: (selectedKeys) => setSelectedRowKeys(selectedKeys),
   };
 
-  const handleAddContent = async () => {
-    try {
-      const values = await form.validateFields();
+  const handleSearch = (e) => {
+    const value = e.target.value.toLowerCase();
 
-      const formData = {
-        ...values,
-        grade: "60d49d5b2e1b2f000f8d9c52",
-        previewImageBuffer: image,
-      };
-
-      const response = await AddContent(formData);
-      if (response) {
-        toast.success("Content Added Successfully");
-      }
-      setAddContentVisible(false);
-      form.resetFields();
-
-    } catch (error) {
-      console.log(error);
+    if (!value) {
+      setfilteredData(dataSource);
+      return;
     }
+
+    const filtered = dataSource.filter(item =>
+      item.title.toLowerCase().includes(value)
+    );
+    setfilteredData(filtered);
   };
+
+  const fetchGrade = async () => {
+    const response = await GetGrades();
+    setGrade(response.data);
+  };
+
+  const fetchSchools = async () => {
+    const response = await GetSchools();
+    setSchools(response.data);
+  }
+
+  const handleAddPlaylist = async () => {
+
+  }
+
+  useEffect(() => {
+    fetchSchools();
+    fetchGrade();
+  }, []);
 
   return (
-    <div className="bg-gray-100 min-h-screen p-6">
-      {currentView === 'playlist' ? (
-        <Card className="rounded-lg shadow">
-          <div className="flex justify-between items-center mb-6">
-            <Title level={3} className="m-0">Playlist ({playlistData.length})</Title>
-            <div className="flex space-x-2">
-              {
-                isSuperAdmin() && (
-                  <Button
-                    type="primary"
-                    icon={<FileAddOutlined />}
-                    className="mr-2 bg-blue-500"
-                    onClick={() => setAddPlaylistVisible(true)}
-                  >
-                    Add Content
-                  </Button>
+    <div>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-semibold text-gray-700">Content</h1>
+        <div>
+          <Button
+            type="primary"
+            icon={<FileAddOutlined />}
+            className="mr-2 bg-blue-500"
+            onClick={() => setAddPlaylistVisible(true)}
+          >
+            Add Playlist
+          </Button>
+          <Button
+            type="primary"
+            icon={<BookOutlined />}
+            className="mr-2 bg-blue-500"
+          >
+            Assign to Class
+          </Button>
+        </div>
+      </div>
+      <Row gutter={16} className="mb-6">
+        <Col span={5}>
+          <Select placeholder="Grade" style={{ width: '100%' }}>
+            <Option value="">Grade</Option>
+            <Option value="1">Grade 1</Option>
+            <Option value="2">Grade 2</Option>
+          </Select>
+        </Col>
+        <Col span={5}>
+          <Select placeholder="Week" style={{ width: '100%' }}>
+            <Option value="">Week</Option>
+            <Option value="1">Week 1</Option>
+            <Option value="2">Week 2</Option>
+          </Select>
+        </Col>
+        <Col span={5}>
+          <Select placeholder="Day" style={{ width: '100%' }}>
+            <Option value="">Day</Option>
+            <Option value="1">Monday</Option>
+            <Option value="2">Tuesday</Option>
+          </Select>
+        </Col>
+        <Col span={5}>
+          <Input placeholder="Search" prefix={<SearchOutlined />} onChange={handleSearch} />
+        </Col>
+        <Col span={4}>
+          <Button icon={<ReloadOutlined />}>Reset Filter</Button>
+        </Col>
+      </Row>
+      <Table
+        rowSelection={rowSelection}
+        dataSource={filteredData}
+        columns={columns}
+        pagination={true}
+      />
 
-                )
-              }
-              <Button
-                type="default"
-                className="border-purple-800 text-purple-800 flex items-center"
-              >
-                <span className="mr-2">📚</span>
-                Assign to Class
-              </Button>
-              <Button type="link" className="text-purple-800">More</Button>
-            </div>
-          </div>
 
-          <div className="mb-6">
-            <Row gutter={16}>
-              <Col span={5}>
-                <Select defaultValue="" style={{ width: '100%' }} placeholder="Grade">
-                  <Option value="">Grade</Option>
-                  <Option value="1">Grade 1</Option>
-                  <Option value="2">Grade 2</Option>
-                </Select>
-              </Col>
-              <Col span={5}>
-                <Select defaultValue="" style={{ width: '100%' }} placeholder="Week">
-                  <Option value="">Week</Option>
-                  <Option value="1">Week 1</Option>
-                  <Option value="2">Week 2</Option>
-                </Select>
-              </Col>
-              <Col span={5}>
-                <Select defaultValue="" style={{ width: '100%' }} placeholder="Day">
-                  <Option value="">Day</Option>
-                  <Option value="1">Monday</Option>
-                  <Option value="2">Tuesday</Option>
-                </Select>
-              </Col>
-              <Col span={5}>
-                <Input
-                  placeholder="Search"
-                  prefix={<SearchOutlined className="text-gray-400" />}
-                />
-              </Col>
-              <Col span={4}>
-                <Button
-                  icon={<ReloadOutlined />}
-                  className="flex items-center"
-                >
-                  Reset Filter
-                </Button>
-              </Col>
-            </Row>
-          </div>
 
-          <Table
-            rowSelection={{
-              type: 'checkbox',
-              selectedRowKeys,
-              onChange: setSelectedRowKeys, 
-            }} dataSource={playlistData}
-            columns={playlistColumns}
-            pagination={{
-              position: ['bottomRight'],
-              showSizeChanger: true,
-              pageSizeOptions: ['10', '20', '50', '100'],
-              defaultPageSize: 100,
-              total: playlistData.length,
-              showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
-            }}
-            className="custom-table"
-          />
-        </Card>
-      ) : (
-        <Card bordered={false} className="rounded-lg shadow">
-          <div className="mb-6">
-            <Title level={3}>Animals of World({animalsOfWorldDetails.length})</Title>
-          </div>
 
-          <Table
-            dataSource={animalsOfWorldDetails}
-            columns={detailColumns}
-            pagination={{
-              position: ['bottomRight'],
-              showSizeChanger: true,
-              pageSizeOptions: ['10', '20', '50'],
-              defaultPageSize: 10,
-              total: animalsOfWorldDetails.length,
-              showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
-            }}
-            className="custom-table"
-          />
 
-          <div className="mt-6">
-            <Button
-              type="primary"
-              icon={<ArrowLeftOutlined />}
-              onClick={() => setCurrentView('playlist')}
-              className="bg-purple-800 hover:bg-purple-700 border-purple-800"
-            >
-              Back
-            </Button>
-          </div>
-        </Card>
-      )}
 
-      {/* Add Playlist Model */}
+      {/* Modal For add Playlist*/}
       <Modal
-        title="Add Content"
+        title="Add Playlist"
         open={addplaylistvisible}
         onCancel={() => setAddPlaylistVisible(false)}
         width={900}
         footer={[
-          <Button key="back" onClick={() => setAddPlaylistVisible(false)}>
-            Back
-          </Button>,
-          <Button key="submit" type="primary" className="bg-sky-600" onClick={handleAddContent}>
+          <Button key="back" onClick={() => setAddPlaylistVisible(false)}>Back</Button>,
+          <Button key="submit" type="primary" className="bg-sky-600" onClick={() => form.submit()}>
             Confirm
-          </Button>
+          </Button>,
         ]}
       >
-        <Form form={form} layout="vertical">
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={(values) => {
+            const formattedPayload = {
+              ...values,
+              contents: values.contents
+                ? values.contents.split(',').map((id) => id.trim()).filter(Boolean)
+                : [],
+            };
+            handleAddPlaylist(formattedPayload);
+          }}
+        >
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item label="Playlist Name" name="name" rules={[{ required: true }]}>
+              <Form.Item
+                label="Playlist Name"
+                name="name"
+                rules={[{ required: true, message: 'Please enter playlist name' }]}
+              >
                 <Input placeholder="Enter playlist name" />
               </Form.Item>
             </Col>
+
             <Col span={12}>
-              <Form.Item label="Branch ID" name="author" rules={[{ required: true }]}>
-                <Input placeholder="Enter branch ID (author)" />
+              <Form.Item
+                label="Author (Branch ID)"
+                name="author"
+                rules={[{ required: true, message: 'Please enter author ID' }]}
+              >
+                <Input placeholder="Enter author (branch ID)" />
               </Form.Item>
             </Col>
           </Row>
 
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item label="Grade ID" name="grade" rules={[{ required: true }]}>
-                <Input placeholder="Enter grade ID" />
+              <Form.Item
+                name="grade"
+                label="Grade"
+                rules={[{ required: true, message: 'Please select a grade' }]}
+              >
+                <Select placeholder="Select grade" showSearch optionFilterProp="children">
+                  {grade?.map((g) => (
+                    <Option key={g._id} value={g._id}>
+                      {g.name}
+                    </Option>
+                  ))}
+                </Select>
               </Form.Item>
             </Col>
+
             <Col span={12}>
-              <Form.Item label="School ID" name="schoolId" rules={[{ required: true }]}>
-                <Input placeholder="Enter school ID" />
+              <Form.Item
+                name="class"
+                label="class"
+                rules={[{ required: true, message: 'Please select a Class' }]}
+              >
+                <Select placeholder="Select Class" showSearch optionFilterProp="children">
+                  {school?.map((s) => (
+                    <Option key={s._id} value={s._id}>
+                      {s.schoolName}
+                    </Option>
+                  ))}
+                </Select>
               </Form.Item>
             </Col>
+
           </Row>
+
 
           <Row gutter={16}>
             <Col span={24}>
-              <Form.Item label="Description" name="description" rules={[{ required: true }]}>
+              <Form.Item
+                label="Description"
+                name="description"
+                rules={[{ required: true, message: 'Please enter description' }]}
+              >
                 <Input.TextArea rows={3} placeholder="Enter playlist description" />
               </Form.Item>
             </Col>
           </Row>
+
 
           <Row gutter={16}>
             <Col span={12}>
@@ -461,10 +331,11 @@ const App = () => {
                     const reader = new FileReader();
                     reader.readAsDataURL(file);
                     reader.onload = () => {
-                      const base64String = reader.result;
-                      form.setFieldsValue({ thumbnail: base64String });
+                      const base64 = reader.result;
+                      form.setFieldsValue({ thumbnail: base64 });
+                      setImage(base64); 
                     };
-                    return false;
+                    return false; 
                   }}
                   showUploadList={false}
                   accept="image/*"
@@ -475,17 +346,47 @@ const App = () => {
             </Col>
 
             <Col span={12}>
-              <Form.Item label="Content IDs (comma separated)" name="contents" rules={[{ required: true }]}>
-                <Input placeholder="e.g. 680c909fcf846f58445bfcaa,680c915ecf846f58445bfcac" />
+              <Form.Item
+                label="Content IDs (comma separated)"
+                name="contents"
+                rules={[{ required: false }]}
+              >
+                <Input placeholder="e.g. id1,id2,id3" />
               </Form.Item>
             </Col>
           </Row>
         </Form>
+      </Modal>
+
+
+
+
+
+
+
+
+
+
+
+
+
+      {/* Playlist View List  */}
+      <Modal
+        title="Playlist"
+        open={showPlaylists}
+        onCancel={() => setShowPlaylists(false)}
+        width={900}
+        footer={[
+          <Button key="back" onClick={() => setShowPlaylists(false)}>Back</Button>,
+        ]}
+      >
+        <Table
+          dataSource={playlistViewDatalist}
+          columns={PlaylistViewColumns}
+          pagination={true}
+        />
 
       </Modal>
     </div>
   );
 };
-
-
-export default App;

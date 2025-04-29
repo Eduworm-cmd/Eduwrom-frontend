@@ -62,7 +62,7 @@ const TeacherAdminProtected = ({ children }) => {
 
 const isSuperAdmin = () =>{
   const user = useSelector((state) => state.auth.user);
-  return user.role.includes('schooladmin');
+  return user.role.includes('superadmin');
 }
 
 export { SuperAdminProtected, SchoolAdminProtected,TeacherAdminProtected, isSuperAdmin };

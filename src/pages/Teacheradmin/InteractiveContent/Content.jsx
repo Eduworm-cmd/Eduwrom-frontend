@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Table, Button, Input, Select, DatePicker, TimePicker,
     Modal, Card, Tabs, Badge, Form, Row, Col,
@@ -13,7 +13,7 @@ import {
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { Gamepad } from 'lucide-react';
-import { AddContent } from '@/Network/Super_Admin/auth';
+import { AddContent, GetGrades } from '@/Network/Super_Admin/auth';
 import { toast, ToastContainer } from 'react-toastify';
 import { isSuperAdmin } from '@/auth/Proctected';
 
@@ -140,6 +140,7 @@ const ContentManagement = () => {
     // State variables
     const [expandedRowKeys, setExpandedRowKeys] = useState([]);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+    const [grade, setGrade] = useState();
     const [addcontentVisible, setAddContentVisible] = useState(false);
     const [assignModalVisible, setAssignModalVisible] = useState(false);
     const [assignType, setAssignType] = useState('');
@@ -325,8 +326,8 @@ const ContentManagement = () => {
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = () => {
-                const base64String = reader.result.split(',')[1]; // Extract base64 string
-                setImage(base64String); // Store base64 string in the state
+                const base64String = reader.result.split(',')[1];
+                setImage(base64String);
             };
         }
         return false;
@@ -339,7 +340,6 @@ const ContentManagement = () => {
 
             const formData = {
                 ...values,
-                grade: "60d49d5b2e1b2f000f8d9c52",
                 previewImageBuffer: image,
             };
 
@@ -354,6 +354,15 @@ const ContentManagement = () => {
             console.log(error);
         }
     };
+
+    useEffect(() => {
+        const fetchGrades = async () => {
+            const response = await GetGrades();
+            setGrade(response.data)
+        }
+
+        fetchGrades();
+    }, [])
 
     return (
         <div className="bg-gray-50 min-h-screen">
@@ -613,16 +622,23 @@ const ContentManagement = () => {
                 <Form form={form} layout="vertical">
                     <Row gutter={16}>
                         <Col span={12}>
-                            <Form.Item label="Content Type" name="contentType" rules={[{ required: true }]}>
+                            <Form.Item
+                                label="Content Type"
+                                name="contentType"
+                                rules={[{ required: true, message: 'Please select a content type' }]}
+                            >
                                 <Select placeholder="Select content type">
                                     <Option value="video">Video</Option>
                                     <Option value="game">Game</Option>
-                                    <Option value="pdf">PDF</Option>
                                 </Select>
                             </Form.Item>
                         </Col>
                         <Col span={12}>
-                            <Form.Item label="Title" name="title" rules={[{ required: true }]}>
+                            <Form.Item
+                                label="Title"
+                                name="title"
+                                rules={[{ required: true, message: 'Please enter the title' }]}
+                            >
                                 <Input placeholder="Enter content title" />
                             </Form.Item>
                         </Col>
@@ -630,12 +646,20 @@ const ContentManagement = () => {
 
                     <Row gutter={16}>
                         <Col span={12}>
-                            <Form.Item label="Domain" name="domain" rules={[{ required: true }]}>
+                            <Form.Item
+                                label="Domain"
+                                name="domain"
+                                rules={[{ required: true, message: 'Please enter the domain' }]}
+                            >
                                 <Input placeholder="Enter domain" />
                             </Form.Item>
                         </Col>
                         <Col span={12}>
-                            <Form.Item label="Subdomain" name="subdomain" rules={[{ required: true }]}>
+                            <Form.Item
+                                label="Subdomain"
+                                name="subdomain"
+                                rules={[{ required: true, message: 'Please enter the subdomain' }]}
+                            >
                                 <Input placeholder="Enter subdomain" />
                             </Form.Item>
                         </Col>
@@ -643,12 +667,27 @@ const ContentManagement = () => {
 
                     <Row gutter={16}>
                         <Col span={12}>
-                            <Form.Item label="Grade" >
-                                <Input placeholder="Enter grade ID" />
+                            <Form.Item
+                                name="grade"
+                                label="Grade"
+                                rules={[{ required: true, message: 'Please select a grade' }]}
+                            >
+                                <Select placeholder="Select grade" showSearch optionFilterProp="children">
+                                    {grade?.map((g) => (
+                                        <Option key={g._id} value={g._id}>
+                                            {g.name}
+                                        </Option>
+                                    ))}
+                                </Select>
                             </Form.Item>
                         </Col>
+
                         <Col span={12}>
-                            <Form.Item label="Learning Objective" name="learningObjective" rules={[{ required: true }]}>
+                            <Form.Item
+                                label="Learning Objective"
+                                name="learningObjective"
+                                rules={[{ required: true, message: 'Please enter a learning objective' }]}
+                            >
                                 <Input placeholder="Enter learning objective" />
                             </Form.Item>
                         </Col>
@@ -656,12 +695,25 @@ const ContentManagement = () => {
 
                     <Row gutter={16}>
                         <Col span={12}>
-                            <Form.Item label="Redirect Link" name="redirectLink" rules={[{ required: true, type: 'url', message: 'Enter a valid URL' }]}>
+                            <Form.Item
+                                label="Redirect Link"
+                                name="redirectLink"
+                                rules={[
+                                    { required: true, message: 'Please enter a redirect link' },
+                                    { type: 'url', message: 'Enter a valid URL (e.g., https://example.com)' }
+                                ]}
+                            >
                                 <Input placeholder="https://example.com/..." />
                             </Form.Item>
                         </Col>
+
                         <Col span={12}>
-                            <Form.Item label="Preview Image" name="previewImageBuffer" valuePropName="file">
+                            <Form.Item
+                                label="Preview Image"
+                                name="previewImageBuffer"
+                                rules={[{ required: true, message: 'Please upload a preview image' }]}
+                                valuePropName="file"
+                            >
                                 <Upload
                                     beforeUpload={handleImageUpload}
                                     showUploadList={false}
@@ -670,11 +722,10 @@ const ContentManagement = () => {
                                     <Button icon={<UploadOutlined />}>Click to Upload</Button>
                                 </Upload>
                             </Form.Item>
-
-
                         </Col>
                     </Row>
                 </Form>
+
             </Modal>
         </div>
     );
