@@ -372,7 +372,7 @@ const ContentManagement = () => {
                     <h1 className="text-2xl font-semibold text-gray-700">Content</h1>
                     <div>
                         {
-                            isSuperAdmin() && (
+                            // isSuperAdmin() && (
                                 <Button
                                     type="primary"
                                     icon={<FileAddOutlined />}
@@ -381,7 +381,7 @@ const ContentManagement = () => {
                                 >
                                     Add Content
                                 </Button>
-                            )
+                            // )
                         }
                         <Button
                             type="primary"
