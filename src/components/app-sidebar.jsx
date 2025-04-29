@@ -27,7 +27,7 @@ const iconMap = {
 };
 
 export function AppSidebar(props) {
-  const role = "schooladmin";
+  const role = "superadmin";
   const [openMenu, setOpenMenu] = useState(null);
   const [menuData, setMenuData] = useState(null);
   const [loading, setLoading] = useState(true);

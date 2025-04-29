@@ -289,7 +289,7 @@ const App = () => {
             <Title level={3} className="m-0">Playlist ({playlistData.length})</Title>
             <div className="flex space-x-2">
               {
-                isSuperAdmin() && (
+                // isSuperAdmin() && (
                   <Button
                     type="primary"
                     icon={<FileAddOutlined />}
@@ -299,7 +299,7 @@ const App = () => {
                     Add Content
                   </Button>
 
-                )
+                // )
               }
               <Button
                 type="default"
