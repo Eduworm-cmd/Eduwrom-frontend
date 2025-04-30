@@ -26,15 +26,15 @@ import Content from "./pages/Teacheradmin/InteractiveContent/Content";
 import ScheduleList from "./pages/Teacheradmin/InteractiveContent/ScheduleList";
 import { SP_ScheduleList } from "./pages/super-admin-pannel/ScheduleList/SP_ScheduleList";
 import { School_Teacher_Login } from "./auth/School_Teacher_Login";
-import { SchoolAdminProtected, SuperAdminProtected, TeacherAdminProtected } from "./auth/Proctected";
 import PageNotFound from "./components/PageNotFound/PageNotFound";
-import StudentData from "./pages/StudentData";
 import StaffData from "./pages/StaffData";
 import AcademicData from "./pages/AcademicData";
 import GradeManagement from "./pages/GradeManagement";
 import ClassRoomMangement from "./pages/ClassRoomMangement";
 import ToogleTabs from "./pages/super-admin-pannel/ToogleTabs";
 import { PlayListAssignment } from "./pages/Teacheradmin/InteractiveContent/PlayListAssignment";
+import { StudentList } from "./pages/super-admin-pannel/Student/StudentList";
+import { AddStudent } from "./pages/super-admin-pannel/Student/AddStudent";
 
 function App() {
   return (
@@ -66,11 +66,12 @@ function App() {
           <Route path="school/edit/:id" element={<AddSchool />} />
           <Route path="school/view/:id" element={<SchoolView />} />
 
-          <Route path="student" element={<StudentData />} />
+          <Route path="student" element={<StudentList />} />
           <Route path="staff" element={<StaffData />} />
           <Route path="academic Year" element={<AcademicData />} />
           <Route path="grade" element={<GradeManagement />} />
           <Route path="classroom" element={<ClassRoomMangement />} />
+          <Route path="students/edit/:id" element={<AddStudent />} />
 
           <Route path="schedule/List" element={<SP_ScheduleList />} />
           <Route path="lms" element={<Lms />} />

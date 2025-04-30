@@ -1,0 +1,23 @@
+/* SchoolList.css */
+.custom-table .ant-table-thead > tr > th {
+    font-weight: 700 !important;
+    background-color: #e8ebee !important; 
+    font-size: 14px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+    text-align: center;
+    white-space: nowrap; 
+  }
+  
+
+.custom-table .ant-table-tbody > tr > td {
+  border-bottom: 2px solid #e5e5e5 !important;
+  font-size: 16px;
+  text-align: center;
+}
+
+/* Hover effect */
+.custom-table .ant-table-tbody > tr:hover > td {
+  background-color: #f0f9ff !important;
+}
+
+

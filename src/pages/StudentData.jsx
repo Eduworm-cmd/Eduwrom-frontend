@@ -504,7 +504,7 @@ function StudentList({
             <thead>
               <tr className="text-left text-purple-900">
                 <th className="p-3 border-b"><input type="checkbox" /></th>
-                <th className="p-3 border-b">#</th>
+                <th className="p-3 border-b">Sno</th>
                 <th className="p-3 border-b">Student Details</th>
                 <th className="p-3 border-b">Parent and Contact</th>
                 <th className="p-3 border-b">Academic Year</th>

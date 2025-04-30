@@ -34,7 +34,7 @@ export const AdminPannelLayout = () => {
       return;
     }
 
-    const user = GetUser();  
+    const user = GetUser();
     if (!user) {
       localStorage.removeItem('token');
       navigate("/login", { replace: true });
@@ -52,9 +52,9 @@ export const AdminPannelLayout = () => {
           return null;
       }
     };
-  
+
     const userRole = resolveRole();
-  
+
     try {
       const roleData = MangeRoles(userRole);
       setRoles(roleData);
@@ -62,17 +62,17 @@ export const AdminPannelLayout = () => {
       console.error("Invalid role for MangeRoles:", err);
     }
   }, []);
-  
-  
+
+
   useEffect(() => {
     const pathsArr = location.pathname.split("/").filter(Boolean);
-  
+
     setPath({
       currentpath: location.pathname,
       paths: pathsArr,
     });
   }, [location]);
-  
+
 
   return (
     <SidebarProvider>
@@ -98,10 +98,10 @@ export const AdminPannelLayout = () => {
             </BreadcrumbList>
           </Breadcrumb>
         </header>
-
-        <div className="w-full h-full p-4 mt-16">
+        <div className="w-full h-full p-4 mt-16 overflow-x-auto">
           <Outlet />
         </div>
+
       </SidebarInset>
     </SidebarProvider>
   );
