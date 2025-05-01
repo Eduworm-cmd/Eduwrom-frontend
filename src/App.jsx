@@ -27,7 +27,6 @@ import ScheduleList from "./pages/Teacheradmin/InteractiveContent/ScheduleList";
 import { SP_ScheduleList } from "./pages/super-admin-pannel/ScheduleList/SP_ScheduleList";
 import { School_Teacher_Login } from "./auth/School_Teacher_Login";
 import PageNotFound from "./components/PageNotFound/PageNotFound";
-import StaffData from "./pages/StaffData";
 import AcademicData from "./pages/AcademicData";
 import GradeManagement from "./pages/GradeManagement";
 import ClassRoomMangement from "./pages/ClassRoomMangement";
@@ -35,6 +34,9 @@ import ToogleTabs from "./pages/super-admin-pannel/ToogleTabs";
 import { PlayListAssignment } from "./pages/Teacheradmin/InteractiveContent/PlayListAssignment";
 import { StudentList } from "./pages/super-admin-pannel/Student/StudentList";
 import { AddStudent } from "./pages/super-admin-pannel/Student/AddStudent";
+import { StaffList } from "./pages/super-admin-pannel/Staff/StaffList";
+import { AddStaff } from "./pages/super-admin-pannel/Staff/AddStaff";
+import { AcademicList } from "./pages/super-admin-pannel/AcademicYear/AcademicList";
 
 function App() {
   return (
@@ -61,16 +63,21 @@ function App() {
           <Route index element={<SAHomePage />} />
           <Route path="home" element={<SAHomePage />} />
           <Route path="Admin" element={<SALSHome />} />
+
           <Route path="school/list" element={<SchoolList />} />
           <Route path="school/add" element={<AddSchool />} />
           <Route path="school/edit/:id" element={<AddSchool />} />
           <Route path="school/view/:id" element={<SchoolView />} />
 
+          <Route path="staff" element={<StaffList/>} />
+          <Route path="staff/add" element={<AddStaff/>} />
+          <Route path="staff/edit" element={<AddStaff/>} />
+
+          <Route path="academic Year" element={<AcademicList />} />
           <Route path="student" element={<StudentList />} />
-          <Route path="staff" element={<StaffData />} />
-          <Route path="academic Year" element={<AcademicData />} />
           <Route path="grade" element={<GradeManagement />} />
           <Route path="classroom" element={<ClassRoomMangement />} />
+          <Route path="students/add" element={<AddStudent />} />
           <Route path="students/edit/:id" element={<AddStudent />} />
 
           <Route path="schedule/List" element={<SP_ScheduleList />} />

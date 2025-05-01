@@ -136,7 +136,7 @@ export const StudentList = () => {
     <div className="overflow-x-auto">
       <div className="flex justify-end gap-2 mb-4">
         <button
-          onClick={() => navigate("/students/add")}
+          onClick={() => navigate("/eduworm-admin/students/add")}
           className="flex items-center gap-2 bg-sky-500 text-white font-semibold text-sm py-2 px-4 rounded"
         >
           <PlusCircle size={18} /> Add Student

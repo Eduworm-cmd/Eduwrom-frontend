@@ -56,7 +56,6 @@ export const AddStaff = () => {
         toast.success("Registration successfully!");
       }
     } catch (error) {
-      toast.error(error.message || "Registration failed");
       console.error("Registration error:", error);
     }
   }
