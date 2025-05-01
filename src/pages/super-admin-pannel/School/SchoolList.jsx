@@ -1,37 +1,38 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { PlusCircle, Edit2, Trash2, Eye, EllipsisVertical } from "lucide-react";
 import { Space, Table, Button, Dropdown } from "antd";
 import DownloadButton from "@/components/Buttons/DownloadButton/DownloadButton";
 import { ExportButton } from "@/components/Buttons/ExportButton/ExportButton";
 import "./SchoolList.css";
+import { GetAllSchools, GetSchools } from "@/Network/Super_Admin/auth";
 
 export const SchoolList = () => {
   const navigate = useNavigate();
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-
-  const schoolData = [
-    {
-      id: 2,
-      AY: "2027-2029",
-      name: "Diana Plenty",
-      StartDate: "31/03/2025",
-      EndDate: "01/04/2024",
-      phone: "9988776655",
-      email: "davidb@example.com",
-      status: false,
-    },
-    {
-      id: 3,
-      AY: "2024-2025",
-      name: "Adam Smith",
-      StartDate: "01/04/2025",
-      EndDate: "01/04/2024",
-      phone: "9988776655",
-      email: "davdb@example.com",
-      status: true,
-    },
-  ].map((item) => ({ ...item, key: item.id }));
+  const [schoolData, setSchoolData] = useState();
+  // const schoolData = [
+  //   {
+  //     id: 2,
+  //     AY: "2027-2029",
+  //     name: "Diana Plenty",
+  //     StartDate: "31/03/2025",
+  //     EndDate: "01/04/2024",
+  //     phone: "9988776655",
+  //     email: "davidb@example.com",
+  //     status: false,
+  //   },
+  //   {
+  //     id: 3,
+  //     AY: "2024-2025",
+  //     name: "Adam Smith",
+  //     StartDate: "01/04/2025",
+  //     EndDate: "01/04/2024",
+  //     phone: "9988776655",
+  //     email: "davdb@example.com",
+  //     status: true,
+  //   },
+  // ].map((item) => ({ ...item, key: item.id }));
 
   const onSelectChange = (selectedKeys) => {
     setSelectedRowKeys(selectedKeys);
@@ -155,6 +156,35 @@ export const SchoolList = () => {
     { key: "EndDate", label: "End Date" },
     { key: "AY", label: "Academic Year" },
   ];
+
+  const AllSchools = async () => {
+    try {
+      const response = await GetAllSchools();
+      const rawData = response.allSchools || []; 
+      
+      const formattedData = rawData.map((school) => ({
+        id: school._id,
+        AY: school.academicYear?.map((ay) => {
+            return ay.name;
+        }),
+        name: school.schoolName,
+        StartDate: school.startDate,
+        EndDate: school.endDate,
+        phone: school.phone,
+        email: school.branchEmail,
+        status: new Date(school.endDate) > new Date(),
+      }));
+  
+      setSchoolData(formattedData);
+  
+    } catch (error) {
+      console.log("Error fetching school data:", error);
+    }
+  };
+    
+  useEffect(() => {
+    AllSchools();    
+  }, [])
 
   return (
     <div className="overflow-x-auto">

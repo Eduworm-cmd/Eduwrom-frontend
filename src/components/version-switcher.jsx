@@ -5,6 +5,7 @@ import { GetUser } from "@/Network/Super_Admin/auth";
 import { useState } from "react";
 import { useEffect } from "react";
 import { Roles } from "@/utils/roles";
+import { useSelector } from "react-redux";
 
 export function VersionSwitcher({title="Admin Pannel"}) {
   const [role, setRole] = useState(null);
@@ -26,7 +27,9 @@ export function VersionSwitcher({title="Admin Pannel"}) {
     const userRole = resolveRole();
     setRole(userRole);
   }, []);
-
+ 
+  const user = useSelector((state) => state?.auth?.user);
+  
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -40,7 +43,7 @@ export function VersionSwitcher({title="Admin Pannel"}) {
           </div>
           <div className="flex flex-col gap-0.5 leading-none">
             <span className="font-medium">Eduworm</span>
-            <span className="">{role} Dashboard</span>
+            <span className="">{user?.schoolName || role} Dashboard</span>
           </div>
         </SidebarMenuButton>
       </SidebarMenuItem>

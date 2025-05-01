@@ -179,7 +179,7 @@ export function AppSidebar(props) {
                             <Link
                               to={subItem.url}
                               className={clsx(
-                                "w-full block px-4 py-2 text-base font-medium transition-all text-left",
+                                "w-full block px-4 py-2 text-base font-medium transition-all text-left mt-1",
                                 location.pathname === subItem.url
                                   ? "bg-sky-100 font-semibold text-sky-800"
                                   : "text-gray-700 hover:bg-gray-200"

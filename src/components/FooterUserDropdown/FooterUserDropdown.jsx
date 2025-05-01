@@ -13,10 +13,10 @@ import {
   Settings,
   Star,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { GetUser } from "@/Network/Super_Admin/auth";
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "@/auth/authSlice";
 
 
@@ -54,9 +54,10 @@ const bottomItems = [
 export function FooterUserDropdown() {
   const [user, setUser] = useState(null);
   const dispatch = useDispatch();
-
+  const navigate = useNavigate();
+  
+  const userData = useSelector((state) => state?.auth?.user)
   useEffect(() => {
-    const userData = GetUser();
     if (userData) {
       setUser(userData);
     } else {
@@ -68,7 +69,9 @@ export function FooterUserDropdown() {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     dispatch(logout());
+    navigate("/");
   }
+  
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -77,11 +80,11 @@ export function FooterUserDropdown() {
             <Avatar>
               <AvatarImage src="/avatar.png" />
               <AvatarFallback className="bg-primary text-primary-foreground">
-                {user?.name?.substring(0, 2)?.toUpperCase() }
+                {user?.name || user?.firstName ?.substring(0, 2)?.toUpperCase() }
               </AvatarFallback>
             </Avatar>
             <div>
-              <p className="text-sm font-medium">{user?.name || "Demo"}</p>
+              <p className="text-sm font-medium">{user?.name || user?.firstName}</p>
               <p className="text-xs text-muted-foreground">{user?.email || "Demo@gmail.com"}</p>
             </div>
           </div>
@@ -100,7 +103,7 @@ export function FooterUserDropdown() {
             <AvatarFallback></AvatarFallback>
           </Avatar>
           <div>
-            <p className="text-sm font-medium">{user?.name || "Demo"}</p>
+            <p className="text-sm font-medium">{user?.name || user?.firstName}</p>
             <p className="text-xs text-muted-foreground">{user?.email || "Demo@gmail.com"}</p>
           </div>
         </div>

@@ -65,13 +65,6 @@ const SuperAdminLogin = async (body) => {
     });
 };
 
-// Create School By Super Admin
-const CreateSchool = async (body) => {
-    return await apiRequest("schooladmin-auth/create-by-superadmin", {
-        method: "POST",
-        body,
-    });
-};
 
 // Create Staff By Super Admin
 const CreateStafff = async (body) => {
@@ -134,8 +127,22 @@ const GetSchools = async (body) => {
         body,
     });
 }
+//Get All Schools
+const GetAllSchools = async (body) => {
+    return await apiRequest("schooladmin-auth/all", {
+        method: "GET",
+        body,
+    });
+}
 
-// Create School
+
+// Create School By Super Admin
+const CreateSchool = async (body) => {
+    return await apiRequest("schooladmin-auth/create-by-superadmin", {
+        method: "POST",
+        body,
+    });
+};
 
 
 // Get School Branches
@@ -222,6 +229,7 @@ export {
     SuperAdminRegister,
     SuperAdminLogin,
     GetClasses,
+    GetAllSchools,
     CreateSchool,
     CreateStafff,
     GetGrades,

@@ -58,8 +58,11 @@ export const School_Teacher_Login = () => {
                         dispatch(setUserData({
                           user: {
                             id: response?.user?.id,
-                            name: response.user?.name,
-                            email: response?.user?.email,
+                            firstName: response.user?.firstName,
+                            lastName: response.user?.lastName,
+                            email:response.user?.email,
+                            phoneNumber: response.user?.phoneNumber,
+                            schoolName:response.user?.schoolName,
                             role: response?.user?.role,
                           },
                           token: response.token,
@@ -70,10 +73,11 @@ export const School_Teacher_Login = () => {
                         });
                     }
                     else {
-                        toast.error(response?.message || "Login failed");
+                        console.log(error);
                     }
                 } catch (err) {
-                    toast.error(err.message || "Something went wrong");
+                    console.log(err);
+                    
                 }
             } else {
                 try {
@@ -108,7 +112,9 @@ export const School_Teacher_Login = () => {
                       id: response?.user?.id,
                       firstName: response.user?.firstName,
                       lastName: response.user?.lastName,
+                      email:response.user?.email,
                       phoneNumber: response.user?.phoneNumber,
+                      schoolName:response.user?.schoolName,
                       role: response?.user?.role,
                     },
                     token: response.token,
@@ -119,10 +125,11 @@ export const School_Teacher_Login = () => {
                     onClose: () => navigate("/eduworm-school"),
                 });
             } else {
-                toast.error(response?.message || "OTP verification failed");
+                console.log(error);
             }
         } catch (err) {
-            toast.error(err.message || "Something went wrong during OTP verification");
+            console.log(err);
+            
         }
     };
 
