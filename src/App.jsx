@@ -37,6 +37,7 @@ import { AddStudent } from "./pages/super-admin-pannel/Student/AddStudent";
 import { StaffList } from "./pages/super-admin-pannel/Staff/StaffList";
 import { AddStaff } from "./pages/super-admin-pannel/Staff/AddStaff";
 import { AcademicList } from "./pages/super-admin-pannel/AcademicYear/AcademicList";
+import { CreateStaff } from "./pages/super-admin-pannel/Staff/CreateStaff";
 
 function App() {
   return (
@@ -70,7 +71,7 @@ function App() {
           <Route path="school/view/:id" element={<SchoolView />} />
 
           <Route path="staff" element={<StaffList/>} />
-          <Route path="staff/add" element={<AddStaff/>} />
+          <Route path="staff/add" element={<CreateStaff/>} />
           <Route path="staff/edit" element={<AddStaff/>} />
 
           <Route path="academic Year" element={<AcademicList />} />

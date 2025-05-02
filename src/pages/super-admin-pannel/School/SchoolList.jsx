@@ -11,8 +11,7 @@ export const SchoolList = () => {
   const navigate = useNavigate();
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [schoolData, setSchoolData] = useState();
-  // const schoolData = [
-  //   {
+
   //     id: 2,
   //     AY: "2027-2029",
   //     name: "Diana Plenty",

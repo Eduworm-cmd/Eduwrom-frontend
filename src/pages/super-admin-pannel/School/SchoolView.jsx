@@ -1,126 +1,134 @@
-import React from 'react'
-import user from "../../../assets/Images/teacher.webp"
-import { BookOpen, DollarSign, Edit, GraduationCap, Trash, User2 } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { BookOpen, DollarSign, Edit, GraduationCap, Trash, User, User2, Users } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { GetSchoolById } from '@/Network/Super_Admin/auth';
+import user from "../../../assets/Images/teacher.webp";
 import Barcharts from '@/components/Charts/Barcharts';
 import { PieChart } from '@/components/Charts/PieChart';
+
 export const SchoolView = () => {
+  const [school, setSchool] = useState(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const params = useParams();
-  const { id } = params;
-
-  const school = {
-    name: 'Delhi Public School',
-    phone: '9324589259',
-    emailAddress: 'info@delhipublic.com',
-    rollNo: '098767ijhj',
-    startDate: '12/04/2014',
-    endDate: '01/04/2024',
-    classes: 'LKG, UKG,',
-    admissionNo: 'AD_DE86BSK',
-    branch: 'Eduworm delhi',
-    profileImg: 'https://via.placeholder.com/100',
-    country: 'India',
-    state: 'New Delhi',
-    city: 'Rohini sec-7',
-    pincode: '110024',
-    branchName: "Demo Account",
-    branchEmail: "demo@454gmail.com",
-    branchPhone: "8943427889",
-  };
-
+  const { id } = useParams();
 
   const statusList = [
     {
-      title: "Student",
-      bgColor: "bg-sky-100",
-      icon: <GraduationCap strokeWidth={0.75} />,
-      value: "100.0k"
+      title: "Students",
+      value: "15.00K",
+      icon: <GraduationCap className="text-purple-500" size={30} />,
+      bgColor: "bg-purple-100",
     },
     {
-      title: "Teacher",
-      bgColor: "bg-green-100",
-      icon: <User2 strokeWidth={0.75} />,
-      value: "25.0k"
+      title: "Teachers",
+      value: "2.00K",
+      icon: <User className="text-sky-600" size={30} />,
+      bgColor: "bg-blue-50",
+    },
+    {
+      title: "Parents",
+      value: "5.6K",
+      icon: <Users className="text-orange-500" size={30} />,
+      bgColor: "bg-orange-50",
     },
     {
       title: "Earnings",
-      bgColor: "bg-yellow-100",
-      icon: <DollarSign strokeWidth={0.75} />,
-      value: "$500,000"
+      value: "$19.3K",
+      icon: <DollarSign className="text-green-500" size={30} />,
+      bgColor: "bg-green-50",
     },
-    {
-      title: "Classes",
-      bgColor: "bg-purple-100",
-      icon: <BookOpen strokeWidth={0.75} />,
-      value: "120"
-    }
+
   ];
+
+  const SchoolApi = async (id) => {
+    try {
+      const response = await GetSchoolById(id);
+      if (response.success) {
+        setSchool(response.data);
+      } else {
+        console.error("Error:", response.message);
+      }
+    } catch (error) {
+      console.error("Fetch failed:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (id) SchoolApi(id);
+  }, [id]);
+
+  if (loading) return <p className="p-4 text-lg">Loading school data...</p>;
+  if (!school) return <p className="p-4 text-red-600">School not found.</p>;
+
   return (
     <div>
+      {/* Main Profile Section */}
       <div className="max-w-8xl mx-auto mt-10 bg-white rounded-md shadow-md overflow-hidden flex flex-col md:flex-row">
-        <div className="md:w-1/3 p-2 bg-sky-100 flex flex-col justify-center items-center">
-
-          <img src={user} alt="" srcset="" className="w-32 h-32 rounded-full object-cover border-2 bg-slate-200 border-white shadow" />
-
-          <h2 className="mt-4 text-lg font-bold text-gray-800">{school.name}</h2>
-
+        <div className="md:w-1/3 p-4 bg-sky-100 flex flex-col justify-center items-center">
+          <img src={school?.schoolLogo || user} alt="School Logo" className="w-32 h-32 rounded-full object-cover border-2 bg-slate-200 border-white shadow" />
+          <h2 className="mt-4 text-lg font-bold text-gray-800">{school?.schoolName || '—'}</h2>
           <div className="space-x-4 mt-2 flex w-full justify-center items-center my-6">
-            <button className='bg-yellow-500 px-4 py-2 cursor-pointer flex text-white rounded-sm gap-2' onClick={() => { navigate(`/eduworm-admin/school/edit/${id}`) }}><Edit />Edit</button>
-            <button className='bg-red-500 px-4 py-2 cursor-pointer flex text-white rounded-sm gap-2'><Trash /> Deactivate</button>
+            <button className='bg-yellow-500 px-4 py-2 cursor-pointer flex text-white rounded-sm gap-2' onClick={() => navigate(`/eduworm-admin/school/edit/${id}`)}>
+              <Edit /> Edit
+            </button>
+            <button className='bg-red-500 px-4 py-2 cursor-pointer flex text-white rounded-sm gap-2'>
+              <Trash /> Deactivate
+            </button>
           </div>
         </div>
 
-        <div className="md:w-2/3 p-2 px-6 mb-3">
+        {/* School Info */}
+        <div className="md:w-2/3 p-6 mb-3">
           <h3 className='text-2xl font-semibold text-sky-500 mb-4'>School Details</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2">
-            <div className='mb-2'><span className="font-semibold text-xl">School Name:</span> {school.name || '—'}</div>
-            <div className='mb-2'><span className="font-semibold text-xl">Display Name:</span> {school.name || '—'}</div>
-            <div className='mb-2'><span className="font-semibold text-xl">Classes :</span> {school.classes || '—'}</div>
-            <div className='mb-2'><span className="font-semibold text-xl">Academic Year:</span> {school.rollNo || '—'}</div>
-            <div className='mb-2'><span className="font-semibold text-xl">Start Date :</span> {school.startDate}</div>
-            <div className='mb-2'><span className="font-semibold text-xl">End Date :</span> {school.endDate || '—'}</div>
-            <div className='mb-2'><span className="font-semibold text-xl">Phone Number :</span> {school.phone}</div>
-            <div className='mb-2'><span className="font-semibold text-xl">Email Address :</span> {school.emailAddress}</div>
-            <div className='mb-2'><span className="font-semibold text-xl">Country :</span> {school.country}</div>
-            <div className='mb-2'><span className="font-semibold text-xl">State :</span> {school.state}</div>
-            <div className='mb-2'><span className="font-semibold text-xl">City :</span> {school.city}</div>
-            <div className='mb-2'><span className="font-semibold text-xl">Pin Code :</span> {school.pincode}</div>
-            <div className='mb-2'><span className="font-semibold text-xl">Address :</span> {school.city}</div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div><strong>School Name:</strong> {school?.schoolName || '—'}</div>
+            <div><strong>Display Name:</strong> {school?.displayName || '—'}</div>
+            <div><strong>Classes:</strong> {school?.classes?.length || '0'}</div>
+            <div><strong>Academic Year:</strong> {school?.academicYear?.length || '—'}</div>
+            <div><strong>Start Date:</strong> {school?.startDate?.split('T')[0] || '—'}</div>
+            <div><strong>End Date:</strong> {school?.endDate?.split('T')[0] || '—'}</div>
+            <div><strong>Phone:</strong> {school?.phone || '—'}</div>
+            <div><strong>Email:</strong> {school?.email || '—'}</div>
+            <div><strong>Country:</strong> {school?.country || '—'}</div>
+            <div><strong>State:</strong> {school?.state || '—'}</div>
+            <div><strong>City:</strong> {school?.city || '—'}</div>
+            <div><strong>Pincode:</strong> {school?.pincode || '—'}</div>
+            <div><strong>Address:</strong> {school?.address || '—'}</div>
           </div>
         </div>
-
-
       </div>
-      <div className="max-w-8xl w-full shadow-md rounded-md p-4 mt-10">
+
+      {/* Branch Info */}
+      <div className="max-w-8xl w-full shadow-md rounded-md p-4 mt-10 bg-white">
         <h1 className='text-3xl text-sky-500 font-semibold'>Branch Admin Information</h1>
-        <div className='my-3'><span className="font-semibold text-xl">Branch Name:</span> {school.branchName}</div>
-        <div className='my-3'><span className="font-semibold text-xl">Phone Number :</span> {school.branchPhone}</div>
-        <div className='my-3'><span className="font-semibold text-xl">Email Address :</span> {school.branchEmail}</div>
+        <div className='my-3'><strong>Branch Name:</strong> {school?.branchName || '—'}</div>
+        <div className='my-3'><strong>Branch Phone:</strong> {school?.branchPhone || '—'}</div>
+        <div className='my-3'><strong>Branch Email:</strong> {school?.branchEmail || '—'}</div>
       </div>
 
       <section>
         <div className="max-w-8xl">
-          <div className="grid grid-cols-4 py-10 gap-8">
-
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 py-10">
             {
-              Array.isArray(statusList) && (
-                statusList.map((s, index) => (
-                  <div key={index} className={`flex justify-between items-center rounded-md px-2 py-2 max-w-full mb-4 shadow-md ${s.bgColor}`}>
-                    <div className="">
-                      <h1 className="text-xl font-semibold mb-2">{s.title}</h1>
-                      <p className="text-2xl font-bold">{s.value}</p>
-                    </div>
-                    <div className="p-3 font-light">
-                      {s.icon ? React.cloneElement(s.icon, { className: "w-20 h-20" }) : null}
-                    </div>
-
+              Array.isArray(statusList) && statusList.map((s, index) => (
+                <div
+                  key={index}
+                  className={`flex justify-between items-center rounded-md px-4 py-4 shadow-md ${s.bgColor}`}
+                >
+                  <div>
+                    <h1 className="text-base sm:text-lg font-semibold mb-1">{s.title}</h1>
+                    <p className="text-xl sm:text-2xl font-bold">{s.value}</p>
                   </div>
-                ))
-              )
+                  <div className="p-2">
+                    {s.icon ? React.cloneElement(s.icon, { className: "w-12 h-12 sm:w-16 sm:h-16" }) : null}
+                  </div>
+                </div>
+              ))
             }
-
           </div>
+
 
           <div className="max-w-full rounded-2xl grid grid-cols-2 gap-6">
             <Barcharts />
@@ -129,5 +137,5 @@ export const SchoolView = () => {
         </div>
       </section>
     </div>
-  )
-}
+  );
+};

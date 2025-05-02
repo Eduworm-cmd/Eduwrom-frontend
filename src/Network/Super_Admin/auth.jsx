@@ -23,23 +23,23 @@ const ConvertImageToBase64 = (file) => {
     });
 };
 
-const FetchMenuItems = async(body) =>{
-    return await apiRequest("menu/items/all",{
-        method:"GET",
+const FetchMenuItems = async (body) => {
+    return await apiRequest("menu/items/all", {
+        method: "GET",
         body,
     })
 }
 
-const UpdateMenuItems = async (id,body) =>{
-    return await apiRequest(`menu/item/${id}`,{
-        method:"PUT",
+const UpdateMenuItems = async (id, body) => {
+    return await apiRequest(`menu/item/${id}`, {
+        method: "PUT",
         body,
     })
 }
 
-const ToogleMenuItem = async(id) =>{
-    return await apiRequest(`menu/item/${id}/toggle`,{
-        method:"PATCH",
+const ToogleMenuItem = async (id) => {
+    return await apiRequest(`menu/item/${id}/toggle`, {
+        method: "PATCH",
         body,
     })
 }
@@ -75,8 +75,8 @@ const CreateStafff = async (body) => {
 }
 
 // Get All Classes 
-const GetClasses = async (body) =>{
-    return await apiRequest("class",{
+const GetClasses = async (body) => {
+    return await apiRequest("class", {
         method: "GET",
         body
     })
@@ -135,7 +135,6 @@ const GetAllSchools = async (body) => {
     });
 }
 
-
 // Create School By Super Admin
 const CreateSchool = async (body) => {
     return await apiRequest("schooladmin-auth/create-by-superadmin", {
@@ -144,6 +143,12 @@ const CreateSchool = async (body) => {
     });
 };
 
+// Get School By Id
+const GetSchoolById = async (schoolId) => {
+    return await apiRequest(`schooladmin-auth/${schoolId}`, {
+        method: "GET",
+    });
+};
 
 // Get School Branches
 const GetSchoolBranches = async (schoolId) => {
@@ -163,9 +168,9 @@ const GetLevels = async (body) => {
 }
 
 // Get All Academic Year
-const GetAcademicYear = async (body) =>{
-    return await apiRequest("academic",{
-        method:"GET",
+const GetAcademicYear = async (body) => {
+    return await apiRequest("academic", {
+        method: "GET",
         body,
     })
 }
@@ -202,6 +207,14 @@ const GetAcademicYearsById = async (schoolId) => {
 
 
 
+const CreateStaff = async(body) =>{
+    return await apiRequest("SA_Staff/staffCreate",{
+        method:"POST",
+        body
+    })
+}
+
+
 
 
 
@@ -212,11 +225,11 @@ const GetAcademicYearsById = async (schoolId) => {
 // Add Content 
 const AddContent = async (body) => {
     return await apiRequest("content", {
-      method: "POST",  
-      body: body, 
+        method: "POST",
+        body: body,
     });
-  };
-  
+};
+
 
 
 export {
@@ -230,6 +243,7 @@ export {
     SuperAdminLogin,
     GetClasses,
     GetAllSchools,
+    GetSchoolById,
     CreateSchool,
     CreateStafff,
     GetGrades,
