@@ -2,46 +2,42 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, Edit2, Trash2, EllipsisVertical, PlusCircle, EyeIcon } from "lucide-react";
 import { Table, Button, Dropdown } from "antd";
-import axios from "axios"; // You'll need to install axios: `npm install axios`
+import { GetAllStaff } from "@/Network/Super_Admin/auth";
 
 export const StaffList = () => {
   const navigate = useNavigate();
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [staffData, setStaffData] = useState([]); // State to hold the fetched staff data
-  const [loading, setLoading] = useState(true); // To handle loading state
-  const [error, setError] = useState(null); // To handle errors
+  const [staffData, setStaffData] = useState([]);
+  const [loading, setLoading] = useState(true); 
 
-  // Fetch data from the API when the component mounts
   useEffect(() => {
     const fetchStaffData = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/api/SA_Staff/all");
+        const response = await GetAllStaff();
 
-        // Check if the response contains an array of staff data
-        if (Array.isArray(response.data)) {
-          const data = response.data; // Directly assign response.data since it's an array
+        if (Array.isArray(response)) {
+          const data = response;
 
-          // Format the data to include `sno` for serial number and `key` for unique row identifier
           const formattedData = data.map((item, index) => ({
             ...item,
-            key: item._id, // Use `_id` as the unique key
-            sno: index + 1, // Serial number starting from 1
+            key: item._id,
+            sno: index + 1, 
           }));
 
-          setStaffData(formattedData); // Update state with fetched data
+          setStaffData(formattedData);
         } else {
           throw new Error("Invalid data structure from API");
         }
       } catch (error) {
         console.error("Error fetching staff data:", error);
-        setError("Failed to fetch staff data"); // Set error message
+        setError("Failed to fetch staff data");
       } finally {
-        setLoading(false); // Set loading to false after the fetch is complete
+        setLoading(false); 
       }
     };
 
-    fetchStaffData(); // Call the fetch function
-  }, []); // Empty dependency array means this runs once on mount
+    fetchStaffData(); 
+  }, []); 
 
   const onSelectChange = (selectedKeys) => {
     setSelectedRowKeys(selectedKeys);
@@ -146,9 +142,6 @@ export const StaffList = () => {
     return <div>Loading...</div>;
   }
 
-  if (error) {
-    return <div>{error}</div>;
-  }
 
   return (
     <div className="overflow-x-auto">

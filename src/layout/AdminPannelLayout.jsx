@@ -48,6 +48,8 @@ export const AdminPannelLayout = () => {
           return Roles.SUPERADMIN;
         case Roles.TEACHER:
           return Roles.TEACHER;
+        case Roles.ACCOUNT:
+          return Roles.ACCOUNT;
         default:
           return null;
       }

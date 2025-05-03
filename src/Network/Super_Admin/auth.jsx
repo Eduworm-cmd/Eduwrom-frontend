@@ -66,14 +66,6 @@ const SuperAdminLogin = async (body) => {
 };
 
 
-// Create Staff By Super Admin
-const CreateStafff = async (body) => {
-    return await apiRequest("staff", {
-        method: "POST",
-        body,
-    });
-}
-
 // Get All Classes 
 const GetClasses = async (body) => {
     return await apiRequest("class", {
@@ -207,10 +199,30 @@ const GetAcademicYearsById = async (schoolId) => {
 
 
 
-const CreateStaff = async(body) =>{
+const StaffLogin = async(body) =>{
+    return await apiRequest("SA_Staff/staff_login",{
+        method:"POST",
+        body,
+    })
+}
+
+const AddStaff = async(body) =>{
     return await apiRequest("SA_Staff/staffCreate",{
         method:"POST",
         body
+    })
+}
+const GetAllStaff = async(body) =>{
+    return await apiRequest("SA_Staff/all",{
+        method:"GET",
+        body
+    })
+}
+
+const GetStaffById = async (body) =>{
+    return await apiRequest(`SA_Staff/${id}`,{
+        method:"GET",
+        body,
     })
 }
 
@@ -245,7 +257,10 @@ export {
     GetAllSchools,
     GetSchoolById,
     CreateSchool,
-    CreateStafff,
+    StaffLogin,
+    AddStaff,
+    GetAllStaff,
+    GetStaffById,
     GetGrades,
     GetGradeById,
     CreateGrade,

@@ -45,7 +45,6 @@ export const AddSchool = () => {
         setAcademicYearOptions(academicYearsData || []);
       } catch (error) {
         console.error("Error fetching data:", error);
-        toast.error("Failed to load class or academic year data");
       } finally {
         setIsLoading(false);
       }
@@ -98,7 +97,6 @@ export const AddSchool = () => {
       setLogoBuffer(null);
     } catch (error) {
       console.error(error);
-      toast.error("Failed to create school");
     }
   };
 

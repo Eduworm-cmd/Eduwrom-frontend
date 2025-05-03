@@ -6,16 +6,19 @@ import {
     SchoolAdminLoginByPhone,
     SchoolAdminVerifyOTP,
 } from "../Network/schooladminauth";
-import { SetLocalStorage } from "@/Network/Super_Admin/auth";
+import { SetLocalStorage, StaffLogin } from "@/Network/Super_Admin/auth";
 import { setUserData } from "./authSlice";
 import { useDispatch } from "react-redux";
 
 export const School_Teacher_Login = () => {
     const [role, setRole] = useState("School");
-    const [showForm, setShowForm] = useState(false); 
+    const [showForm, setShowForm] = useState(false);
     const [showOtp, setShowOtp] = useState(false);
     const [otp, setOtp] = useState(["", "", "", "", "", ""]);
     const dispatch = useDispatch();
+
+    const [staffEmail, setStaffEmail] = useState("");
+    const [staffPassword, setStaffPassword] = useState("");
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -52,20 +55,20 @@ export const School_Teacher_Login = () => {
             if (showForm) {
                 try {
                     const response = await SchoolAdminLoginByEmail({ email, password });
-                    
+
                     if (response?.message === "Login successful") {
-                        SetLocalStorage("token", response.token);  
+                        SetLocalStorage("token", response.token);
                         dispatch(setUserData({
-                          user: {
-                            id: response?.user?.id,
-                            firstName: response.user?.firstName,
-                            lastName: response.user?.lastName,
-                            email:response.user?.email,
-                            phoneNumber: response.user?.phoneNumber,
-                            schoolName:response.user?.schoolName,
-                            role: response?.user?.role,
-                          },
-                          token: response.token,
+                            user: {
+                                id: response?.user?.id,
+                                firstName: response.user?.firstName,
+                                lastName: response.user?.lastName,
+                                email: response.user?.email,
+                                phoneNumber: response.user?.phoneNumber,
+                                schoolName: response.user?.schoolName,
+                                role: response?.user?.role,
+                            },
+                            token: response.token,
                         }));
                         toast.success(response?.message || "Login successfully!", {
                             autoClose: 3000,
@@ -77,7 +80,7 @@ export const School_Teacher_Login = () => {
                     }
                 } catch (err) {
                     console.log(err);
-                    
+
                 }
             } else {
                 try {
@@ -92,7 +95,39 @@ export const School_Teacher_Login = () => {
                     toast.error(err.message || "Something went wrong");
                 }
             }
+        } else if (role === "Staff") {
+            try {
+                const response = await StaffLogin({
+                    email: staffEmail,
+                    password: staffPassword,
+                });
+
+                if (response.token) {
+                    SetLocalStorage("token", response.token);
+                    dispatch(setUserData({
+                        user: {
+                            id: response?._id,
+                            firstName: response.name,
+                            lastName: response.lastName,
+                            email: response.email,
+                            role: response.role,
+                        },
+                        token: response.token,
+                    }));
+                    toast.success("Login successfully!", {
+                        autoClose: 2000,
+                        onClose: () => navigate("/eduworm-school"),
+                    });
+                } else {
+                    console.log(error);
+                    
+                }
+            } catch (err) {
+                console.log(error);
+                
+            }
         }
+
     };
 
     const handleVerifyOTP = async (e) => {
@@ -105,21 +140,21 @@ export const School_Teacher_Login = () => {
             });
 
             if (response.message === "OTP verified successfully") {
-                SetLocalStorage("token", response.token);  
-                       
+                SetLocalStorage("token", response.token);
+
                 dispatch(setUserData({
                     user: {
-                      id: response?.user?.id,
-                      firstName: response.user?.firstName,
-                      lastName: response.user?.lastName,
-                      email:response.user?.email,
-                      phoneNumber: response.user?.phoneNumber,
-                      schoolName:response.user?.schoolName,
-                      role: response?.user?.role,
+                        id: response?.user?.id,
+                        firstName: response.user?.firstName,
+                        lastName: response.user?.lastName,
+                        email: response.user?.email,
+                        phoneNumber: response.user?.phoneNumber,
+                        schoolName: response.user?.schoolName,
+                        role: response?.user?.role,
                     },
                     token: response.token,
-                  }));
-                  
+                }));
+
                 toast.success("OTP Verified!", {
                     autoClose: 3000,
                     onClose: () => navigate("/eduworm-school"),
@@ -129,7 +164,7 @@ export const School_Teacher_Login = () => {
             }
         } catch (err) {
             console.log(err);
-            
+
         }
     };
 
@@ -164,11 +199,11 @@ export const School_Teacher_Login = () => {
                                 As School
                             </button>
                             <button
-                                onClick={() => setRole("Teacher")}
-                                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${role === "Teacher" ? "bg-blue-900 text-white" : "text-gray-700"
+                                onClick={() => setRole("Staff")}
+                                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${role === "Staff" ? "bg-blue-900 text-white" : "text-gray-700"
                                     }`}
                             >
-                                As Teacher
+                                As Staff
                             </button>
                         </div>
                     </div>
@@ -222,28 +257,23 @@ export const School_Teacher_Login = () => {
                             )
                         ) : (
                             <>
-                                <div>
-                                    <label htmlFor="teacher-email" className="block text-md font-medium text-gray-700">
-                                        Email Address <span className="text-red-500">*</span>
-                                    </label>
-                                    <input
-                                        id="teacher-email"
-                                        type="email"
-                                        placeholder="Enter your email"
-                                        className="w-full p-3 border border-gray-300 rounded-md focus:outline-none"
-                                    />
-                                </div>
-                                <div>
-                                    <label htmlFor="teacher-password" className="block text-md font-medium text-gray-700">
-                                        Password <span className="text-red-500">*</span>
-                                    </label>
-                                    <input
-                                        id="teacher-password"
-                                        type="password"
-                                        placeholder="Enter your password"
-                                        className="w-full p-3 border border-gray-300 rounded-md focus:outline-none"
-                                    />
-                                </div>
+                                <input
+                                    id="teacher-email"
+                                    type="email"
+                                    value={staffEmail}
+                                    onChange={(e) => setStaffEmail(e.target.value)}
+                                    placeholder="Enter your email"
+                                    className="w-full p-3 border border-gray-300 rounded-md focus:outline-none"
+                                />
+                                <input
+                                    id="teacher-password"
+                                    type="password"
+                                    value={staffPassword}
+                                    onChange={(e) => setStaffPassword(e.target.value)}
+                                    placeholder="Enter your password"
+                                    className="w-full p-3 border border-gray-300 rounded-md focus:outline-none"
+                                />
+
                             </>
                         )}
 

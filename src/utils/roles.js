@@ -4,9 +4,10 @@ export const Roles = {
   SUPERADMIN: 'superadmin',
   SCHOOLADMIN: 'schooladmin',
   TEACHER: 'teacher',
+  ACCOUNT: 'accountadmin',
 }
 
-const adminData = {
+const superAdminData = {
   title: "Super Admin Pannel",
   buttons: [
     {
@@ -91,7 +92,7 @@ const schoolAdminData = {
   title: "School Admin Pannel",
   buttons: [
     {
-      title: "Dashboard",
+      title: "Dashboard",   
       url: "/eduworm-school/home",
       icon: LayoutDashboard,
     },
@@ -100,15 +101,15 @@ const schoolAdminData = {
       url: "/eduworm-admin/home",
       icon: LayoutDashboard,
     },
+  ],
 
-  ],
-  footersBtns: [
-    {
-      title: "Settings",
-      url: "/home",
-      icon: Settings,
-    },
-  ],
+  // footersBtns: [
+  //   {
+  //     title: "Settings",
+  //     url: "/home",
+  //     icon: Settings,
+  //   },
+  // ],
 
   navMain: [
     {
@@ -117,9 +118,9 @@ const schoolAdminData = {
       items: [
         { title: "Student Data", url: "/eduworm-admin" },
         { title: "Staff Data", url: "/eduworm-admin/school/list" },
-        { title: "Academic Year", url: "/eduworm-admin/staff/add" },
-        { title: "Grade Management", url: "/eduworm-admin/staff/list" },
-        { title: "Classroom Management", url: "/eduworm-admin/staff/list" },
+        // { title: "Academic Year", url: "/eduworm-admin/staff/add" },
+        // { title: "Grade Management", url: "/eduworm-admin/staff/list" },
+        // { title: "Classroom Management", url: "/eduworm-admin/staff/list" },
       ]
     },
 
@@ -175,17 +176,114 @@ const schoolAdminData = {
 
 }
 
+const teacherData = {
+  title: "Teacher Admin Pannel",
+  buttons: [
+    {
+      title: "Dashboard",   
+      url: "/eduworm-school/home",
+      icon: LayoutDashboard,
+    },
+    {
+      title: "AI Reports",
+      url: "/eduworm-admin/home",
+      icon: LayoutDashboard,
+    },
+
+  ],
+  footersBtns: [
+    {
+      title: "Settings",
+      url: "/home",
+      icon: Settings,
+    },
+  ],
+
+  navMain: [
+    {
+      title: "LMS Management",
+      icon: NotebookPen,
+      items: [
+        { title: "Playlist/ Assignment", url: "/eduworm-school/playlist" },
+        { title: "Content", url: "/eduworm-school/content" },
+        { title: "Scheduled List", url:"/eduworm-school/scheduleList" },
+        { title: "Assignment History", url: "/admin/teachers/add" },
+      ]
+    },
+
+    {
+      title: "Lesson Management",
+      icon: Users,
+      items: [
+        { title: "Lesson Plan", url: "/admin/teachers" },
+        { title: "PlayList / Assignment", url: "/eduworm-school/playlist" },
+        { title: "Content", url: "/eduworm-school/content" },
+        { title: "Schedule List", url: "/eduworm-school/scheduleList" },
+        { title: "Tech", url: "/admin/teachers" },
+      ]
+    },
+    {
+      title: "",
+      icon: Users,
+      items: [
+        { title: "Manage Documents", url: "/admin/teachers" },
+        { title: "Daily Diary", url: "/admin/teachers/add" },
+      ]
+    },
+  ]
+}
+
+const accountAdminData = {
+  title: "Account Admin Pannel",
+  buttons: [
+    {
+      title: "Dashboard",   
+      url: "/eduworm-school/home",
+      icon: LayoutDashboard,
+    },
+  ],
+  footersBtns: [
+    {
+      title: "Settings",
+      url: "/home",
+      icon: Settings,
+    },
+  ],
+
+  navMain: [
+    {
+      title: "Finance & Billing",
+      icon: Users,
+      items: [
+        { title: "Invoice", url: "/eduworm-admin/curriculum" },
+        { title: "Balance & Refund", url: "/eduworm-admin/curriculum" },
+        { title: "Receipts", url: "/eduworm-admin/curriculum" },
+      ]
+    },
+    {
+      title: "Document Management",
+      icon: Users,
+      items: [
+        { title: "Manage Documents", url: "/admin/teachers" },
+        { title: "Daily Diary", url: "/admin/teachers/add" },
+      ]
+    },
+  ]
+
+}
 
 
 
 export const MangeRoles = (role = "") => {
   switch (role) {
     case "superadmin":
-      return adminData;
+      return superAdminData;
     case 'teacher':
       return teacherData;
     case 'schooladmin':
       return schoolAdminData;
+    case 'accountadmin' :
+      return accountAdminData;
     default:
       throw new Error("Invalid role");
   }

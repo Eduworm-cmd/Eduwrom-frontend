@@ -35,9 +35,9 @@ import { PlayListAssignment } from "./pages/Teacheradmin/InteractiveContent/Play
 import { StudentList } from "./pages/super-admin-pannel/Student/StudentList";
 import { AddStudent } from "./pages/super-admin-pannel/Student/AddStudent";
 import { StaffList } from "./pages/super-admin-pannel/Staff/StaffList";
-import { AddStaff } from "./pages/super-admin-pannel/Staff/AddStaff";
 import { AcademicList } from "./pages/super-admin-pannel/AcademicYear/AcademicList";
 import { CreateStaff } from "./pages/super-admin-pannel/Staff/CreateStaff";
+import { StaffView } from "./pages/super-admin-pannel/Staff/StaffView.";
 
 function App() {
   return (
@@ -72,7 +72,7 @@ function App() {
 
           <Route path="staff" element={<StaffList/>} />
           <Route path="staff/add" element={<CreateStaff/>} />
-          <Route path="staff/edit" element={<AddStaff/>} />
+          <Route path="staff/view/:id" element={<StaffView/>} />
 
           <Route path="academic Year" element={<AcademicList />} />
           <Route path="student" element={<StudentList />} />
