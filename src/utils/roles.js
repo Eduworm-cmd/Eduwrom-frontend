@@ -29,8 +29,9 @@ const superAdminData = {
       title: "School Management",
       icon: Users,
       items: [
-        { title: "Add School", url: "/eduworm-admin/school/add" },
         { title: "School List", url: "/eduworm-admin/school/list" },
+        { title: "Add Branch", url: "/eduworm-admin/branch/add" },
+        { title: "Branch List", url: "/eduworm-admin/branch/list" },
         { title: "Student Data", url: "/eduworm-admin/student" },
         { title: "Staff Data", url: "/eduworm-admin/staff" },
         { title: "Academic Year", url: "/eduworm-admin/academic Year" },

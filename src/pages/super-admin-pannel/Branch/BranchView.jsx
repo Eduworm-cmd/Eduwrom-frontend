@@ -6,7 +6,7 @@ import user from "../../../assets/Images/teacher.webp";
 import Barcharts from '@/components/Charts/Barcharts';
 import { PieChart } from '@/components/Charts/PieChart';
 
-export const SchoolView = () => {
+export const BranchView = () => {
   const [school, setSchool] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -99,6 +99,43 @@ export const SchoolView = () => {
           </div>
         </div>
       </div>
+
+      {/* Branch Info */}
+      <div className="max-w-8xl w-full shadow-md rounded-md p-4 mt-10 bg-white">
+        <h1 className='text-3xl text-sky-500 font-semibold'>Branch Admin Information</h1>
+        <div className='my-3'><strong>Branch Name:</strong> {school?.branchName || '—'}</div>
+        <div className='my-3'><strong>Branch Phone:</strong> {school?.branchPhone || '—'}</div>
+        <div className='my-3'><strong>Branch Email:</strong> {school?.branchEmail || '—'}</div>
+      </div>
+
+      <section>
+        <div className="max-w-8xl">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 py-10">
+            {
+              Array.isArray(statusList) && statusList.map((s, index) => (
+                <div
+                  key={index}
+                  className={`flex justify-between items-center rounded-md px-4 py-4 shadow-md ${s.bgColor}`}
+                >
+                  <div>
+                    <h1 className="text-base sm:text-lg font-semibold mb-1">{s.title}</h1>
+                    <p className="text-xl sm:text-2xl font-bold">{s.value}</p>
+                  </div>
+                  <div className="p-2">
+                    {s.icon ? React.cloneElement(s.icon, { className: "w-12 h-12 sm:w-16 sm:h-16" }) : null}
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+
+
+          <div className="max-w-full rounded-2xl grid grid-cols-2 gap-6">
+            <Barcharts />
+            <PieChart />
+          </div>
+        </div>
+      </section>
     </div>
   );
 };
