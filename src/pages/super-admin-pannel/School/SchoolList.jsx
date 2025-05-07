@@ -4,6 +4,7 @@ import { PlusCircle, Edit2, Trash2, Eye, EllipsisVertical } from "lucide-react";
 import { Table, Button, Dropdown } from "antd";
 import DownloadButton from "@/components/Buttons/DownloadButton/DownloadButton";
 import { ExportButton } from "@/components/Buttons/ExportButton/ExportButton";
+import { GetAllSchools } from "@/Network/Super_Admin/auth";
 
 export const SchoolList = () => {
   const navigate = useNavigate();
@@ -130,10 +131,9 @@ export const SchoolList = () => {
 
   const fetchAllSchools = async () => {
     try {
-      const response = await fetch("http://localhost:4000/api/school/all");
-      const result = await response.json();
-
-      const formattedData = result.data.map((school) => ({
+      const response = await GetAllSchools();
+     
+      const formattedData = response.data.map((school) => ({
         id: school._id,
         name: school.schoolName,
         email: school.contact?.email,

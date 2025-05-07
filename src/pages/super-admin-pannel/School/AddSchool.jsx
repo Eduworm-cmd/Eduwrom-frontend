@@ -2,6 +2,7 @@ import React from "react";
 import { Button, Input, Form, Select, DatePicker, Row, Col } from "antd";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { CreateSchool } from "@/Network/Super_Admin/auth";
 
 export const AddSchool = () => {
   const [form] = Form.useForm();
@@ -16,27 +17,14 @@ export const AddSchool = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:4000/api/school/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const result = await response.json();
+      const response = await CreateSchool(payload);
 
       if (response.ok) {
         toast.success("School created successfully!");
-        console.log("API Response:", result);
         form.resetFields();
-      } else {
-        toast.error(result.message || "Failed to create school.");
-        console.error("Error Response:", result);
       }
     } catch (error) {
       console.error("API Error:", error);
-      toast.error("An error occurred while creating the school.");
     }
   };
 

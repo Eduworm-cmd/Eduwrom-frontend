@@ -121,20 +121,19 @@ const GetSchools = async (body) => {
 }
 //Get All Schools
 const GetAllSchools = async (body) => {
-    return await apiRequest("schooladmin-auth/all", {
+    return await apiRequest("school/all", {
         method: "GET",
         body,
     });
 }
 
 // Create School By Super Admin
-const CreateSchool = async (body) => {
-    return await apiRequest("schooladmin-auth/create-by-superadmin", {
-        method: "POST",
-        body,
-    });
-};
-
+const CreateSchool = async (body) =>{
+    return await apiRequest('school/create',{
+        method:"POST",
+        body
+    })
+}
 
 // Get School By Id
 const GetSchoolById = async (schoolId) => {
