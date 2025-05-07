@@ -40,7 +40,7 @@ const { Option } = Select;
 const GradeManagement = () => {
   const [grades, setGrades] = useState([]);
   const [schools, setSchools] = useState([]);
-  const [levels, setLevels] = useState([]);
+ 
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentView, setCurrentView] = useState('list'); // list, add, edit, view
@@ -51,7 +51,7 @@ const GradeManagement = () => {
   useEffect(() => {
     fetchGrades();
     fetchSchools();
-    fetchLevels();
+    
   }, []);
 
   // Fetch grades from API
@@ -90,15 +90,7 @@ const GradeManagement = () => {
     }
   };
 
-  // Fetch levels from API
-  const fetchLevels = async () => {
-    try {
-      const response = await GetLevels();
-      setLevels(response);
-    } catch (error) {
-      console.error('Error fetching levels:', error);
-    }
-  };
+
 
   // Fetch single grade by ID
   const fetchGradeById = async (id) => {
@@ -109,7 +101,7 @@ const GradeManagement = () => {
 
       // Handle both object and string reference formats
       const schoolId = typeof grade.school === 'object' ? grade.school?._id : grade.school;
-      const levelId = typeof grade.level === 'object' ? grade.level?._id : grade.level;
+     
 
       // Set form data with all the necessary fields
       form.setFieldsValue({
@@ -118,7 +110,6 @@ const GradeManagement = () => {
         minAge: grade.minAge || 3,
         maxAge: grade.maxAge || 3,
         school: schoolId || '',
-        level: levelId || ''
       });
 
       setLoading(false);
@@ -475,10 +466,10 @@ const GradeManagement = () => {
               <Col span={12}>
                 <Form.Item
                   name="school"
-                  label="School"
+                  label="Class"
                   rules={[{ required: true, message: 'Please select a school' }]}
                 >
-                  <Select placeholder="Select school">
+                  <Select placeholder="Select Class">
                     {schools.map(school => (
                       <Option key={school._id} value={school._id}>
                         {school.name}
@@ -488,21 +479,7 @@ const GradeManagement = () => {
                 </Form.Item>
               </Col>
 
-              <Col span={12}>
-                <Form.Item
-                  name="level"
-                  label="Level"
-                  rules={[{ required: true, message: 'Please select a level' }]}
-                >
-                  <Select placeholder="Select level">
-                    {levels.map(level => (
-                      <Option key={level._id} value={level._id}>
-                        {level.name}
-                      </Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-              </Col>
+            
             </Row>
 
             <Form.Item>
