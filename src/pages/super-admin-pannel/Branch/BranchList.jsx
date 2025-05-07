@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { PlusCircle, Edit2, Trash2, Eye, EllipsisVertical } from "lucide-react";
+import {
+  PlusCircle, Edit2, Trash2, Eye, EllipsisVertical,
+} from "lucide-react";
 import { Space, Table, Button, Dropdown } from "antd";
 import DownloadButton from "@/components/Buttons/DownloadButton/DownloadButton";
 import { ExportButton } from "@/components/Buttons/ExportButton/ExportButton";
 import "./BranchList.css";
-import { GetAllSchools, GetSchools } from "@/Network/Super_Admin/auth";
+import axios from "axios";
 
 export const BranchList = () => {
   const navigate = useNavigate();
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [schoolData, setSchoolData] = useState();
+  const [schoolData, setSchoolData] = useState([]);
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
+  const [loading, setLoading] = useState(false);
+
   const onSelectChange = (selectedKeys) => {
     setSelectedRowKeys(selectedKeys);
   };
@@ -20,9 +25,44 @@ export const BranchList = () => {
     onChange: onSelectChange,
   };
 
+  const fetchBranches = async (page = 1, limit = 10) => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`http://localhost:4000/api/auth_SchoolBranch/allBranches?page=${page}&limit=${limit}`);
+      const { data, totalBranches } = response.data;
+
+      const formattedData = data.map((branch) => ({
+        key: branch._id,
+        id: branch._id,
+        name: branch.name || branch.displayName,
+        StartDate: new Date(branch.startDate).toLocaleDateString(),
+        EndDate: new Date(branch.endDate).toLocaleDateString(),
+        email: branch.contact?.email || "N/A",
+        phone: branch.contact?.phone || "N/A",
+        status: branch.isActive,
+        AY: Array.isArray(branch.academicYear) ? branch.academicYear.join(", ") : "",
+      }));
+
+      setSchoolData(formattedData);
+      setPagination({ current: page, pageSize: limit, total: totalBranches });
+    } catch (error) {
+      console.error("Error fetching branch data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleTableChange = (pagination) => {
+    fetchBranches(pagination.current, pagination.pageSize);
+  };
+
+  useEffect(() => {
+    fetchBranches();
+  }, []);
+
   const columns = [
     {
-      title: "School Name",
+      title: "Branch Name",
       dataIndex: "name",
       key: "name",
     },
@@ -31,8 +71,8 @@ export const BranchList = () => {
       key: "contact",
       render: (_, record) => (
         <div>
-          {record.email && <div>{record.email}</div>}
-          {record.phone && <div>{record.phone}</div>}
+          <div>{record.email}</div>
+          <div>{record.phone}</div>
         </div>
       ),
     },
@@ -105,63 +145,25 @@ export const BranchList = () => {
             ],
           }}
         >
-          <Button
-            type="link"
-            style={{ color: "black" }}
-          >
+          <Button type="link" style={{ color: "black" }}>
             <EllipsisVertical />
           </Button>
-
         </Dropdown>
-      )
-    }
-
+      ),
+    },
   ];
 
   const exportColumns = [
-    { key: "name", label: "School Name" },
+    { key: "name", label: "Branch Name" },
     {
       key: "contact",
       label: "Contact",
-      render: (value, row) => (
-        <div>
-          {row.email} | {row.phone}
-        </div>
-      ),
+      render: (value, row) => `${row.email} | ${row.phone}`,
     },
     { key: "StartDate", label: "Start Date" },
     { key: "EndDate", label: "End Date" },
     { key: "AY", label: "Academic Year" },
   ];
-
-  const AllSchools = async () => {
-    try {
-      const response = await GetAllSchools();
-      const rawData = response.allSchools || []; 
-      
-      const formattedData = rawData.map((school) => ({
-        id: school._id,
-        AY: school.academicYear?.map((ay) => {
-            return ay.name;
-        }),
-        name: school.schoolName,
-        StartDate: school.startDate,
-        EndDate: school.endDate,
-        phone: school.phone,
-        email: school.branchEmail,
-        status: new Date(school.endDate) > new Date(),
-      }));
-  
-      setSchoolData(formattedData);
-  
-    } catch (error) {
-      console.log("Error fetching school data:", error);
-    }
-  };
-    
-  useEffect(() => {
-    AllSchools();    
-  }, [])
 
   return (
     <div className="overflow-x-auto">
@@ -180,13 +182,17 @@ export const BranchList = () => {
         columns={columns}
         rowSelection={rowSelection}
         dataSource={schoolData}
+        loading={loading}
         pagination={{
+          current: pagination.current,
+          pageSize: pagination.pageSize,
+          total: pagination.total,
           position: ["bottomRight"],
           pageSizeOptions: ["10", "20", "50"],
           showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
-          pageSize: 8,
           showLessItems: true,
         }}
+        onChange={handleTableChange}
         scroll={{ x: "max-content", y: 350 }}
         className="custom-table"
       />

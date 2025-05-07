@@ -11,6 +11,7 @@ import {
   Col,
 } from "antd";
 import { ToastContainer, toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 import {
   AcademicYear,
   GetClasses,
@@ -26,6 +27,7 @@ export const AddBranch = () => {
   const [schoolOptions, setSchoolOptions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [form] = Form.useForm();
+  const navigate = useNavigate(); // <-- navigation hook
 
   useEffect(() => {
     const fetchData = async () => {
@@ -74,9 +76,15 @@ export const AddBranch = () => {
 
       const reader = new FileReader();
       reader.readAsDataURL(file);
+
       reader.onload = () => {
         const base64String = reader.result.split(",")[1];
         setLogoBuffer(base64String);
+      };
+
+      reader.onerror = (error) => {
+        console.error("Error reading file:", error);
+        toast.error("Error reading the logo file");
       };
     }
 
@@ -104,7 +112,7 @@ export const AddBranch = () => {
     } = values;
 
     const submissionData = {
-      schoolId,
+      school: schoolId,
       name,
       displayName,
       branchPassword,
@@ -139,12 +147,12 @@ export const AddBranch = () => {
         setLogoPreview(null);
         setLogoName("");
         setLogoBuffer(null);
-      } else {
-        toast.error("Failed to create branch");
-      }
+        setTimeout(() => {
+          navigate("/eduworm-admin/branch/list");
+        }, 1000);
+      } 
     } catch (error) {
       console.error("CreateBranch Error:", error);
-      toast.error("Failed to create branch");
     }
   };
 
@@ -319,8 +327,7 @@ export const AddBranch = () => {
           </Col>
         </Row>
 
-
-        {/* Contact Info in Single Row */}
+        {/* Contact Info */}
         <Row gutter={16}>
           <Col span={8}>
             <Form.Item
@@ -350,7 +357,7 @@ export const AddBranch = () => {
             </Form.Item>
           </Col>
         </Row>
-        
+
         <Form.Item>
           <Button type="primary" htmlType="submit" block>
             Create Branch
