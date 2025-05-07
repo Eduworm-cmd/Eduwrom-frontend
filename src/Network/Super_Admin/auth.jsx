@@ -210,6 +210,17 @@ const GetAcademicYearsById = async (schoolId) => {
 
 
 
+
+const GetBranchById = async (id) => {
+    return await apiRequest(`auth_SchoolBranch/branches/${id}`, {
+        method: "GET",
+        
+    });
+};
+
+
+
+
 const StaffLogin = async(body) =>{
     return await apiRequest("SA_Staff/staff_login",{
         method:"POST",
@@ -276,6 +287,7 @@ export {
     GetGradeById,
     CreateGrade,
     DeactivateGrade,
+    GetBranchById,
     UpdateGrade,
     GetSchools,
     GetLevels,

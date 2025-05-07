@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { BookOpen, DollarSign, Edit, GraduationCap, Trash, User, User2, Users } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { GetSchoolById } from '@/Network/Super_Admin/auth';
 import user from "../../../assets/Images/teacher.webp";
 import Barcharts from '@/components/Charts/Barcharts';
 import { PieChart } from '@/components/Charts/PieChart';
+import { GetBranchById, GetSchoolById } from '@/Network/Super_Admin/auth';
 
 export const BranchView = () => {
   const [school, setSchool] = useState(null);
@@ -15,19 +15,19 @@ export const BranchView = () => {
   const statusList = [
     {
       title: "Students",
-      value: "15.00K",
+      value: school?.total_Students || "15.00K",
       icon: <GraduationCap className="text-purple-500" size={30} />,
       bgColor: "bg-purple-100",
     },
     {
       title: "Teachers",
-      value: "2.00K",
+      value: school?.total_Teachers ||"2.00K",
       icon: <User className="text-sky-600" size={30} />,
       bgColor: "bg-blue-50",
     },
     {
-      title: "Parents",
-      value: "5.6K",
+      title: "Staff",
+      value: school?.total_Staff ||"5.6K",
       icon: <Users className="text-orange-500" size={30} />,
       bgColor: "bg-orange-50",
     },
@@ -42,12 +42,12 @@ export const BranchView = () => {
 
   const SchoolApi = async (id) => {
     try {
-      const response = await GetSchoolById(id);
-      if (response.success) {
-        setSchool(response.data);
-      } else {
-        console.error("Error:", response.message);
-      }
+      const response = await GetBranchById(id);
+
+      setSchool(response.data);
+
+      console.log(response);
+
     } catch (error) {
       console.error("Fetch failed:", error);
     } finally {
@@ -60,17 +60,17 @@ export const BranchView = () => {
   }, [id]);
 
   if (loading) return <p className="p-4 text-lg">Loading school data...</p>;
-  if (!school) return <p className="p-4 text-red-600">School not found.</p>;
+  
 
   return (
     <div>
       {/* Main Profile Section */}
       <div className="max-w-8xl mx-auto mt-10 bg-white rounded-md shadow-md overflow-hidden flex flex-col md:flex-row">
         <div className="md:w-1/3 p-4 bg-sky-100 flex flex-col justify-center items-center">
-          <img src={school?.schoolLogo || user} alt="School Logo" className="w-32 h-32 rounded-full object-cover border-2 bg-slate-200 border-white shadow" />
-          <h2 className="mt-4 text-lg font-bold text-gray-800">{school?.schoolName || '—'}</h2>
+          <img src={school?.branchLogo || user} alt="School Logo" className="w-32 h-32 rounded-full object-cover border-2 bg-slate-200 border-white shadow" />
+          <h2 className="mt-4 text-lg font-bold text-gray-800">{school?.name || '—'}</h2>
           <div className="space-x-4 mt-2 flex w-full justify-center items-center my-6">
-            <button className='bg-yellow-500 px-4 py-2 cursor-pointer flex text-white rounded-sm gap-2' onClick={() => navigate(`/eduworm-admin/school/edit/${id}`)}>
+            <button className='bg-yellow-500 px-4 py-2 cursor-pointer flex text-white rounded-sm gap-2' onClick={() => navigate(`/eduworm-admin/branch/edit/${id}`)}> 
               <Edit /> Edit
             </button>
             <button className='bg-red-500 px-4 py-2 cursor-pointer flex text-white rounded-sm gap-2'>
@@ -81,21 +81,21 @@ export const BranchView = () => {
 
         {/* School Info */}
         <div className="md:w-2/3 p-6 mb-3">
-          <h3 className='text-2xl font-semibold text-sky-500 mb-4'>School Details</h3>
+          <h3 className='text-2xl font-semibold text-sky-500 mb-4'>Branch Details</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div><strong>School Name:</strong> {school?.schoolName || '—'}</div>
+            <div><strong>Branch Name:</strong> {school?.name || '—'}</div>
             <div><strong>Display Name:</strong> {school?.displayName || '—'}</div>
             <div><strong>Classes:</strong> {school?.classes?.length || '0'}</div>
             <div><strong>Academic Year:</strong> {school?.academicYear?.length || '—'}</div>
             <div><strong>Start Date:</strong> {school?.startDate?.split('T')[0] || '—'}</div>
             <div><strong>End Date:</strong> {school?.endDate?.split('T')[0] || '—'}</div>
-            <div><strong>Phone:</strong> {school?.phone || '—'}</div>
-            <div><strong>Email:</strong> {school?.email || '—'}</div>
-            <div><strong>Country:</strong> {school?.country || '—'}</div>
-            <div><strong>State:</strong> {school?.state || '—'}</div>
-            <div><strong>City:</strong> {school?.city || '—'}</div>
-            <div><strong>Pincode:</strong> {school?.pincode || '—'}</div>
-            <div><strong>Address:</strong> {school?.address || '—'}</div>
+            <div><strong>Phone:</strong> {school?.contact?.phone || '—'}</div>
+            <div><strong>Email:</strong> {school?.contact?.email || '—'}</div>
+            <div><strong>Country:</strong> {school?.location?.country || '—'}</div>
+            <div><strong>State:</strong> {school?.location?.state || '—'}</div>
+            <div><strong>City:</strong> {school?.location?.city || '—'}</div>
+            <div><strong>Pincode:</strong> {school?.location?.pincode || '—'}</div>
+            <div><strong>Address:</strong> {school?.location?.address || '—'}</div>
           </div>
         </div>
       </div>
@@ -103,9 +103,9 @@ export const BranchView = () => {
       {/* Branch Info */}
       <div className="max-w-8xl w-full shadow-md rounded-md p-4 mt-10 bg-white">
         <h1 className='text-3xl text-sky-500 font-semibold'>Branch Admin Information</h1>
-        <div className='my-3'><strong>Branch Name:</strong> {school?.branchName || '—'}</div>
-        <div className='my-3'><strong>Branch Phone:</strong> {school?.branchPhone || '—'}</div>
-        <div className='my-3'><strong>Branch Email:</strong> {school?.branchEmail || '—'}</div>
+        <div className='my-3'><strong>Branch Name:</strong> {school?.name || '—'}</div>
+        <div className='my-3'><strong>Branch Phone:</strong> {school?.contact?.phone || '—'}</div>
+        <div className='my-3'><strong>Branch Email:</strong> {school?.contact?.email || '—'}</div>
       </div>
 
       <section>
