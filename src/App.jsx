@@ -16,9 +16,6 @@ import { CommunicationHub } from "./pages/Notification Schedules/CommunicationHu
 import { InvoiceList } from "./pages/super-admin-pannel/Biiling/Invoice/InvoiceList";
 import { Invoice } from "./pages/super-admin-pannel/Biiling/Invoice/Invoice";
 import { Notification } from "./pages/Notification Schedules/Notification";
-import { AddSchool } from "./pages/super-admin-pannel/School/AddSchool";
-import { SchoolList } from "./pages/super-admin-pannel/School/SchoolList";
-import { SchoolView } from "./pages/super-admin-pannel/School/SchoolView";
 import { SALSHome } from "./pages/super-admin-pannel/SALicenseSubscription/SALSHome/SALSHome";
 import { Lms } from "./pages/super-admin-pannel/LMS/Lms";
 import { Login_SignUp } from "./auth/Login_SignUp";
@@ -27,7 +24,6 @@ import ScheduleList from "./pages/Teacheradmin/InteractiveContent/ScheduleList";
 import { SP_ScheduleList } from "./pages/super-admin-pannel/ScheduleList/SP_ScheduleList";
 import { School_Teacher_Login } from "./auth/School_Teacher_Login";
 import PageNotFound from "./components/PageNotFound/PageNotFound";
-import AcademicData from "./pages/AcademicData";
 import GradeManagement from "./pages/GradeManagement";
 import ClassRoomMangement from "./pages/ClassRoomMangement";
 import ToogleTabs from "./pages/super-admin-pannel/ToogleTabs";
@@ -38,6 +34,10 @@ import { StaffList } from "./pages/super-admin-pannel/Staff/StaffList";
 import { AcademicList } from "./pages/super-admin-pannel/AcademicYear/AcademicList";
 import { CreateStaff } from "./pages/super-admin-pannel/Staff/CreateStaff";
 import { StaffView } from "./pages/super-admin-pannel/Staff/StaffView.";
+import { BranchList } from "./pages/super-admin-pannel/Branch/BranchList";
+import { AddBranch } from "./pages/super-admin-pannel/Branch/AddBranch";
+import { BranchView } from "./pages/super-admin-pannel/Branch/BranchView";
+import { SchoolList } from "./pages/super-admin-pannel/School/SchoolList";
 
 function App() {
   return (
@@ -65,14 +65,17 @@ function App() {
           <Route path="home" element={<SAHomePage />} />
           <Route path="Admin" element={<SALSHome />} />
 
+          <Route path="branch/list" element={<BranchList />} />
+          <Route path="branch/add" element={<AddBranch />} />
+          <Route path="branch/edit/:id" element={<AddBranch />} />
+          <Route path="branch/view/:id" element={<BranchView />} />
+          
           <Route path="school/list" element={<SchoolList />} />
-          <Route path="school/add" element={<AddSchool />} />
-          <Route path="school/edit/:id" element={<AddSchool />} />
-          <Route path="school/view/:id" element={<SchoolView />} />
 
           <Route path="staff" element={<StaffList/>} />
           <Route path="staff/add" element={<CreateStaff/>} />
           <Route path="staff/view/:id" element={<StaffView/>} />
+          <Route path="staff/edit/:id" element={<CreateStaff/>} />
 
           <Route path="academic Year" element={<AcademicList />} />
           <Route path="student" element={<StudentList />} />

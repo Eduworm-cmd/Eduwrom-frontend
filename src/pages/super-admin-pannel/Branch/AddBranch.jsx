@@ -17,7 +17,7 @@ import {
   GetClasses,
 } from "@/Network/Super_Admin/auth";
 
-export const AddSchool = () => {
+export const AddBranch = () => {
   const [logoPreview, setLogoPreview] = useState(null);
   const [logoName, setLogoName] = useState("");
   const [logoBuffer, setLogoBuffer] = useState(null);
@@ -71,7 +71,13 @@ export const AddSchool = () => {
   };
 
   const handleSubmit = async (values) => {
-    const { startDate, endDate, classes, academicYear, ...rest } = values;
+    const {
+      startDate,
+      endDate,
+      classes,
+      academicYear,
+      ...rest
+    } = values;
 
     const submissionData = {
       ...rest,
@@ -91,7 +97,6 @@ export const AddSchool = () => {
       setLogoBuffer(null);
     } catch (error) {
       console.error(error);
-      toast.error("Failed to create school. Please try again.");
     }
   };
 
@@ -189,7 +194,7 @@ export const AddSchool = () => {
             <Form.Item
               label="Email"
               name="email"
-              rules={[{ required: true, type: "email" }]}
+              rules={[{ required: true }]}
             >
               <Input />
             </Form.Item>

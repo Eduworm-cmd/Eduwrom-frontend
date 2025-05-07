@@ -7,15 +7,24 @@ import {
   Eye,
   EllipsisVertical,
 } from "lucide-react";
-import { Space, Table, Button, Dropdown } from "antd";
+import { Space, Table, Button, Dropdown, Modal, Form, Row, Col, Input, DatePicker } from "antd";
 import DownloadButton from "@/components/Buttons/DownloadButton/DownloadButton";
 import { ExportButton } from "@/components/Buttons/ExportButton/ExportButton";
-import { GetAcademicYear } from "@/Network/Super_Admin/auth";
+import { CreateAcademicYear, GetAllAcademicYear } from "@/Network/Super_Admin/auth";
+import { toast, ToastContainer } from "react-toastify";
 
 export const AcademicList = () => {
+  const  [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [academicData, setAcademicData] = useState([]);
+  const [form] = Form.useForm();
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
 
   const onSelectChange = (selectedKeys) => {
     setSelectedRowKeys(selectedKeys);
@@ -30,7 +39,8 @@ export const AcademicList = () => {
     {
       title: "Sr.No",
       key: "srno",
-      render: (_, __, index) => index + 1,
+      render: (_, __, index) =>
+        (pagination.current - 1) * pagination.pageSize + index + 1,
     },
     {
       title: "Academic Year",
@@ -114,9 +124,8 @@ export const AcademicList = () => {
       align: "center",
       render: (status) => (
         <span
-          className={`font-semibold ${
-            status ? "text-green-600" : "text-red-500"
-          }`}
+          className={`font-semibold ${status ? "text-green-600" : "text-red-500"
+            }`}
         >
           {status ? "Active" : "Inactive"}
         </span>
@@ -131,11 +140,11 @@ export const AcademicList = () => {
     { key: "createdDate", label: "Created Date" },
   ];
 
-  const fetchAcademicYears = async () => {
+  const fetchAcademicYears = async (page = 1, limit = 10) => {
     try {
-      const response = await GetAcademicYear();
-      if (response?.status === "success" && Array.isArray(response.data)) {
-        const transformed = response.data.map((item, index) => ({
+      const response = await GetAllAcademicYear(page, limit);
+      if (response?.data && Array.isArray(response.data)) {
+        const transformed = response.data.map((item) => ({
           key: item._id,
           id: item._id,
           academicYear: item.name,
@@ -145,6 +154,11 @@ export const AcademicList = () => {
           status: item.isActive,
         }));
         setAcademicData(transformed);
+        setPagination({
+          current: page,
+          pageSize: limit,
+          total: response.totalRecords || 0,
+        });
       }
     } catch (err) {
       console.error("Failed to fetch academic years:", err);
@@ -155,11 +169,45 @@ export const AcademicList = () => {
     fetchAcademicYears();
   }, []);
 
+  const handleTableChange = (pagination) => {
+    fetchAcademicYears(pagination.current, pagination.pageSize);
+  };
+
+  const handleOk = () => {
+    form.submit();
+  };
+
+  const handleSubmit = async (values) => {
+    setLoading(true);
+    try {
+      const payload = {
+        name: values.name,
+        startDate: values.startDate.toISOString(),
+        endDate: values.endDate.toISOString(),
+      };
+      const response = await CreateAcademicYear(payload);
+      toast.success(response.message || "Academic Year Created Successfully!");
+      fetchAcademicYears();
+    } catch (error) {
+      console.log("Error creating academic year:", error);
+    } finally {
+      setLoading(false); 
+      setIsModalOpen(false);
+      form.resetFields();
+    }
+  };
+  
+
+  if (loading) {
+    return <div className="text-center mt-10 text-lg font-semibold">Loading...</div>;
+  }
+
   return (
     <div className="overflow-x-auto">
+      <ToastContainer/>
       <div className="flex gap-2 justify-end mb-3">
         <button
-          onClick={() => navigate("/eduworm-admin/academic/add")}
+          onClick={() => setIsModalOpen(true)}
           className="flex gap-2 mt-4 text-white py-2 px-5 outline-none rounded-sm font-semibold cursor-pointer text-[14px] bg-sky-500"
         >
           <PlusCircle /> Add Academic Year
@@ -173,15 +221,67 @@ export const AcademicList = () => {
         rowSelection={rowSelection}
         dataSource={academicData}
         pagination={{
-          position: ["bottomRight"],
-          pageSizeOptions: ["10", "20", "50"],
-          showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
-          pageSize: 8,
-          showLessItems: true,
+          ...pagination,
+          showTotal: (total, range) =>
+            `${range[0]}-${range[1]} of ${total}`,
+          pageSizeOptions: ["5", "10", "20", "50"],
         }}
+        onChange={handleTableChange}
         scroll={{ x: "max-content", y: 350 }}
         className="custom-table"
       />
+
+
+
+
+
+      <Modal
+        title="Add Academic Year"
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={() => setIsModalOpen(false)}
+        okText="Submit"
+      >
+        <Form
+          form={form}
+          layout="vertical"
+          className="form-container"
+          onFinish={handleSubmit}
+        >
+          <Row gutter={16}>
+            <Col span={24}>
+              <Form.Item
+                label="Academic Year Name"
+                name="name"
+                rules={[{ required: true, message: "Please enter a name" }]}
+              >
+                <Input type="number" placeholder="e.g. 2024-2025"/>
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                label="Start Date"
+                name="startDate"
+                rules={[{ required: true, message: "Start date is required" }]}
+              >
+                <DatePicker style={{ width: "100%" }} />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                label="End Date"
+                name="endDate"
+                rules={[{ required: true, message: "End date is required" }]}
+              >
+                <DatePicker style={{ width: "100%" }} />
+              </Form.Item>
+            </Col>
+          </Row>
+        </Form>
+      </Modal>
+
     </div>
   );
 };

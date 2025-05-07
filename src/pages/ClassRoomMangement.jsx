@@ -28,7 +28,7 @@ import {
   LeftOutlined,
   RightOutlined
 } from '@ant-design/icons';
-import { GetAcademicYear, GetClasses, GetGrades, GetSchoolBranches, GetSchools } from '@/Network/Super_Admin/auth';
+import { AcademicYear, GetClasses, GetGrades, GetSchoolBranches, GetSchools } from '@/Network/Super_Admin/auth';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -120,7 +120,7 @@ const ClassManagement = () => {
   // Fetch academic years API
   const fetchAcademicYears = async () => {
     try {
-      const response = await GetAcademicYear();
+      const response = await AcademicYear();
       setAcademicYears(response.data);
     } catch (error) {
       message.error('Failed to fetch academic years');

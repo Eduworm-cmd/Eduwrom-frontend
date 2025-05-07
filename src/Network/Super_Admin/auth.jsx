@@ -135,6 +135,7 @@ const CreateSchool = async (body) => {
     });
 };
 
+
 // Get School By Id
 const GetSchoolById = async (schoolId) => {
     return await apiRequest(`schooladmin-auth/${schoolId}`, {
@@ -160,15 +161,24 @@ const GetLevels = async (body) => {
 }
 
 // Get All Academic Year
-const GetAcademicYear = async (body) => {
-    return await apiRequest("academic", {
+const GetAllAcademicYear = async (page = 1, limit = 10) => {
+    return await apiRequest(`academicYear/AllAcademicYear?page=${page}&limit=${limit}`, {
+      method: "GET",
+    });
+};
+
+// Academic Year for Dropdown 
+const AcademicYear = async (body) => {
+    return await apiRequest("academicYear/AllAcademicYear", {
         method: "GET",
         body,
     })
 }
+  
+
 // Create Academic Year
 const CreateAcademicYear = async (body) => {
-    return await apiRequest("academic", {
+    return await apiRequest("academicYear/createAcademicYear", {
         method: "POST",
         body,
     });
@@ -182,6 +192,8 @@ const UpdateAcademicYear = async (id, body) => {
     });
 };
 
+
+// Deactive Academic year 
 const DeactivateAcademicYear = async (yearId, isActive) => {
     return await apiRequest(`academic-years/${yearId}`, {
         method: "PATCH",
@@ -219,10 +231,10 @@ const GetAllStaff = async(body) =>{
     })
 }
 
-const GetStaffById = async (body) =>{
+const GetStaffById = async (id,body) =>{
     return await apiRequest(`SA_Staff/${id}`,{
         method:"GET",
-        body,
+        body
     })
 }
 
@@ -268,7 +280,8 @@ export {
     UpdateGrade,
     GetSchools,
     GetLevels,
-    GetAcademicYear,
+    AcademicYear,
+    GetAllAcademicYear,
     GetAcademicYearsById,
     CreateAcademicYear,
     DeactivateAcademicYear,
