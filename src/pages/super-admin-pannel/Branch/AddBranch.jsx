@@ -13,9 +13,9 @@ import {
 import { ToastContainer, toast } from "react-toastify";
 import {
   AcademicYear,
-  CreateSchool,
   GetClasses,
 } from "@/Network/Super_Admin/auth";
+import axios from "axios";
 
 export const AddBranch = () => {
   const [logoPreview, setLogoPreview] = useState(null);
@@ -23,6 +23,7 @@ export const AddBranch = () => {
   const [logoBuffer, setLogoBuffer] = useState(null);
   const [classOptions, setClassOptions] = useState([]);
   const [academicYearOptions, setAcademicYearOptions] = useState([]);
+  const [schoolOptions, setSchoolOptions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [form] = Form.useForm();
 
@@ -30,19 +31,31 @@ export const AddBranch = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const classesResponse = await GetClasses();
+        const [classesResponse, academicYearsResponse, schoolResponse] =
+          await Promise.all([
+            GetClasses(),
+            AcademicYear(),
+            axios.get("http://localhost:4000/api/school/dropdown"),
+          ]);
+
         const classesData = classesResponse?.data?.map((cls) => ({
           value: cls._id,
           label: cls.className || cls.name,
         }));
-        setClassOptions(classesData || []);
 
-        const academicYearsResponse = await AcademicYear();
         const academicYearsData = academicYearsResponse?.data?.map((year) => ({
           value: year._id,
           label: year.name || `AY ${year.startYear} - ${year.endYear}`,
         }));
+
+        const schoolData = schoolResponse?.data?.data?.map((school) => ({
+          value: school._id,
+          label: school.schoolName,
+        }));
+
+        setClassOptions(classesData || []);
         setAcademicYearOptions(academicYearsData || []);
+        setSchoolOptions(schoolData || []);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -72,31 +85,66 @@ export const AddBranch = () => {
 
   const handleSubmit = async (values) => {
     const {
+      schoolId,
+      name,
+      displayName,
+      branchPassword,
+      branchEmail,
+      phone,
       startDate,
       endDate,
       classes,
       academicYear,
-      ...rest
+      city,
+      state,
+      country,
+      address,
+      pincode,
+      affiliation_board,
     } = values;
 
     const submissionData = {
-      ...rest,
-      startDate: startDate ? startDate.format("YYYY-MM-DD") : "",
-      endDate: endDate ? endDate.format("YYYY-MM-DD") : "",
+      schoolId,
+      name,
+      displayName,
+      branchPassword,
+      contact: {
+        email: branchEmail,
+        phone,
+      },
+      location: {
+        address,
+        city,
+        state,
+        country,
+        pincode,
+      },
+      affiliation_board,
+      startDate: startDate?.format("YYYY-MM-DD"),
+      endDate: endDate?.format("YYYY-MM-DD"),
       classes: classes || [],
       academicYear: academicYear || [],
-      schoolLogoBuffer: logoBuffer,
+      branchLogo: logoBuffer,
     };
 
     try {
-      const response = await CreateSchool(submissionData);
-      toast.success(response.message);
-      form.resetFields();
-      setLogoPreview(null);
-      setLogoName("");
-      setLogoBuffer(null);
+      const response = await axios.post(
+        "http://localhost:4000/api/auth_SchoolBranch/create_SchoolBranch",
+        submissionData
+      );
+
+      if (response.status === 200) {
+        toast.success(response.data.message || "Branch created successfully!");
+        form.resetFields();
+        setLogoPreview(null);
+        setLogoName("");
+        setLogoBuffer(null);
+      } else {
+        toast.error("Failed to create branch");
+      }
     } catch (error) {
-      console.error(error);
+      console.error("CreateBranch Error:", error);
+      toast.error("Failed to create branch");
     }
   };
 
@@ -118,6 +166,14 @@ export const AddBranch = () => {
     { value: "Los Angeles", label: "Los Angeles" },
   ];
 
+  const boardOptions = [
+    { value: "CBSE", label: "CBSE" },
+    { value: "ICSE", label: "ICSE" },
+    { value: "State Board", label: "State Board" },
+    { value: "IB", label: "IB" },
+    { value: "Other", label: "Other" },
+  ];
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -136,8 +192,8 @@ export const AddBranch = () => {
         initialValues={{ startDate: null, endDate: null }}
         className="form-container"
       >
-        {/* Logo Upload */}
-        <Form.Item label="School Logo" required className="flex justify-center">
+        {/* Branch Logo Upload */}
+        <Form.Item label="Branch Logo" required className="flex justify-center">
           <Upload
             customRequest={({ file }) => handleLogoChange(file)}
             showUploadList={false}
@@ -167,96 +223,29 @@ export const AddBranch = () => {
           )}
         </Form.Item>
 
-        {/* School Admin Info */}
+        {/* School Dropdown */}
         <Row gutter={16}>
-          <Col span={12}>
+          <Col span={24}>
             <Form.Item
-              label="First Name"
-              name="firstName"
-              rules={[{ required: true }]}
+              label="Select School"
+              name="schoolId"
+              rules={[{ required: true, message: "Please select a school" }]}
             >
-              <Input />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item
-              label="Last Name"
-              name="lastName"
-              rules={[{ required: true }]}
-            >
-              <Input />
+              <Select options={schoolOptions} placeholder="Select a school" />
             </Form.Item>
           </Col>
         </Row>
 
+        {/* Branch Info */}
         <Row gutter={16}>
           <Col span={12}>
-            <Form.Item
-              label="Email"
-              name="email"
-              rules={[{ required: true }]}
-            >
+            <Form.Item label="Branch Name" name="name" rules={[{ required: true }]}>
               <Input />
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item
-              label="Phone Number"
-              name="phone"
-              rules={[{ required: true }]}
-            >
+            <Form.Item label="Display Name" name="displayName" rules={[{ required: true }]}>
               <Input />
-            </Form.Item>
-          </Col>
-        </Row>
-
-        <Row gutter={16}>
-          <Col span={12}>
-            <Form.Item
-              label="School Name"
-              name="schoolName"
-              rules={[{ required: true }]}
-            >
-              <Input />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item
-              label="Display Name"
-              name="displayName"
-              rules={[{ required: true }]}
-            >
-              <Input />
-            </Form.Item>
-          </Col>
-        </Row>
-
-        {/* Classes & Academic Year */}
-        <Row gutter={16}>
-          <Col span={12}>
-            <Form.Item
-              label="Select Classes"
-              name="classes"
-              rules={[{ required: true }]}
-            >
-              <Select
-                mode="multiple"
-                options={classOptions}
-                placeholder="Select Classes"
-              />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item
-              label="Academic Year"
-              name="academicYear"
-              rules={[{ required: true }]}
-            >
-              <Select
-                mode="multiple"
-                options={academicYearOptions}
-                placeholder="Select Academic Year(s)"
-              />
             </Form.Item>
           </Col>
         </Row>
@@ -264,39 +253,31 @@ export const AddBranch = () => {
         {/* Dates */}
         <Row gutter={16}>
           <Col span={12}>
-            <Form.Item
-              label="Start Date"
-              name="startDate"
-              rules={[{ required: true }]}
-            >
+            <Form.Item label="Start Date" name="startDate" rules={[{ required: true }]}>
               <DatePicker style={{ width: "100%" }} />
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item
-              label="End Date"
-              name="endDate"
-              rules={[{ required: true }]}
-            >
+            <Form.Item label="End Date" name="endDate" rules={[{ required: true }]}>
               <DatePicker style={{ width: "100%" }} />
             </Form.Item>
           </Col>
         </Row>
 
-        {/* Location Info */}
+        {/* Location */}
         <Row gutter={16}>
           <Col span={8}>
-            <Form.Item label="Country" name="country">
+            <Form.Item label="Country" name="country" rules={[{ required: true }]}>
               <Select options={countryOptions} />
             </Form.Item>
           </Col>
           <Col span={8}>
-            <Form.Item label="State" name="state">
+            <Form.Item label="State" name="state" rules={[{ required: true }]}>
               <Select options={stateOptions} />
             </Form.Item>
           </Col>
           <Col span={8}>
-            <Form.Item label="City" name="city">
+            <Form.Item label="City" name="city" rules={[{ required: true }]}>
               <Select options={cityOptions} />
             </Form.Item>
           </Col>
@@ -304,33 +285,57 @@ export const AddBranch = () => {
 
         <Row gutter={16}>
           <Col span={8}>
-            <Form.Item label="Pincode" name="pincode">
+            <Form.Item label="Pincode" name="pincode" rules={[{ required: true }]}>
               <Input />
             </Form.Item>
           </Col>
           <Col span={16}>
-            <Form.Item label="Address" name="address">
+            <Form.Item label="Address" name="address" rules={[{ required: true }]}>
               <Input.TextArea />
             </Form.Item>
           </Col>
         </Row>
 
-        {/* Branch Info */}
-        <Row gutter={24}>
+        {/* Class and Academic Year */}
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item label="Classes" name="classes" rules={[{ required: true }]}>
+              <Select mode="multiple" options={classOptions} />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item label="Academic Year" name="academicYear" rules={[{ required: true }]}>
+              <Select options={academicYearOptions} />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        {/* Affiliation Board */}
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item label="Affiliation Board" name="affiliation_board" rules={[{ required: true }]}>
+              <Select options={boardOptions} />
+            </Form.Item>
+          </Col>
+        </Row>
+
+
+        {/* Contact Info in Single Row */}
+        <Row gutter={16}>
           <Col span={8}>
             <Form.Item
-              label="Branch Name"
-              name="branchName"
-              rules={[{ required: true }]}
+              label="Branch Email"
+              name="branchEmail"
+              rules={[{ required: true, message: "Please enter branch email" }]}
             >
               <Input />
             </Form.Item>
           </Col>
           <Col span={8}>
             <Form.Item
-              label="Branch Email"
-              name="branchEmail"
-              rules={[{ required: true }]}
+              label="Phone Number"
+              name="phone"
+              rules={[{ required: true, message: "Please enter phone number" }]}
             >
               <Input />
             </Form.Item>
@@ -339,17 +344,16 @@ export const AddBranch = () => {
             <Form.Item
               label="Branch Password"
               name="branchPassword"
-              rules={[{ required: true }]}
+              rules={[{ required: true, message: "Please enter password" }]}
             >
               <Input.Password />
             </Form.Item>
           </Col>
         </Row>
-
-        {/* Submit */}
+        
         <Form.Item>
-          <Button type="primary" htmlType="submit">
-            Submit
+          <Button type="primary" htmlType="submit" block>
+            Create Branch
           </Button>
         </Form.Item>
       </Form>
