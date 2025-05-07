@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { BookOpen, DollarSign, Edit, GraduationCap, Trash, User, User2, Users } from 'lucide-react';
+import { Edit, Trash } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { GetSchoolById } from '@/Network/Super_Admin/auth';
 import user from "../../../assets/Images/teacher.webp";
-import Barcharts from '@/components/Charts/Barcharts';
-import { PieChart } from '@/components/Charts/PieChart';
 
 export const SchoolView = () => {
   const [school, setSchool] = useState(null);
@@ -12,41 +10,13 @@ export const SchoolView = () => {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  const statusList = [
-    {
-      title: "Students",
-      value: "15.00K",
-      icon: <GraduationCap className="text-purple-500" size={30} />,
-      bgColor: "bg-purple-100",
-    },
-    {
-      title: "Teachers",
-      value: "2.00K",
-      icon: <User className="text-sky-600" size={30} />,
-      bgColor: "bg-blue-50",
-    },
-    {
-      title: "Parents",
-      value: "5.6K",
-      icon: <Users className="text-orange-500" size={30} />,
-      bgColor: "bg-orange-50",
-    },
-    {
-      title: "Earnings",
-      value: "$19.3K",
-      icon: <DollarSign className="text-green-500" size={30} />,
-      bgColor: "bg-green-50",
-    },
-
-  ];
-
   const SchoolApi = async (id) => {
     try {
       const response = await GetSchoolById(id);
-      if (response.success) {
-        setSchool(response.data);
+      if (response?.school) {
+        setSchool(response.school);
       } else {
-        console.error("Error:", response.message);
+        console.error("Error:", response.message || "School not found");
       }
     } catch (error) {
       console.error("Fetch failed:", error);
@@ -67,10 +37,18 @@ export const SchoolView = () => {
       {/* Main Profile Section */}
       <div className="max-w-8xl mx-auto mt-10 bg-white rounded-md shadow-md overflow-hidden flex flex-col md:flex-row">
         <div className="md:w-1/3 p-4 bg-sky-100 flex flex-col justify-center items-center">
-          <img src={school?.schoolLogo || user} alt="School Logo" className="w-32 h-32 rounded-full object-cover border-2 bg-slate-200 border-white shadow" />
-          <h2 className="mt-4 text-lg font-bold text-gray-800">{school?.schoolName || '—'}</h2>
-          <div className="space-x-4 mt-2 flex w-full justify-center items-center my-6">
-            <button className='bg-yellow-500 px-4 py-2 cursor-pointer flex text-white rounded-sm gap-2' onClick={() => navigate(`/eduworm-admin/school/edit/${id}`)}>
+          <img
+            src={school.schoolLogo || user}
+            alt="School Logo"
+            className="w-32 h-32 rounded-full object-cover border-2 bg-slate-200 border-white shadow"
+          />
+          <h2 className="mt-4 text-lg font-bold text-gray-800">{school.schoolName || '—'}</h2>
+
+          <div className="space-x-4 mt-4 flex justify-center">
+            <button
+              className='bg-yellow-500 px-4 py-2 cursor-pointer flex text-white rounded-sm gap-2'
+              onClick={() => navigate(`/eduworm-admin/school/edit/${id}`)}
+            >
               <Edit /> Edit
             </button>
             <button className='bg-red-500 px-4 py-2 cursor-pointer flex text-white rounded-sm gap-2'>
@@ -83,19 +61,15 @@ export const SchoolView = () => {
         <div className="md:w-2/3 p-6 mb-3">
           <h3 className='text-2xl font-semibold text-sky-500 mb-4'>School Details</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div><strong>School Name:</strong> {school?.schoolName || '—'}</div>
-            <div><strong>Display Name:</strong> {school?.displayName || '—'}</div>
-            <div><strong>Classes:</strong> {school?.classes?.length || '0'}</div>
-            <div><strong>Academic Year:</strong> {school?.academicYear?.length || '—'}</div>
-            <div><strong>Start Date:</strong> {school?.startDate?.split('T')[0] || '—'}</div>
-            <div><strong>End Date:</strong> {school?.endDate?.split('T')[0] || '—'}</div>
-            <div><strong>Phone:</strong> {school?.phone || '—'}</div>
-            <div><strong>Email:</strong> {school?.email || '—'}</div>
-            <div><strong>Country:</strong> {school?.country || '—'}</div>
-            <div><strong>State:</strong> {school?.state || '—'}</div>
-            <div><strong>City:</strong> {school?.city || '—'}</div>
-            <div><strong>Pincode:</strong> {school?.pincode || '—'}</div>
-            <div><strong>Address:</strong> {school?.address || '—'}</div>
+            <div><strong>First Name:</strong> {school.firstName || '—'}</div>
+            <div><strong>Last Name:</strong> {school.lastName || '—'}</div>
+            <div><strong>School Name:</strong> {school.schoolName || '—'}</div>
+            <div><strong>Email:</strong> {school.contact?.email || '—'}</div>
+            <div><strong>Phone:</strong> {school.contact?.phone || '—'}</div>
+            <div><strong>Status:</strong> {school.isActive ? 'Active' : 'Inactive'}</div>
+            <div><strong>Total Branches:</strong> {school.branches?.length || 0}</div>
+            <div><strong>Created At:</strong> {new Date(school.createdAt).toLocaleDateString()}</div>
+            <div><strong>Updated At:</strong> {new Date(school.updatedAt).toLocaleDateString()}</div>
           </div>
         </div>
       </div>

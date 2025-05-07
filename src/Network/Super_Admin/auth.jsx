@@ -137,7 +137,7 @@ const CreateSchool = async (body) =>{
 
 // Get School By Id
 const GetSchoolById = async (schoolId) => {
-    return await apiRequest(`schooladmin-auth/${schoolId}`, {
+    return await apiRequest(`school/${schoolId}`, {
         method: "GET",
     });
 };

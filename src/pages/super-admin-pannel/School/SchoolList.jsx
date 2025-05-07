@@ -79,7 +79,7 @@ export const SchoolList = () => {
                 label: (
                   <div
                     className="flex items-center gap-2 text-black"
-                    onClick={() => navigate(`/eduworm-admin/branch/edit/${record.id}`)}
+                    onClick={() => navigate(`/eduworm-admin/school/edit/${record.id}`)}
                   >
                     <Edit2 size={14} /> Edit
                   </div>
@@ -90,7 +90,7 @@ export const SchoolList = () => {
                 label: (
                   <div
                     className="flex items-center gap-2 text-black"
-                    onClick={() => navigate(`/eduworm-admin/branch/view/${record.id}`)}
+                    onClick={() => navigate(`/eduworm-admin/school/view/${record.id}`)}
                   >
                     <Eye size={14} /> View
                   </div>

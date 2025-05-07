@@ -39,6 +39,7 @@ import { AddBranch } from "./pages/super-admin-pannel/Branch/AddBranch";
 import { BranchView } from "./pages/super-admin-pannel/Branch/BranchView";
 import { SchoolList } from "./pages/super-admin-pannel/School/SchoolList";
 import { AddSchool } from "./pages/super-admin-pannel/School/AddSchool";
+import { SchoolView } from "./pages/super-admin-pannel/School/SchoolView";
 
 function App() {
   return (
@@ -73,6 +74,7 @@ function App() {
           
           <Route path="school/list" element={<SchoolList />} />
           <Route path="school/add" element={<AddSchool />} />
+          <Route path="school/view/:id" element={<SchoolView />} />
 
           <Route path="staff" element={<StaffList/>} />
           <Route path="staff/add" element={<CreateStaff/>} />
