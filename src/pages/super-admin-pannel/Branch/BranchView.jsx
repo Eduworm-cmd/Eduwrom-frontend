@@ -4,12 +4,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import user from "../../../assets/Images/teacher.webp";
 import Barcharts from '@/components/Charts/Barcharts';
 import { PieChart } from '@/components/Charts/PieChart';
-<<<<<<< HEAD
 import { GetBranchById,} from '@/Network/Super_Admin/auth';
 import { toast } from 'react-toastify';
-=======
-import { GetBranchById, GetSchoolById } from '@/Network/Super_Admin/auth';
->>>>>>> e1b88ba26f9db8137ac8a001fa665ca3055d6ff8
 
 export const BranchView = () => {
   const [school, setSchool] = useState(null);
@@ -48,19 +44,11 @@ export const BranchView = () => {
   const SchoolApi = async (id) => {
     try {
       const response = await GetBranchById(id);
-<<<<<<< HEAD
       if(response){
         toast.success(response.message);
         navigate('/eduworm-admin/school/list') ;
       }
       setSchool(response.data);
-=======
-
-      setSchool(response.data);
-
-      console.log(response);
-
->>>>>>> e1b88ba26f9db8137ac8a001fa665ca3055d6ff8
     } catch (error) {
       console.error("Fetch failed:", error);
     } finally {

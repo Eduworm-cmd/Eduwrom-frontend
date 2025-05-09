@@ -235,13 +235,6 @@ const GetAcademicYearsById = async (schoolId) => {
 
 
 
-const GetBranchById = async (id) => {
-    return await apiRequest(`auth_SchoolBranch/branches/${id}`, {
-        method: "GET",
-        
-    });
-};
-
 
 
 
@@ -314,7 +307,6 @@ export {
     GetGradeById,
     CreateGrade,
     DeactivateGrade,
-    GetBranchById,
     UpdateGrade,
     GetSchools,
     GetLevels,
