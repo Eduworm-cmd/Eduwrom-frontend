@@ -68,11 +68,20 @@ const SuperAdminLogin = async (body) => {
 
 // Get All Classes 
 const GetClasses = async (body) => {
-    return await apiRequest("class", {
+    return await apiRequest("class/all", {
         method: "GET",
         body
     })
 }
+
+// Class Dropdown
+const ClassesDropdown = async (body) => {
+    return await apiRequest("class/dropdown", {
+        method: "GET",
+        body
+    })
+}
+
 
 // Get All Grades
 const GetGrades = async (body) => {
@@ -119,6 +128,14 @@ const GetSchools = async (body) => {
         body,
     });
 }
+
+const SchoolsDropdwon = async (body) => {
+    return await apiRequest("school/dropdown", {
+        method: "GET",
+        body,
+    });
+}
+
 //Get All Schools
 const GetAllSchools = async (body) => {
     return await apiRequest("school/all", {
@@ -151,6 +168,13 @@ const GetSchoolBranches = async (schoolId) => {
 };
 
 
+const GetBranchById = async (id) => {
+    return await apiRequest(`auth_SchoolBranch/branches/${id}`, {
+        method: "GET",
+        
+    });
+};
+
 // Get All Levels
 const GetLevels = async (body) => {
     return await apiRequest("level", {
@@ -167,8 +191,8 @@ const GetAllAcademicYear = async (page = 1, limit = 10) => {
 };
 
 // Academic Year for Dropdown 
-const AcademicYear = async (body) => {
-    return await apiRequest("academicYear/AllAcademicYear", {
+const AcademicYearDropdown = async (body) => {
+    return await apiRequest("academicYear/dropdown", {
         method: "GET",
         body,
     })
@@ -266,6 +290,9 @@ export {
     SuperAdminLogin,
     GetClasses,
     GetAllSchools,
+    SchoolsDropdwon,
+    GetBranchById,
+    ClassesDropdown,
     GetSchoolById,
     CreateSchool,
     StaffLogin,
@@ -279,7 +306,7 @@ export {
     UpdateGrade,
     GetSchools,
     GetLevels,
-    AcademicYear,
+    AcademicYearDropdown,
     GetAllAcademicYear,
     GetAcademicYearsById,
     CreateAcademicYear,

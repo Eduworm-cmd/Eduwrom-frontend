@@ -255,7 +255,7 @@ export const AcademicList = () => {
                 name="name"
                 rules={[{ required: true, message: "Please enter a name" }]}
               >
-                <Input type="number" placeholder="e.g. 2024-2025"/>
+                <Input type="text" placeholder="e.g. 2024-2025"/>
               </Form.Item>
             </Col>
           </Row>

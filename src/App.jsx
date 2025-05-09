@@ -24,8 +24,6 @@ import ScheduleList from "./pages/Teacheradmin/InteractiveContent/ScheduleList";
 import { SP_ScheduleList } from "./pages/super-admin-pannel/ScheduleList/SP_ScheduleList";
 import { School_Teacher_Login } from "./auth/School_Teacher_Login";
 import PageNotFound from "./components/PageNotFound/PageNotFound";
-import GradeManagement from "./pages/GradeManagement";
-import ClassRoomMangement from "./pages/ClassRoomMangement";
 import ToogleTabs from "./pages/super-admin-pannel/ToogleTabs";
 import { PlayListAssignment } from "./pages/Teacheradmin/InteractiveContent/PlayListAssignment";
 import { StudentList } from "./pages/super-admin-pannel/Student/StudentList";
@@ -40,6 +38,8 @@ import { BranchView } from "./pages/super-admin-pannel/Branch/BranchView";
 import { SchoolList } from "./pages/super-admin-pannel/School/SchoolList";
 import { AddSchool } from "./pages/super-admin-pannel/School/AddSchool";
 import { SchoolView } from "./pages/super-admin-pannel/School/SchoolView";
+import { GradeList } from "./pages/super-admin-pannel/GradeList/GradeList";
+import { ClassList } from "./pages/super-admin-pannel/ClassList/ClassList";
 
 function App() {
   return (
@@ -82,9 +82,9 @@ function App() {
           <Route path="staff/edit/:id" element={<CreateStaff/>} />
 
           <Route path="academic Year" element={<AcademicList />} />
+          <Route path="grade" element={<GradeList />} />
+          <Route path="class" element={<ClassList />} />
           <Route path="student" element={<StudentList />} />
-          <Route path="grade" element={<GradeManagement />} />
-          <Route path="classroom" element={<ClassRoomMangement />} />
           <Route path="students/add" element={<AddStudent />} />
           <Route path="students/edit/:id" element={<AddStudent />} />
 

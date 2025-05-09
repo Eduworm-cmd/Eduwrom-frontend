@@ -36,7 +36,7 @@ const superAdminData = {
         { title: "Staff Data", url: "/eduworm-admin/staff" },
         { title: "Academic Year", url: "/eduworm-admin/academic Year" },
         { title: "Grade Management", url: "/eduworm-admin/grade" },
-        { title: "Classroom Management", url: "/eduworm-admin/classroom" },
+        { title: "Classroom Management", url: "/eduworm-admin/class" },
       ]
     },
     {

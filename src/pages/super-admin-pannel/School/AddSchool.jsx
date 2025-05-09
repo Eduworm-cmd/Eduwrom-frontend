@@ -18,8 +18,7 @@ export const AddSchool = () => {
 
     try {
       const response = await CreateSchool(payload);
-
-      if (response.ok) {
+      if (response) {
         toast.success("School created successfully!");
         form.resetFields();
       }

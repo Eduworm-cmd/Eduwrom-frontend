@@ -13,8 +13,9 @@ import {
 import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import {
-  AcademicYear,
-  GetClasses,
+  AcademicYearDropdown,
+  ClassesDropdown,
+  SchoolsDropdwon,
 } from "@/Network/Super_Admin/auth";
 import axios from "axios";
 
@@ -27,22 +28,21 @@ export const AddBranch = () => {
   const [schoolOptions, setSchoolOptions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [form] = Form.useForm();
-  const navigate = useNavigate(); // <-- navigation hook
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const [classesResponse, academicYearsResponse, schoolResponse] =
-          await Promise.all([
-            GetClasses(),
-            AcademicYear(),
-            axios.get("http://localhost:4000/api/school/dropdown"),
-          ]);
+        const [classesResponse, academicYearsResponse, schoolResponse] = await Promise.all([
+          ClassesDropdown(),
+          AcademicYearDropdown(),
+          SchoolsDropdwon(),
+        ]);
 
         const classesData = classesResponse?.data?.map((cls) => ({
           value: cls._id,
-          label: cls.className || cls.name,
+          label: cls.className,
         }));
 
         const academicYearsData = academicYearsResponse?.data?.map((year) => ({
@@ -50,7 +50,7 @@ export const AddBranch = () => {
           label: year.name || `AY ${year.startYear} - ${year.endYear}`,
         }));
 
-        const schoolData = schoolResponse?.data?.data?.map((school) => ({
+        const schoolData = schoolResponse?.data?.map((school) => ({
           value: school._id,
           label: school.schoolName,
         }));
@@ -141,8 +141,8 @@ export const AddBranch = () => {
         submissionData
       );
 
-      if (response.status === 200) {
-        toast.success(response.data.message || "Branch created successfully!");
+      if (response) {
+        toast.success(response.message || "Branch created successfully!");
         form.resetFields();
         setLogoPreview(null);
         setLogoName("");
@@ -150,9 +150,10 @@ export const AddBranch = () => {
         setTimeout(() => {
           navigate("/eduworm-admin/branch/list");
         }, 1000);
-      } 
+      }
     } catch (error) {
       console.error("CreateBranch Error:", error);
+      toast.error("Branch creation failed.");
     }
   };
 
@@ -200,7 +201,6 @@ export const AddBranch = () => {
         initialValues={{ startDate: null, endDate: null }}
         className="form-container"
       >
-        {/* Branch Logo Upload */}
         <Form.Item label="Branch Logo" required className="flex justify-center">
           <Upload
             customRequest={({ file }) => handleLogoChange(file)}
@@ -231,7 +231,6 @@ export const AddBranch = () => {
           )}
         </Form.Item>
 
-        {/* School Dropdown */}
         <Row gutter={16}>
           <Col span={24}>
             <Form.Item
@@ -244,7 +243,6 @@ export const AddBranch = () => {
           </Col>
         </Row>
 
-        {/* Branch Info */}
         <Row gutter={16}>
           <Col span={12}>
             <Form.Item label="Branch Name" name="name" rules={[{ required: true }]}>
@@ -258,7 +256,6 @@ export const AddBranch = () => {
           </Col>
         </Row>
 
-        {/* Dates */}
         <Row gutter={16}>
           <Col span={12}>
             <Form.Item label="Start Date" name="startDate" rules={[{ required: true }]}>
@@ -272,7 +269,6 @@ export const AddBranch = () => {
           </Col>
         </Row>
 
-        {/* Location */}
         <Row gutter={16}>
           <Col span={8}>
             <Form.Item label="Country" name="country" rules={[{ required: true }]}>
@@ -304,7 +300,6 @@ export const AddBranch = () => {
           </Col>
         </Row>
 
-        {/* Class and Academic Year */}
         <Row gutter={16}>
           <Col span={12}>
             <Form.Item label="Classes" name="classes" rules={[{ required: true }]}>
@@ -318,7 +313,6 @@ export const AddBranch = () => {
           </Col>
         </Row>
 
-        {/* Affiliation Board */}
         <Row gutter={16}>
           <Col span={12}>
             <Form.Item label="Affiliation Board" name="affiliation_board" rules={[{ required: true }]}>
@@ -327,7 +321,6 @@ export const AddBranch = () => {
           </Col>
         </Row>
 
-        {/* Contact Info */}
         <Row gutter={16}>
           <Col span={8}>
             <Form.Item
