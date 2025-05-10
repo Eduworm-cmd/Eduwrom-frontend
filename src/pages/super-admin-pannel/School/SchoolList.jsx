@@ -137,13 +137,13 @@ export const SchoolList = () => {
   ];
 
 
-  const filteredData = schoolData.filter((item) => {
+  // const filteredData = schoolData.filter((item) => {
 
-    if (item===searchTerm) {
-        console.log(filteredData);
-    }
-  }
-  );
+  //   if (item===searchTerm) {
+  //       console.log(filteredData);
+  //   }
+  // }
+  // );z
   const fetchAllSchools = async () => {
     try {
       const response = await GetAllSchools();
