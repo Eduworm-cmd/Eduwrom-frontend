@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { PlusCircle, Edit2, Trash2, Eye, EllipsisVertical } from "lucide-react";
+import { PlusCircle, Edit2, Trash2, Eye, EllipsisVertical, Search } from "lucide-react";
 import { Table, Button, Dropdown } from "antd";
 import DownloadButton from "@/components/Buttons/DownloadButton/DownloadButton";
 import { ExportButton } from "@/components/Buttons/ExportButton/ExportButton";
@@ -8,6 +8,8 @@ import { GetAllSchools } from "@/Network/Super_Admin/auth";
 
 export const SchoolList = () => {
   const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState("");
+
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [schoolData, setSchoolData] = useState([]);
 
@@ -19,6 +21,11 @@ export const SchoolList = () => {
     selectedRowKeys,
     onChange: onSelectChange,
   };
+
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
 
   const columns = [
     {
@@ -129,10 +136,18 @@ export const SchoolList = () => {
     { key: "Branches", label: "Branches" },
   ];
 
+
+  const filteredData = schoolData.filter((item) => {
+
+    if (item===searchTerm) {
+        console.log(filteredData);
+    }
+  }
+  );
   const fetchAllSchools = async () => {
     try {
       const response = await GetAllSchools();
-     
+
       const formattedData = response.data.map((school) => ({
         id: school._id,
         name: school.schoolName,
@@ -156,6 +171,19 @@ export const SchoolList = () => {
   return (
     <div className="w-248 max-w-8xl">
       <div className="flex gap-2 justify-end mb-3">
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Search..."
+            className="w-full bg-white max-w-[250px] p-2 pl-10 border rounded-full focus:outline-none focus:ring-2 focus:ring-sky-500 transition"
+            value={searchTerm}
+            onChange={handleSearch}
+          />
+          <Search
+            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+            size={18}
+          />
+        </div>
         <button
           onClick={() => navigate("/eduworm-admin/school/add")}
           className="flex gap-2 mt-4 text-white py-2 px-5 outline-none rounded-sm font-semibold cursor-pointer text-[14px] bg-sky-500"
@@ -163,6 +191,7 @@ export const SchoolList = () => {
           <PlusCircle /> Add School
         </button>
         <DownloadButton />
+
         <ExportButton columns={exportColumns} currentItems={schoolData} />
       </div>
 

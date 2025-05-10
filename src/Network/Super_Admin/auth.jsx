@@ -43,6 +43,7 @@ const ToogleMenuItem = async (id) => {
         body,
     })
 }
+
 // Get User From Store
 const GetUser = () => {
     const user = store.getState()?.auth?.user;
@@ -180,8 +181,25 @@ const CreateBranch = async (body) =>{
     return await apiRequest('auth_SchoolBranch/create_SchoolBranch',{
         method:"POST",
         body
-    })
+    });
 }
+
+// Get All Stundents 
+const GetAllStudent = async (body) =>{
+    return await apiRequest('superStudent/all',{
+        method:"GET",
+        body
+    });
+}
+// Get All Stundents By branch 
+const GetAllStudentByBranch = async (id, page = 1, limit = 10) => {
+  return await apiRequest(`superStudent/branch/${id}?page=${page}&limit=${limit}`, {
+    method: "GET",
+  });
+};
+
+
+
 
 // Get All Levels
 const GetLevels = async (body) => {
@@ -306,6 +324,8 @@ export {
     GetBranchById,
     ClassesDropdown,
     GetSchoolById,
+    GetAllStudentByBranch,
+    GetAllStudent,
     CreateSchool,
     CreateBranch,
     StaffLogin,

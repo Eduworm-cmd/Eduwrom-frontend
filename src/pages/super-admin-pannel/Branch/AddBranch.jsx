@@ -146,7 +146,7 @@ export const AddBranch = () => {
         setLogoName("");
         setLogoBuffer(null);
         setTimeout(() => {
-          navigate("/eduworm-admin/branch/list");
+          navigate("/eduworm-admin/schoolbranch/list");
         }, 1000);
       }
     } catch (error) {
