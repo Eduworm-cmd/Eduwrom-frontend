@@ -204,7 +204,7 @@ export const BranchList = () => {
   return (
     <div className="overflow-x-auto">
       <div className="flex flex-wrap items-center justify-end gap-3 mb-3">
-        <div className="relative">
+        <div className="relative mt-3.5">
           <input
             type="text"
             placeholder="Search by Branch Name, Contact, or Phone"
@@ -220,7 +220,7 @@ export const BranchList = () => {
 
         <button
           onClick={() => navigate("/eduworm-admin/branch/add")}
-          className="flex items-center gap-2 text-white py-2 px-5 outline-none rounded-sm font-semibold cursor-pointer text-[14px] bg-sky-500"
+          className="flex items-center gap-2 text-white py-2 mt-4 px-5 outline-none rounded-sm font-semibold cursor-pointer text-[14px] bg-sky-500"
         >
           <PlusCircle /> Add Branch
         </button>
