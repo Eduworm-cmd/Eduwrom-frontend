@@ -30,8 +30,8 @@ const superAdminData = {
       icon: Users,
       items: [
         { title: "School List", url: "/eduworm-admin/school/list" },
-        { title: "Add Branch", url: "/eduworm-admin/branch/add" },
-        { title: "Branch List", url: "/eduworm-admin/branch/list" },
+        { title: "Add Branch", url: "/eduworm-admin/schoolbranch/add" },
+        { title: "Branch List", url: "/eduworm-admin/schoolbranch/list" },
         { title: "Student Data", url: "/eduworm-admin/student" },
         { title: "Staff Data", url: "/eduworm-admin/staff" },
         { title: "Academic Year", url: "/eduworm-admin/academic Year" },

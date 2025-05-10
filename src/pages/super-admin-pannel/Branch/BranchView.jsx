@@ -44,10 +44,6 @@ export const BranchView = () => {
   const SchoolApi = async (id) => {
     try {
       const response = await GetBranchById(id);
-      if(response){
-        toast.success(response.message);
-        navigate('/eduworm-admin/school/list') ;
-      }
       setSchool(response.data);
     } catch (error) {
       console.error("Fetch failed:", error);
@@ -71,7 +67,7 @@ export const BranchView = () => {
           <img src={school?.branchLogo || user} alt="School Logo" className="w-32 h-32 rounded-full object-cover border-2 bg-slate-200 border-white shadow" />
           <h2 className="mt-4 text-lg font-bold text-gray-800">{school?.name || '—'}</h2>
           <div className="space-x-4 mt-2 flex w-full justify-center items-center my-6">
-            <button className='bg-yellow-500 px-4 py-2 cursor-pointer flex text-white rounded-sm gap-2' onClick={() => navigate(`/eduworm-admin/branch/edit/${id}`)}> 
+            <button className='bg-yellow-500 px-4 py-2 cursor-pointer flex text-white rounded-sm gap-2' onClick={() => navigate(`/eduworm-admin/schoolbranch/edit/${id}`)}> 
               <Edit /> Edit
             </button>
             <button className='bg-red-500 px-4 py-2 cursor-pointer flex text-white rounded-sm gap-2'>

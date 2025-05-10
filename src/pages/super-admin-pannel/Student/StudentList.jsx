@@ -1,34 +1,55 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { Eye, Edit2, Trash2, EllipsisVertical, PlusCircle } from "lucide-react";
 import { Table, Button, Dropdown } from "antd";
+import { GetAllStudentByBranch } from "@/Network/Super_Admin/auth";
 
 export const StudentList = () => {
+  const params = useParams();
   const navigate = useNavigate();
+  
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [schoolData, setSchoolData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const {id} = params;
 
-  const studentData = [
-    {
-      id: 1,
-      name: "John Doe",
-      parentName: "Jane Doe",
-      contact: "9876543210",
-      academicYear: "2024-2025",
-      studentClass: "5th Grade",
-      createdAt: "2024-04-10",
-      email: "johndoe@example.com",
-    },
-    {
-      id: 2,
-      name: "Alice Smith",
-      parentName: "Robert Smith",
-      contact: "9123456789",
-      academicYear: "2023-2024",
-      studentClass: "6th Grade",
-      createdAt: "2024-03-15",
-      email: "alice@example.com",
-    },
-  ].map((item, index) => ({ ...item, key: item.id, sno: index + 1 }));
+  const page = 1;
+  const limit = 10;
+
+const fetchStudent = async () => {
+  if (!id) return; 
+  setLoading(true);
+  try {
+    const response = await GetAllStudentByBranch(id, page, limit);
+    const { data } = response;
+
+    const formattedData = data.map((student, index) => ({
+      key: student._id,
+      id: student._id,
+      sno: index + 1,
+      name: `${student.firstName} ${student.lastName}`,
+      branchname: student.schoolBranch?.name,
+      contact: student.parents?.[0]?.phoneNumber || "N/A",
+      email: student.parents?.[0]?.email || "N/A",
+      academicYear: "2023-2024", 
+      studentClass: student.class?.className || "N/A", 
+      createdAt: new Date(student.createdAt).toLocaleDateString(),
+      status: student.isActive,
+    }));
+
+    setSchoolData(formattedData);
+  } catch (error) {
+    console.error("Error fetching students:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
+useEffect(() => {
+  if (id) {
+    fetchStudent();
+  }
+}, [id]);
 
   const onSelectChange = (selectedKeys) => {
     setSelectedRowKeys(selectedKeys);
@@ -46,29 +67,14 @@ export const StudentList = () => {
       key: "sno",
     },
     {
-      title: "Student Details",
-      key: "student",
-      render: (_, record) => (
-        <div>
-          <div className="font-medium">{record.name}</div>
-          <div className="text-gray-500">{record.email}</div>
-        </div>
-      ),
+      title: "Student Name",
+      dataIndex: "name",
+      key: "name",
     },
     {
-      title: "Parent and Contact",
-      key: "parent",
-      render: (_, record) => (
-        <div>
-          <div>{record.parentName}</div>
-          <div>{record.contact}</div>
-        </div>
-      ),
-    },
-    {
-      title: "Academic Year",
-      dataIndex: "academicYear",
-      key: "academicYear",
+      title: "Branch Name",
+      key: "branchname",
+      dataIndex: "branchname",
     },
     {
       title: "Class",
@@ -79,6 +85,16 @@ export const StudentList = () => {
       title: "Created Date",
       dataIndex: "createdAt",
       key: "createdAt",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (status) => (
+        <span className={`font-semibold ${status ? "text-green-600" : "text-red-500"}`}>
+          {status ? "Active" : "Inactive"}
+        </span>
+      ),
     },
     {
       title: "Actions",
@@ -144,9 +160,10 @@ export const StudentList = () => {
       </div>
 
       <Table
+        loading={loading}
         rowSelection={rowSelection}
         columns={columns}
-        dataSource={studentData}
+        dataSource={schoolData}
         pagination={{
           position: ["bottomRight"],
           pageSizeOptions: ["10", "20", "50"],

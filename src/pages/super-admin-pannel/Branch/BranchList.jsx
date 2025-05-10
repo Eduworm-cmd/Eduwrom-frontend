@@ -40,9 +40,10 @@ export const BranchList = () => {
         email: branch.contact?.email || "N/A",
         phone: branch.contact?.phone || "N/A",
         status: branch.isActive,
+        students: branch.total_Students.length,
         AY: Array.isArray(branch.academicYear)
-        ? branch.academicYear.map(ay => ay.name).join(", ")
-        : "",
+          ? branch.academicYear.map(ay => ay.name).join(", ")
+          : "",
       }));
 
       setSchoolData(formattedData);
@@ -94,6 +95,20 @@ export const BranchList = () => {
       key: "EndDate",
     },
     {
+      title: "Students",
+      dataIndex: "students",
+      key: "students",
+      render: (students, record) => (
+        
+        <div
+        className="flex items-center gap-2 text-black cursor-pointer"
+        onClick={() => navigate(`/eduworm-admin/students/list/${record.id}`)}
+        >
+          {students} <Eye size={14} />
+        </div>
+      )
+    },
+    {
       title: "Status",
       dataIndex: "status",
       key: "status",
@@ -116,7 +131,7 @@ export const BranchList = () => {
                 label: (
                   <div
                     className="flex items-center gap-2 text-black"
-                    onClick={() => navigate(`/eduworm-admin/branch/edit/${record.id}`)}
+                    onClick={() => navigate(`/eduworm-admin/schoolbranch/edit/${record.id}`)}
                   >
                     <Edit2 size={14} /> Edit
                   </div>
@@ -127,7 +142,7 @@ export const BranchList = () => {
                 label: (
                   <div
                     className="flex items-center gap-2 text-black"
-                    onClick={() => navigate(`/eduworm-admin/branch/view/${record.id}`)}
+                    onClick={() => navigate(`/eduworm-admin/schoolbranch/view/${record.id}`)}
                   >
                     <Eye size={14} /> View
                   </div>

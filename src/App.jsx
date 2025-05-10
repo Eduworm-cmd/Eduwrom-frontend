@@ -67,10 +67,10 @@ function App() {
           <Route path="home" element={<SAHomePage />} />
           <Route path="Admin" element={<SALSHome />} />
 
-          <Route path="branch/list" element={<BranchList />} />
-          <Route path="branch/add" element={<AddBranch />} />
-          <Route path="branch/edit/:id" element={<AddBranch />} />
-          <Route path="branch/view/:id" element={<BranchView />} />
+          <Route path="schoolbranch/list" element={<BranchList />} />
+          <Route path="schoolbranch/add" element={<AddBranch />} />
+          <Route path="schoolbranch/view/:id" element={<BranchView />} />
+          <Route path="schoolbranch/edit/:id" element={<AddBranch />} />
           
           <Route path="school/list" element={<SchoolList />} />
           <Route path="school/add" element={<AddSchool />} />
@@ -84,7 +84,7 @@ a
           <Route path="academic Year" element={<AcademicList />} />
           <Route path="grade" element={<GradeList />} />
           <Route path="class" element={<ClassList />} />
-          <Route path="student" element={<StudentList />} />
+          <Route path="students/list/:id" element={<StudentList />} />
           <Route path="students/add" element={<AddStudent />} />
           <Route path="students/edit/:id" element={<AddStudent />} />
 
