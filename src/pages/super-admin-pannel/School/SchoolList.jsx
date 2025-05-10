@@ -187,7 +187,7 @@ export const SchoolList = () => {
           <input
             type="text"
             placeholder="Search..."
-            className="w-100 bg-white rounded-md    p-2 pl-10 border border-sky-500  focus:outline-none focus:ring-2 focus:ring-sky-500 transition"
+            className="w-100 bg-white rounded-md p-2 pl-10 border border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500 transition"
             value={searchTerm}
             onChange={handleSearch}
           />
