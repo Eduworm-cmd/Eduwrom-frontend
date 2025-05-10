@@ -13,6 +13,7 @@ import { UploadOutlined } from "@ant-design/icons";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AddStaff } from "@/Network/Super_Admin/auth";
+import { useNavigate } from "react-router-dom";
 
 const { Option } = Select;
 
@@ -21,6 +22,7 @@ export const CreateStaff = () => {
   const [profilePreview, setProfilePreview] = useState(null);
   const [profileFile, setProfileFile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
 
   const handleProfileUpload = (file) => {
     if (file) {
@@ -82,8 +84,9 @@ export const CreateStaff = () => {
       form.resetFields();
       setProfilePreview(null);
       setProfileFile(null);
+      navigate('/eduworm-admin/staff')
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to create staff");
+      console.log(error);
     } finally {
       setIsSubmitting(false);
     }

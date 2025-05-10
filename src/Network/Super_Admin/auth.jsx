@@ -175,6 +175,14 @@ const GetBranchById = async (id) => {
     });
 };
 
+// Create School By Super Admin
+const CreateBranch = async (body) =>{
+    return await apiRequest('auth_SchoolBranch/create_SchoolBranch',{
+        method:"POST",
+        body
+    })
+}
+
 // Get All Levels
 const GetLevels = async (body) => {
     return await apiRequest("level", {
@@ -299,6 +307,7 @@ export {
     ClassesDropdown,
     GetSchoolById,
     CreateSchool,
+    CreateBranch,
     StaffLogin,
     AddStaff,
     GetAllStaff,

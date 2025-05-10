@@ -40,7 +40,9 @@ export const BranchList = () => {
         email: branch.contact?.email || "N/A",
         phone: branch.contact?.phone || "N/A",
         status: branch.isActive,
-        AY: Array.isArray(branch.academicYear) ? branch.academicYear.join(", ") : "",
+        AY: Array.isArray(branch.academicYear)
+        ? branch.academicYear.map(ay => ay.name).join(", ")
+        : "",
       }));
 
       setSchoolData(formattedData);

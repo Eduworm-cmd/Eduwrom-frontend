@@ -3,9 +3,11 @@ import { Button, Input, Form, Select, DatePicker, Row, Col } from "antd";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { CreateSchool } from "@/Network/Super_Admin/auth";
+import { useNavigate } from "react-router-dom";
 
 export const AddSchool = () => {
   const [form] = Form.useForm();
+  const navigate = useNavigate();
 
   const handleSubmit = async (values) => {
     console.log("Form Data Submitted:", values);
@@ -21,6 +23,7 @@ export const AddSchool = () => {
       if (response) {
         toast.success("School created successfully!");
         form.resetFields();
+        navigate('/eduworm-admin/school/list');
       }
     } catch (error) {
       console.error("API Error:", error);

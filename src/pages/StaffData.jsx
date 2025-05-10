@@ -16,6 +16,7 @@ import {
 } from '@ant-design/icons';
 import moment from 'moment';
 import { GetSchools } from '@/Network/Super_Admin/auth';
+import { useNavigate } from 'react-router-dom';
 
 const { Option } = Select;
 const { Title, Text } = Typography;
@@ -25,7 +26,6 @@ const StaffManagement = () => {
   const [staff, setStaff] = useState([]);
   const [schools, setSchools] = useState([]);
   const [branches, setBranches] = useState([]);
-
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [pageSize, setPageSize] = useState(10);
@@ -36,6 +36,8 @@ const StaffManagement = () => {
   const [viewMode, setViewMode] = useState('table'); 
   const [selectedStaff, setSelectedStaff] = useState(null);
   const [form] = Form.useForm();
+  const navigate = useNavigate();
+
   const getBase64 = (file) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -87,6 +89,7 @@ const StaffManagement = () => {
       setStaff(response.data.data);
       setTotalItems(response.data.count);
       setLoading(false);
+      navigate('/eduworm-admin/staff');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch staff');
       setLoading(false);

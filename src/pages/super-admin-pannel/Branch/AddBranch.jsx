@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import {
   AcademicYearDropdown,
   ClassesDropdown,
+  CreateBranch,
   SchoolsDropdwon,
 } from "@/Network/Super_Admin/auth";
 import axios from "axios";
@@ -136,10 +137,7 @@ export const AddBranch = () => {
     };
 
     try {
-      const response = await axios.post(
-        "http://localhost:4000/api/auth_SchoolBranch/create_SchoolBranch",
-        submissionData
-      );
+      const response = await CreateBranch(submissionData);
 
       if (response) {
         toast.success(response.message || "Branch created successfully!");
@@ -153,7 +151,6 @@ export const AddBranch = () => {
       }
     } catch (error) {
       console.error("CreateBranch Error:", error);
-      toast.error("Branch creation failed.");
     }
   };
 
@@ -201,7 +198,20 @@ export const AddBranch = () => {
         initialValues={{ startDate: null, endDate: null }}
         className="form-container"
       >
-        <Form.Item label="Branch Logo" required className="flex justify-center">
+        <Form.Item
+          label="Branch Logo"
+          required
+          className="flex justify-center"
+          name="branchLogo"
+          rules={[
+            {
+              validator: (_, value) =>
+                logoPreview
+                  ? Promise.resolve()
+                  : Promise.reject(new Error("Branch logo is required")),
+            },
+          ]}
+        >
           <Upload
             customRequest={({ file }) => handleLogoChange(file)}
             showUploadList={false}
@@ -230,6 +240,7 @@ export const AddBranch = () => {
             <p className="text-center mt-2 text-sm text-gray-700">{logoName}</p>
           )}
         </Form.Item>
+
 
         <Row gutter={16}>
           <Col span={24}>
