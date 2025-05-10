@@ -21,12 +21,16 @@ export const AddSchool = () => {
     try {
       const response = await CreateSchool(payload);
       if (response) {
-        toast.success("School created successfully!");
+        toast.success("School created successfully!", {
+          autoClose: 1000,
+          onClose: () => navigate('/eduworm-admin/school/list'),
+        });
+
         form.resetFields();
-        navigate('/eduworm-admin/school/list');
       }
     } catch (error) {
       console.error("API Error:", error);
+      toast.error("Failed to create school");
     }
   };
 
