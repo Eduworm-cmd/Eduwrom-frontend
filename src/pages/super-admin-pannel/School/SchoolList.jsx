@@ -9,9 +9,23 @@ import { GetAllSchools } from "@/Network/Super_Admin/auth";
 export const SchoolList = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
-
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [schoolData, setSchoolData] = useState([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+
+  const filteredData = schoolData.filter((item) => {
+    const search = searchTerm.toLowerCase();
+    return (
+      item.name?.toLowerCase().includes(search)
+    );
+  });
+
+  console.log(filteredData);
+
+  
+ 
+
+  
+
 
   const onSelectChange = (selectedKeys) => {
     setSelectedRowKeys(selectedKeys);
@@ -24,7 +38,10 @@ export const SchoolList = () => {
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
+    
   };
+
+
 
 
   const columns = [
@@ -137,13 +154,8 @@ export const SchoolList = () => {
   ];
 
 
-  // const filteredData = schoolData.filter((item) => {
+  
 
-  //   if (item===searchTerm) {
-  //       console.log(filteredData);
-  //   }
-  // }
-  // );z
   const fetchAllSchools = async () => {
     try {
       const response = await GetAllSchools();
@@ -169,18 +181,18 @@ export const SchoolList = () => {
   }, []);
 
   return (
-    <div className="w-248 max-w-8xl">
+    <div className="max-w-8xl">
       <div className="flex gap-2 justify-end mb-3">
-        <div className="relative">
+        <div className="relative mt-3.5 ">
           <input
             type="text"
             placeholder="Search..."
-            className="w-full bg-white max-w-[250px] p-2 pl-10 border rounded-full focus:outline-none focus:ring-2 focus:ring-sky-500 transition"
+            className="w-100 bg-white rounded-md    p-2 pl-10 border border-sky-500  focus:outline-none focus:ring-2 focus:ring-sky-500 transition"
             value={searchTerm}
             onChange={handleSearch}
           />
           <Search
-            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+            className="absolute left-3 top-5 transform -translate-y-1/2 text-gray-500 "
             size={18}
           />
         </div>
@@ -199,11 +211,11 @@ export const SchoolList = () => {
         <Table
           columns={columns}
           rowSelection={rowSelection}
-          dataSource={schoolData}
+          dataSource={filteredData}
           pagination={{
             position: ["bottomRight"],
             pageSizeOptions: ["10", "20", "50"],
-            showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
+            showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`, 
             pageSize: 8,
             showLessItems: true,
           }}

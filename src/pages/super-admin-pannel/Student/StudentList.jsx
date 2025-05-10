@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Eye, Edit2, Trash2, EllipsisVertical, PlusCircle } from "lucide-react";
+import { Eye, Edit2, Trash2, EllipsisVertical, PlusCircle, Search } from "lucide-react";
 import { Table, Button, Dropdown } from "antd";
 import { GetAllStudentByBranch } from "@/Network/Super_Admin/auth";
 
 export const StudentList = () => {
   const params = useParams();
   const navigate = useNavigate();
-  
+  const [searchTerm, setSearchTerm] = useState('');
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [schoolData, setSchoolData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -15,6 +15,20 @@ export const StudentList = () => {
 
   const page = 1;
   const limit = 10;
+
+  const filteredData = schoolData.filter((item)=>{
+    const search = searchTerm.toLowerCase();
+    return (
+      item.name?.toLowerCase().includes(search)
+    );
+  })
+
+  console.log(filteredData);
+
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value);
+
+  };
 
 const fetchStudent = async () => {
   if (!id) return; 
@@ -151,6 +165,19 @@ useEffect(() => {
   return (
     <div className="overflow-x-auto">
       <div className="flex justify-end gap-2 mb-4">
+        <div className="relative  ">
+          <input
+            type="text"
+            placeholder="Search..."
+            className="w-100 bg-white rounded-md    p-2 pl-10 border border-sky-500  focus:outline-none focus:ring-2 focus:ring-sky-500 transition"
+            value={searchTerm}
+            onChange={handleSearch}
+          />
+          <Search
+            className="absolute left-3 top-5 transform -translate-y-1/2 text-gray-500 "
+            size={18}
+          />
+        </div>
         <button
           onClick={() => navigate("/eduworm-admin/students/add")}
           className="flex items-center gap-2 bg-sky-500 text-white font-semibold text-sm py-2 px-4 rounded"
@@ -163,7 +190,7 @@ useEffect(() => {
         loading={loading}
         rowSelection={rowSelection}
         columns={columns}
-        dataSource={schoolData}
+        dataSource={filteredData}
         pagination={{
           position: ["bottomRight"],
           pageSizeOptions: ["10", "20", "50"],

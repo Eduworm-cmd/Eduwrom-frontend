@@ -42,11 +42,13 @@ export const AddStudent = () => {
     setBranches(data?.data || []);
   };
 
-  const fetchClassDropdown = async () => {
-    const res = await fetch("http://localhost:4000/api/class/dropdown");
+  const fetchClassDropdown = async (branchId) => {
+    const res = await fetch(`http://localhost:4000/api/class/${branchId}`);
     const data = await res.json();
     setClassList(data?.data || []);
   };
+
+
 
   const onFinish = async (values) => {
     const payload = {
@@ -103,7 +105,7 @@ export const AddStudent = () => {
             </Col>
             <Col span={12}>
               <Form.Item name="branchId" label="Branch" rules={[{ required: true }]}>
-                <Select placeholder="Select Branch">
+                <Select placeholder="Select Branch" onChange={fetchClassDropdown}>
                   {branches.map((b) => (
                     <Option key={b._id} value={b._id}>
                       {b.name}
