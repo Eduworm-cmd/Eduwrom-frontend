@@ -6,7 +6,6 @@ import {
   DatePicker,
   Button,
   Card,
-  Space,
   Row,
   Col,
   message
@@ -27,7 +26,6 @@ export const AddStudent = () => {
 
   useEffect(() => {
     fetchSchools();
-    fetchClassDropdown();
   }, []);
 
   const fetchSchools = async () => {
@@ -40,15 +38,18 @@ export const AddStudent = () => {
     const res = await fetch(`http://localhost:4000/api/auth_SchoolBranch/${schoolId}`);
     const data = await res.json();
     setBranches(data?.data || []);
+    setClassList([]); // 🟢 reset class list on school change
+    form.setFieldsValue({ branchId: undefined, classId: undefined }); // 🟢 reset dependent fields
   };
 
+  // 🟢 Updated: Added default value check for branchId
   const fetchClassDropdown = async (branchId) => {
+    if (!branchId) return;
     const res = await fetch(`http://localhost:4000/api/class/${branchId}`);
     const data = await res.json();
     setClassList(data?.data || []);
+    form.setFieldsValue({ classId: undefined }); // 🟢 reset class
   };
-
-
 
   const onFinish = async (values) => {
     const payload = {
@@ -72,6 +73,7 @@ export const AddStudent = () => {
       if (result?.success) {
         toast.success("Student created successfully");
         form.resetFields();
+        navigate("/eduworm-admin/student/list");
       } else {
         message.error(result?.message || "Failed to create student");
       }
@@ -89,7 +91,7 @@ export const AddStudent = () => {
           form={form}
           layout="vertical"
           onFinish={onFinish}
-          initialValues={{ gender: "", bloodGroup: "", parents: [{}] }}
+          initialValues={{ parents: [] }} // ✅ removed unnecessary defaults
         >
           <Row gutter={16}>
             <Col span={12}>
@@ -151,7 +153,7 @@ export const AddStudent = () => {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item name="gender" label="Gender" rules={[{ required: true }]}>
-                <Select>
+                <Select placeholder="Select Gender">
                   <Option value="Male">Male</Option>
                   <Option value="Female">Female</Option>
                   <Option value="Other">Other</Option>
@@ -186,7 +188,7 @@ export const AddStudent = () => {
             </Col>
             <Col span={12}>
               <Form.Item name="bloodGroup" label="Blood Group">
-                <Select>
+                <Select placeholder="Select Blood Group">
                   {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map((b) => (
                     <Option key={b} value={b}>
                       {b}
@@ -241,7 +243,7 @@ export const AddStudent = () => {
           </Row>
 
           {/* Parents */}
-          <Form.List name="parents"  rules={[{ required: true }]} >
+          <Form.List name="parents" rules={[{ required: true, message: "At least one parent is required." }]}>
             {(fields, { add, remove }) => (
               <>
                 <Button onClick={() => add()} icon={<PlusOutlined />} type="dashed" block>
@@ -263,19 +265,19 @@ export const AddStudent = () => {
                   >
                     <Row gutter={16}>
                       <Col span={12}>
-                        <Form.Item {...restField} label="First Name" name={[name, "firstName"]}  rules={[{ required: true }]}>
+                        <Form.Item {...restField} label="First Name" name={[name, "firstName"]} rules={[{ required: true }]}>
                           <Input />
                         </Form.Item>
                       </Col>
                       <Col span={12}>
-                        <Form.Item {...restField} label="Last Name" name={[name, "lastName"]}  rules={[{ required: true }]}>
+                        <Form.Item {...restField} label="Last Name" name={[name, "lastName"]} rules={[{ required: true }]}>
                           <Input />
                         </Form.Item>
                       </Col>
                     </Row>
                     <Row gutter={16}>
                       <Col span={12}>
-                        <Form.Item {...restField} label="Relationship" name={[name, "relationship"]}  rules={[{ required: true }]}>
+                        <Form.Item {...restField} label="Relationship" name={[name, "relationship"]} rules={[{ required: true }]}>
                           <Select>
                             <Option value="Father">Father</Option>
                             <Option value="Mother">Mother</Option>
@@ -284,14 +286,14 @@ export const AddStudent = () => {
                         </Form.Item>
                       </Col>
                       <Col span={12}>
-                        <Form.Item {...restField} label="Phone Number" name={[name, "phoneNumber"]}  rules={[{ required: true }]}>
+                        <Form.Item {...restField} label="Phone Number" name={[name, "phoneNumber"]} rules={[{ required: true }]}>
                           <Input />
                         </Form.Item>
                       </Col>
                     </Row>
                     <Row gutter={16}>
                       <Col span={12}>
-                        <Form.Item {...restField} label="Email" name={[name, "email"]}  rules={[{ required: true }]}>
+                        <Form.Item {...restField} label="Email" name={[name, "email"]} rules={[{ required: true }]}>
                           <Input />
                         </Form.Item>
                       </Col>
@@ -301,9 +303,6 @@ export const AddStudent = () => {
                         </Form.Item>
                       </Col>
                     </Row>
-                    <Form.Item {...restField} label="Photo URL" name={[name, "photo"]}>
-                      <Input />
-                    </Form.Item>
                   </Card>
                 ))}
               </>
@@ -311,8 +310,8 @@ export const AddStudent = () => {
           </Form.List>
 
           <Form.Item>
-            <Button type="primary" htmlType="submit" className="mt-5">
-              Create Student
+            <Button type="primary" htmlType="submit" block>
+              Submit
             </Button>
           </Form.Item>
         </Form>
