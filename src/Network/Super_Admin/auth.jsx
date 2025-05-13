@@ -67,6 +67,39 @@ const SuperAdminLogin = async (body) => {
 };
 
 
+
+// Get All Classes 
+const CreateClass = async (body) => {
+    return await apiRequest("class/create", {
+        method: "POST",
+        body
+    })
+}
+
+// Update Classes 
+const UpdateClass = async (id,body) => {
+    return await apiRequest(`class/${id}`, {
+        method: "PUT",
+        body
+    })
+}
+// Delete Class 
+const DeleteClass = async (id,body) => {
+    return await apiRequest(`class/${id}`, {
+        method: "DELETE",
+        body
+    })
+}
+
+// Get Classe By Id 
+const Class_By_Id = async (id,body) => {
+    return await apiRequest(`class/view/${id}`, {
+        method: "GET",
+        body
+    })
+}
+
+
 // Get All Classes 
 const GetClasses = async (body) => {
     return await apiRequest("class/all", {
@@ -248,26 +281,25 @@ const CreateAcademicYear = async (body) => {
 
 // Update AcademicYear
 const UpdateAcademicYear = async (id, body) => {
-    return await apiRequest(`academic/${id}`, {
-        method: "PATCH",
+    return await apiRequest(`academicYear/${id}`, {
+        method: "PUT",
         body,
     });
 };
 
 
 // Deactive Academic year 
-const DeactivateAcademicYear = async (yearId, isActive) => {
-    return await apiRequest(`academic-years/${yearId}`, {
-        method: "PATCH",
+const DeleteAcademicYear = async (yearId, isActive) => {
+    return await apiRequest(`academicYear/${yearId}`, {
+        method: "DELETE",
         body: { active: isActive },
     });
 };
 
-// Get Academic Year By School Id
-const GetAcademicYearsById = async (schoolId) => {
-    return await apiRequest("academic", {
+// Get Academic Year By Id
+const GetAcademicYearsById = async (id) => {
+    return await apiRequest(`academicYear/${id}`, {
         method: "GET",
-        params: { schoolId },
     });
 };
 
@@ -290,6 +322,13 @@ const AddStaff = async(body) =>{
         body
     })
 }
+
+const UpdateStaff = async(id,payload) =>{
+    return await apiRequest(`SA_Staff/${id}`,{
+        method:"PUT",
+        body: payload,
+    })
+}
 const GetAllStaff = async(body) =>{
     return await apiRequest("SA_Staff/all",{
         method:"GET",
@@ -301,6 +340,11 @@ const GetStaffById = async (id,body) =>{
     return await apiRequest(`SA_Staff/${id}`,{
         method:"GET",
         body
+    })
+}
+const DeleteStaff = async (id) =>{
+    return await apiRequest(`SA_Staff/${id}`,{
+        method:"DELETE",
     })
 }
 
@@ -333,6 +377,10 @@ export {
     SuperAdminRegister,
     SuperAdminLogin,
     GetClasses,
+    CreateClass,
+    DeleteClass,
+    UpdateClass,
+    Class_By_Id,
     GetAllSchools,
     SchoolsDropdwon,
     GetBranchById,
@@ -345,7 +393,9 @@ export {
     StaffLogin,
     AddStaff,
     GetAllStaff,
+    UpdateStaff,
     GetStaffById,
+    DeleteStaff,
     GetGrades,
     GetGradeById,
     CreateGrade,
@@ -357,7 +407,7 @@ export {
     GetAllAcademicYear,
     GetAcademicYearsById,
     CreateAcademicYear,
-    DeactivateAcademicYear,
+    DeleteAcademicYear,
     UpdateAcademicYear,
     GetSchoolBranches,
     AddContent,

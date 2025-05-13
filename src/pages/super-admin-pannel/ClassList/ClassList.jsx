@@ -19,9 +19,11 @@ import {
 } from "lucide-react";
 import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
+import { Class_By_Id, CreateClass, DeleteClass, GetClasses, UpdateClass } from "@/Network/Super_Admin/auth";
 
 export const ClassList = () => {
     const [loading, setLoading] = useState(false);
+    const [tableLoading, setTableLoading] = useState(false);
     const [form] = Form.useForm();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [classes, setClasses] = useState([]);
@@ -31,12 +33,16 @@ export const ClassList = () => {
         total: 0,
     });
 
-    // Fetch all classes from new endpoint
+    const [editMode, setEditMode] = useState(false);
+    const [selectedClassId, setSelectedClassId] = useState(null);
+
+    // Fetch all classes
     const fetchClasses = async () => {
+        setTableLoading(true);
         try {
-            const res = await axios.get("http://localhost:4000/api/class/all");
-            if (res.data && Array.isArray(res.data.data)) {
-                const formatted = res.data.data.map((item) => ({
+            const res = await GetClasses();
+            if (res.data && Array.isArray(res.data)) {
+                const formatted = res.data.map((item) => ({
                     key: item._id,
                     id: item._id,
                     className: item.className,
@@ -47,12 +53,86 @@ export const ClassList = () => {
             }
         } catch (error) {
             console.error("Error fetching class list:", error);
+        } finally {
+            setTableLoading(false);
         }
     };
 
     useEffect(() => {
         fetchClasses();
     }, []);
+
+    const handleDelete = async (id) => {
+        const confirm = window.confirm("Are you sure you want to delete this class?");
+        if (!confirm) return;
+
+        try {
+            const response = await DeleteClass(id);
+            if (response) {
+                toast.success(response.message, { autoClose: 1000 });
+                fetchClasses();
+            }
+        } catch (error) {
+            console.error("Delete error:", error);
+        }
+    };
+
+
+    const handleEdit = async (id) => {
+        try {
+            const res = await Class_By_Id(id);
+            const classData = res?.data;
+
+            if (classData) {
+                form.setFieldsValue({
+                    className: classData.className,
+                    type: classData.type,
+                });
+                setSelectedClassId(classData._id);
+                setEditMode(true);
+                setIsModalOpen(true);
+            }
+        } catch (error) {
+            console.error("Error fetching class by ID:", error);
+        }
+    };
+
+    const handleSubmit = async (values) => {
+        const payload = {
+            className: values.className,
+            type: values.type,
+        };
+
+        try {
+            setLoading(true);
+            let res;
+
+            if (editMode && selectedClassId) {
+                res = await UpdateClass(selectedClassId, payload);
+                toast.success(res.message || "Class updated successfully!", {
+                    autoClose: 1000,
+                    onClose: () => fetchClasses(),
+                });
+            } else {
+                res = await CreateClass(payload);
+                toast.success(res.message || "Class created successfully!", {
+                    autoClose: 1000,
+                    onClose: () => fetchClasses(),
+                });
+            }
+
+            // Reset form and modal state
+            form.resetFields();
+            setIsModalOpen(false);
+            setEditMode(false);
+            setSelectedClassId(null);
+        } catch (error) {
+            console.error("Error saving class:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
 
     const columns = [
         {
@@ -82,23 +162,20 @@ export const ClassList = () => {
                             {
                                 key: "edit",
                                 label: (
-                                    <div className="flex items-center gap-2 text-black">
+                                    <div
+                                        className="flex items-center gap-2 text-black"
+                                        onClick={() => handleEdit(record.id)}
+                                    >
                                         <Edit2 size={14} /> Edit
-                                    </div>
-                                ),
-                            },
-                            {
-                                key: "view",
-                                label: (
-                                    <div className="flex items-center gap-2 text-black">
-                                        <Eye size={14} /> View
                                     </div>
                                 ),
                             },
                             {
                                 key: "delete",
                                 label: (
-                                    <div className="flex items-center gap-2 text-red-500">
+                                    <div className="flex items-center gap-2 text-red-500"
+                                        onClick={() => handleDelete(record.id)}
+                                    >
                                         <Trash2 size={14} /> Delete
                                     </div>
                                 ),
@@ -114,29 +191,6 @@ export const ClassList = () => {
         },
     ];
 
-    const handleSubmit = async (values) => {
-        const payload = {
-            className: values.className,
-            type: values.type,
-        };
-
-        try {
-            const res = await axios.post(
-                "http://localhost:4000/api/class/create",
-                payload
-            );
-            toast.success(res.data.message || "Class created successfully!");
-            fetchClasses();
-            form.resetFields();
-            setIsModalOpen(false);
-        } catch (error) {
-            console.error("Error creating class:", error);
-            toast.error(
-                error.response?.data?.message || "Failed to create class."
-            );
-        }
-    };
-
     return (
         <div className="p-4">
             <ToastContainer />
@@ -145,25 +199,21 @@ export const ClassList = () => {
                 <Button
                     type="primary"
                     icon={<PlusCircle size={18} />}
-                    onClick={() => setIsModalOpen(true)}
+                    onClick={() => {
+                        setIsModalOpen(true);
+                        setEditMode(false);
+                        setSelectedClassId(null);
+                        form.resetFields();
+                    }}
                 >
                     Add Class
                 </Button>
             </div>
 
-            {/* <Table
-                columns={columns}
-                dataSource={classes}
-                pagination={{
-                    showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
-                    pageSize: 10,
-                }}
-                scroll={{ x: "max-content" }}
-            /> */}
-
             <Table
                 columns={columns}
                 dataSource={classes}
+                loading={tableLoading}
                 pagination={{
                     ...pagination,
                     showTotal: (total, range) =>
@@ -175,11 +225,16 @@ export const ClassList = () => {
             />
 
             <Modal
-                title="Add Class"
+                title={editMode ? "Edit Class" : "Add Class"}
                 open={isModalOpen}
                 onOk={() => form.submit()}
-                onCancel={() => setIsModalOpen(false)}
-                okText="Submit"
+                onCancel={() => {
+                    setIsModalOpen(false);
+                    setEditMode(false);
+                    setSelectedClassId(null);
+                    form.resetFields();
+                }}
+                okText={editMode ? "Update" : "Submit"}
                 confirmLoading={loading}
             >
                 <Form form={form} layout="vertical" onFinish={handleSubmit}>

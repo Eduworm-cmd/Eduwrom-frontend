@@ -4,17 +4,36 @@ import {
   PlusCircle,
   Edit2,
   Trash2,
-  Eye,
   EllipsisVertical,
 } from "lucide-react";
-import { Space, Table, Button, Dropdown, Modal, Form, Row, Col, Input, DatePicker } from "antd";
+import {
+  Table,
+  Button,
+  Dropdown,
+  Modal,
+  Form,
+  Row,
+  Col,
+  Input,
+  DatePicker,
+} from "antd";
+import dayjs from "dayjs";
 import DownloadButton from "@/components/Buttons/DownloadButton/DownloadButton";
 import { ExportButton } from "@/components/Buttons/ExportButton/ExportButton";
-import { CreateAcademicYear, GetAllAcademicYear } from "@/Network/Super_Admin/auth";
+import {
+  CreateAcademicYear,
+  DeleteAcademicYear,
+  GetAcademicYearsById,
+  GetAllAcademicYear,
+  UpdateAcademicYear,
+} from "@/Network/Super_Admin/auth";
 import { toast, ToastContainer } from "react-toastify";
 
 export const AcademicList = () => {
-  const  [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [selectedAcademicYearId, setSelectedAcademicYearId] = useState(null);
+  const [tableLoading, setTableLoading] = useState(false);
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -26,13 +45,9 @@ export const AcademicList = () => {
     total: 0,
   });
 
-  const onSelectChange = (selectedKeys) => {
-    setSelectedRowKeys(selectedKeys);
-  };
-
   const rowSelection = {
     selectedRowKeys,
-    onChange: onSelectChange,
+    onChange: setSelectedRowKeys,
   };
 
   const columns = [
@@ -42,26 +57,10 @@ export const AcademicList = () => {
       render: (_, __, index) =>
         (pagination.current - 1) * pagination.pageSize + index + 1,
     },
-    {
-      title: "Academic Year",
-      dataIndex: "academicYear",
-      key: "academicYear",
-    },
-    {
-      title: "Term Start Date",
-      dataIndex: "termStartDate",
-      key: "termStartDate",
-    },
-    {
-      title: "Term End Date",
-      dataIndex: "termEndDate",
-      key: "termEndDate",
-    },
-    {
-      title: "Created Date",
-      dataIndex: "createdDate",
-      key: "createdDate",
-    },
+    { title: "Academic Year", dataIndex: "academicYear", key: "academicYear" },
+    { title: "Term Start Date", dataIndex: "termStartDate", key: "termStartDate" },
+    { title: "Term End Date", dataIndex: "termEndDate", key: "termEndDate" },
+    { title: "Created Date", dataIndex: "createdDate", key: "createdDate" },
     {
       title: "Actions",
       key: "action",
@@ -76,24 +75,9 @@ export const AcademicList = () => {
                 label: (
                   <div
                     className="flex items-center gap-2 text-black"
-                    onClick={() =>
-                      navigate(`/eduworm-admin/academic/edit/${record.id}`)
-                    }
+                    onClick={() => handleEdit(record.id)}
                   >
                     <Edit2 size={14} /> Edit
-                  </div>
-                ),
-              },
-              {
-                key: "view",
-                label: (
-                  <div
-                    className="flex items-center gap-2 text-black"
-                    onClick={() =>
-                      navigate(`/eduworm-admin/academic/view/${record.id}`)
-                    }
-                  >
-                    <Eye size={14} /> View
                   </div>
                 ),
               },
@@ -102,7 +86,7 @@ export const AcademicList = () => {
                 label: (
                   <div
                     className="flex items-center gap-2 text-red-500"
-                    onClick={() => console.log("Delete", record.id)}
+                    onClick={() => handleDelete(record.id)}
                   >
                     <Trash2 size={14} /> Delete
                   </div>
@@ -123,10 +107,7 @@ export const AcademicList = () => {
       key: "status",
       align: "center",
       render: (status) => (
-        <span
-          className={`font-semibold ${status ? "text-green-600" : "text-red-500"
-            }`}
-        >
+        <span className={`font-semibold ${status ? "text-green-600" : "text-red-500"}`}>
           {status ? "Active" : "Inactive"}
         </span>
       ),
@@ -142,8 +123,9 @@ export const AcademicList = () => {
 
   const fetchAcademicYears = async (page = 1, limit = 10) => {
     try {
+      setTableLoading(true);
       const response = await GetAllAcademicYear(page, limit);
-      if (response?.data && Array.isArray(response.data)) {
+      if (Array.isArray(response.data)) {
         const transformed = response.data.map((item) => ({
           key: item._id,
           id: item._id,
@@ -161,7 +143,9 @@ export const AcademicList = () => {
         });
       }
     } catch (err) {
-      console.error("Failed to fetch academic years:", err);
+      console.error("Fetch failed:", err);
+    } finally {
+      setTableLoading(false);
     }
   };
 
@@ -173,8 +157,37 @@ export const AcademicList = () => {
     fetchAcademicYears(pagination.current, pagination.pageSize);
   };
 
-  const handleOk = () => {
-    form.submit();
+  const handleEdit = async (id) => {
+    try {
+      const response = await GetAcademicYearsById(id);
+      const data = response.data;
+
+      form.setFieldsValue({
+        name: data.name,
+        startDate: data.startDate ? dayjs(data.startDate) : null,
+        endDate: data.endDate ? dayjs(data.endDate) : null,
+      });
+
+      setSelectedAcademicYearId(data._id);
+      setEditMode(true);
+      setIsModalOpen(true);
+    } catch (error) {
+      console.error("Edit error:", error);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this academic year?")) return;
+
+    try {
+      const response = await DeleteAcademicYear(id);
+      toast.success(response.message || "Deleted!", {
+        autoClose: 1000,
+        onClose: () => fetchAcademicYears(),
+      });
+    } catch (error) {
+      console.error("Delete error:", error);
+    }
   };
 
   const handleSubmit = async (values) => {
@@ -185,29 +198,43 @@ export const AcademicList = () => {
         startDate: values.startDate.toISOString(),
         endDate: values.endDate.toISOString(),
       };
-      const response = await CreateAcademicYear(payload);
-      toast.success(response.message || "Academic Year Created Successfully!");
-      fetchAcademicYears();
+
+      let response;
+      if (editMode && selectedAcademicYearId) {
+        response = await UpdateAcademicYear(selectedAcademicYearId, payload);
+        toast.success(response.message || "Updated Successfully!", {
+          autoClose: 1000,
+          onClose: () => fetchAcademicYears(),
+        });
+      } else {
+        response = await CreateAcademicYear(payload);
+        toast.success(response.message || "Created Successfully!", {
+          autoClose: 1000,
+          onClose: () => fetchAcademicYears(),
+        });
+      }
     } catch (error) {
-      console.log("Error creating academic year:", error);
+      console.error("Submit error:", error);
     } finally {
-      setLoading(false); 
+      setLoading(false);
       setIsModalOpen(false);
+      setEditMode(false);
       form.resetFields();
     }
   };
-  
 
-  if (loading) {
-    return <div className="text-center mt-10 text-lg font-semibold">Loading...</div>;
-  }
+  const handleOk = () => form.submit();
 
   return (
     <div className="overflow-x-auto">
-      <ToastContainer/>
+      <ToastContainer />
       <div className="flex gap-2 justify-end mb-3">
         <button
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => {
+            setIsModalOpen(true);
+            setEditMode(false);
+            form.resetFields();
+          }}
           className="flex gap-2 mt-4 text-white py-2 px-5 outline-none rounded-sm font-semibold cursor-pointer text-[14px] bg-sky-500"
         >
           <PlusCircle /> Add Academic Year
@@ -220,10 +247,10 @@ export const AcademicList = () => {
         columns={columns}
         rowSelection={rowSelection}
         dataSource={academicData}
+        loading={tableLoading}
         pagination={{
           ...pagination,
-          showTotal: (total, range) =>
-            `${range[0]}-${range[1]} of ${total}`,
+          showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
           pageSizeOptions: ["5", "10", "20", "50"],
         }}
         onChange={handleTableChange}
@@ -231,21 +258,22 @@ export const AcademicList = () => {
         className="custom-table"
       />
 
-
-
-
-
       <Modal
-        title="Add Academic Year"
+        title={editMode ? "Edit Academic Year" : "Add Academic Year"}
         open={isModalOpen}
         onOk={handleOk}
-        onCancel={() => setIsModalOpen(false)}
-        okText="Submit"
+        onCancel={() => {
+          setIsModalOpen(false);
+          setEditMode(false);
+          form.resetFields();
+          setSelectedAcademicYearId(null);
+        }}
+        okText={loading ? (editMode ? "Updating..." : "Submitting...") : (editMode ? "Update" : "Submit")}
+        confirmLoading={loading}
       >
         <Form
           form={form}
           layout="vertical"
-          className="form-container"
           onFinish={handleSubmit}
         >
           <Row gutter={16}>
@@ -255,7 +283,7 @@ export const AcademicList = () => {
                 name="name"
                 rules={[{ required: true, message: "Please enter a name" }]}
               >
-                <Input type="text" placeholder="e.g. 2024-2025"/>
+                <Input placeholder="e.g. 2024-2025" />
               </Form.Item>
             </Col>
           </Row>
@@ -281,7 +309,6 @@ export const AcademicList = () => {
           </Row>
         </Form>
       </Modal>
-
     </div>
   );
 };

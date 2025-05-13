@@ -54,7 +54,7 @@ export const AddBranch = () => {
         const schoolData = schoolResponse?.data?.map((school) => ({
           value: school._id,
           label: school.schoolName,
-        }));
+        }));        
 
         setClassOptions(classesData || []);
         setAcademicYearOptions(academicYearsData || []);
@@ -69,6 +69,9 @@ export const AddBranch = () => {
     fetchData();
   }, []);
 
+
+  console.log(schoolOptions);
+  
   const handleLogoChange = async (file) => {
     if (file) {
       const previewURL = URL.createObjectURL(file);

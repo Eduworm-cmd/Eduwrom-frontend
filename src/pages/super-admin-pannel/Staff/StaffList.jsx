@@ -2,43 +2,58 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, Edit2, Trash2, EllipsisVertical, PlusCircle, EyeIcon } from "lucide-react";
 import { Table, Button, Dropdown } from "antd";
-import { GetAllStaff } from "@/Network/Super_Admin/auth";
+import { DeleteStaff, GetAllStaff } from "@/Network/Super_Admin/auth";
+import { toast, ToastContainer } from "react-toastify";
 
 export const StaffList = () => {
   const navigate = useNavigate();
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [staffData, setStaffData] = useState([]);
-  const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
+
+  const fetchStaffData = async () => {
+    try {
+      const response = await GetAllStaff();
+
+      if (Array.isArray(response)) {
+        const data = response;
+
+        const formattedData = data.map((item, index) => ({
+          ...item,
+          key: item._id,
+          sno: index + 1,
+        }));
+
+        setStaffData(formattedData);
+      }
+    } catch (error) {
+      console.error("Error fetching staff data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchStaffData = async () => {
-      try {
-        const response = await GetAllStaff();
+    fetchStaffData();
+  }, []);
 
-        if (Array.isArray(response)) {
-          const data = response;
 
-          const formattedData = data.map((item, index) => ({
-            ...item,
-            key: item._id,
-            sno: index + 1, 
-          }));
 
-          setStaffData(formattedData);
-        } else {
-          throw new Error("Invalid data structure from API");
-        }
-      } catch (error) {
-        console.error("Error fetching staff data:", error);
-        setError("Failed to fetch staff data");
-      } finally {
-        setLoading(false); 
-      }
-    };
+  const handleDelete = async (id) => {
+    console.log("Staff iD", id);
 
-    fetchStaffData(); 
-  }, []); 
+    if (!window.confirm("Are you sure you want to delete this academic year?")) return;
 
+    try {
+      const response = await DeleteStaff(id);
+      toast.success(response.message || "Deleted!", {
+        autoClose: 1000,
+        onClose: () => fetchStaffData(),
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
   const onSelectChange = (selectedKeys) => {
     setSelectedRowKeys(selectedKeys);
   };
@@ -121,7 +136,7 @@ export const StaffList = () => {
                 label: (
                   <div
                     className="flex items-center gap-2 text-red-500"
-                    onClick={() => console.log("Delete", record._id)}
+                    onClick={() => handleDelete(record._id)}
                   >
                     <Trash2 size={14} /> Delete
                   </div>
@@ -138,13 +153,10 @@ export const StaffList = () => {
     },
   ];
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
 
   return (
     <div className="overflow-x-auto">
+      <ToastContainer />
       <div className="flex justify-end gap-2 mb-4">
         <button
           onClick={() => navigate("/eduworm-admin/staff/add")}
@@ -157,7 +169,8 @@ export const StaffList = () => {
       <Table
         rowSelection={rowSelection}
         columns={columns}
-        dataSource={staffData} // Use the fetched staff data
+        loading={loading}
+        dataSource={staffData}
         pagination={{
           position: ["bottomRight"],
           pageSizeOptions: ["10", "20", "50"],

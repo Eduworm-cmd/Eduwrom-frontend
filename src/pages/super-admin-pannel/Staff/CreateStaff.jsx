@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Form,
   Input,
@@ -12,8 +12,9 @@ import {
 import { UploadOutlined } from "@ant-design/icons";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { AddStaff } from "@/Network/Super_Admin/auth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import dayjs from "dayjs";
+import { AddStaff, GetStaffById, UpdateStaff } from "@/Network/Super_Admin/auth";
 
 const { Option } = Select;
 
@@ -22,14 +23,53 @@ export const CreateStaff = () => {
   const [profilePreview, setProfilePreview] = useState(null);
   const [profileFile, setProfileFile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const { id } = useParams();
   const navigate = useNavigate();
 
-  const handleProfileUpload = (file) => {
-    if (file) {
-      setProfileFile(file);
-      const preview = URL.createObjectURL(file);
-      setProfilePreview(preview);
+  useEffect(() => {
+    if (id) {
+      setIsEditMode(true);
+      fetchStaffDetails(id);
     }
+  }, [id]);
+
+  const fetchStaffDetails = async (staffId) => {
+    try {
+      const response = await GetStaffById(staffId);
+      const staff = response.data;
+
+      form.setFieldsValue({
+        firstName: staff.firstName,
+        lastName: staff.lastName,
+        dateOfBirth: dayjs(staff.dateOfBirth),
+        phoneNumber: staff.phoneNumber,
+        emailId: staff.emailId,
+        gender: staff.gender,
+        employeeRole: staff.employeeRole,
+        department: staff.department,
+        nationality: staff.nationality,
+        religion: staff.religion,
+        fatherName: staff.fatherName,
+        currentAddress: staff.currentAddress,
+        permanentAddress: staff.permanentAddress,
+        pinCode: staff.pinCode,
+        city: staff.city,
+        state: staff.state,
+        password: "********", 
+      });
+
+      setProfilePreview(`data:image/jpeg;base64,${staff.profile}`);
+    } catch (error) {
+      console.log(error);
+      
+    }
+  };
+
+  const handleProfileUpload = (file) => {
+    setProfileFile(file);
+    const preview = URL.createObjectURL(file);
+    setProfilePreview(preview);
     return false;
   };
 
@@ -37,10 +77,7 @@ export const CreateStaff = () => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
-      reader.onload = () => {
-        const base64String = reader.result.split(",")[1];
-        resolve(base64String);
-      };
+      reader.onload = () => resolve(reader.result.split(",")[1]);
       reader.onerror = (error) => reject(error);
     });
   };
@@ -49,18 +86,18 @@ export const CreateStaff = () => {
     setIsSubmitting(true);
 
     try {
-      if (!profileFile) {
-        toast.error("Profile picture is required");
+      let base64 = null;
+      if (profileFile) {
+        base64 = await convertFileToBase64(profileFile);
+      } else if (!isEditMode) {
         setIsSubmitting(false);
         return;
       }
 
-      const base64 = await convertFileToBase64(profileFile);
-
       const staffData = {
         firstName: values.firstName,
         lastName: values.lastName,
-        password: values.password,
+        password: values.password !== "********" ? values.password : undefined,
         dateOfBirth: values.dateOfBirth?.format("YYYY-MM-DD"),
         phoneNumber: values.phoneNumber,
         emailId: values.emailId,
@@ -78,15 +115,20 @@ export const CreateStaff = () => {
         profile: base64,
       };
 
-      await AddStaff(staffData);
+      if (isEditMode) {
+        await UpdateStaff(id, staffData);
+        toast.success("Staff updated successfully");
+      } else {
+        await AddStaff(staffData);
+        toast.success("Staff created successfully");
+      }
 
-      toast.success("Staff created successfully");
       form.resetFields();
       setProfilePreview(null);
       setProfileFile(null);
-      navigate('/eduworm-admin/staff')
+      navigate("/eduworm-admin/staff");
     } catch (error) {
-      console.log(error);
+      console.error(error);
     } finally {
       setIsSubmitting(false);
     }
@@ -104,7 +146,11 @@ export const CreateStaff = () => {
           >
             <div className="w-32 h-32 border-dashed border-2 flex items-center justify-center cursor-pointer">
               {profilePreview ? (
-                <img src={profilePreview} alt="Profile" className="w-full h-full object-cover" />
+                <img
+                  src={profilePreview}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
               ) : (
                 <UploadOutlined className="text-xl" />
               )}
@@ -236,7 +282,7 @@ export const CreateStaff = () => {
 
         <Form.Item>
           <Button type="primary" htmlType="submit" loading={isSubmitting}>
-            Create Staff
+            {isEditMode ? "Update Staff" : "Create Staff"}
           </Button>
         </Form.Item>
       </Form>
