@@ -8,12 +8,13 @@ import {
   Card,
   Row,
   Col,
-  message
+  message,
 } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { toast, ToastContainer } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import "react-toastify/dist/ReactToastify.css";
+import { useNavigate, useParams } from "react-router-dom";
 
 const { Option } = Select;
 
@@ -23,35 +24,119 @@ export const AddStudent = () => {
   const [branches, setBranches] = useState([]);
   const [classList, setClassList] = useState([]);
   const navigate = useNavigate();
+  const { id } = useParams(); // Use this to fetch student ID from URL
+
+  const isEditMode = Boolean(id); // Check if we are in edit mode
 
   useEffect(() => {
     fetchSchools();
-  }, []);
+    if (isEditMode) {
+      fetchStudentDetails();
+    }
+  }, [isEditMode, id]);
 
   const fetchSchools = async () => {
-    const res = await fetch("http://localhost:4000/api/school/dropdown");
-    const data = await res.json();
-    setSchools(data?.data || []);
+    try {
+      const res = await fetch("http://localhost:4000/api/school/dropdown");
+      const data = await res.json();
+      setSchools(data?.data || []);
+    } catch (error) {
+      message.error("Failed to fetch schools");
+    }
+  };
+
+  const fetchStudentDetails = async () => {
+    if (!id) return;
+    try {
+      const res = await fetch(`http://localhost:4000/api/superStudent/ById/${id}`);
+      const data = await res.json();
+
+      if (data?.student) {
+       
+        const student = data.student;
+
+        // Populate form with existing student data
+        form.setFieldsValue({
+          // Basic Information
+          firstName: student.firstName,
+          lastName: student.lastName,
+          rollNo: student.rollNo,
+          gender: student.gender,
+          dateOfBirth: student.dateOfBirth ? dayjs(student.dateOfBirth) : null,
+
+          // School Details
+          schoolId: student.schoolId,
+          branchId: student.branchId,
+          classId: student.classId,
+
+          // Additional Details
+          photo: student.photo,
+          admissionNumber: student.admissionNumber,
+          dateOfJoining: student.dateOfJoining ? dayjs(student.dateOfJoining) : null,
+          bloodGroup: student.bloodGroup,
+          enrollmentStatus: student.enrollmentStatus,
+          uniqueId: student.uniqueId,
+
+          // Documents
+          documents: student.documents || {
+            transferCertificate: '',
+            aadharCard: '',
+            studentIDCard: ''
+          },
+
+          // Emergency Contact
+          emergencyContact: student.emergencyContact || {
+            name: '',
+            relation: '',
+            phone: ''
+          },
+
+          // Parents
+          parents: student.parents || []
+        });
+
+        // Fetch branches based on selected school
+        if (student.schoolId) {
+          await fetchBranches(student.schoolId);
+        }
+
+        // Fetch classes based on selected branch
+        if (student.branchId) {
+          await fetchClassDropdown(student.branchId);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching student details:", error);
+      message.error("Failed to fetch student details");
+    }
   };
 
   const fetchBranches = async (schoolId) => {
-    const res = await fetch(`http://localhost:4000/api/auth_SchoolBranch/${schoolId}`);
-    const data = await res.json();
-    setBranches(data?.data || []);
-    setClassList([]); // 🟢 reset class list on school change
-    form.setFieldsValue({ branchId: undefined, classId: undefined }); // 🟢 reset dependent fields
+    try {
+      const res = await fetch(`http://localhost:4000/api/auth_SchoolBranch/${schoolId}`);
+      const data = await res.json();
+      setBranches(data?.data || []);
+      setClassList([]);
+      form.setFieldsValue({ branchId: undefined, classId: undefined });
+    } catch (error) {
+      message.error("Failed to fetch branches");
+    }
   };
 
-  // 🟢 Updated: Added default value check for branchId
   const fetchClassDropdown = async (branchId) => {
     if (!branchId) return;
-    const res = await fetch(`http://localhost:4000/api/class/${branchId}`);
-    const data = await res.json();
-    setClassList(data?.data || []);
-    form.setFieldsValue({ classId: undefined }); // 🟢 reset class
+    try {
+      const res = await fetch(`http://localhost:4000/api/class/${branchId}`);
+      const data = await res.json();
+      setClassList(data?.data || []);
+      form.setFieldsValue({ classId: undefined });
+    } catch (error) {
+      message.error("Failed to fetch classes");
+    }
   };
 
   const onFinish = async (values) => {
+    // Prepare payload with formatted dates
     const payload = {
       ...values,
       dateOfBirth: values.dateOfBirth?.format("YYYY-MM-DD"),
@@ -60,8 +145,14 @@ export const AddStudent = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:4000/api/superStudent/create", {
-        method: "POST",
+      const url = isEditMode
+        ? `http://localhost:4000/api/superStudent/${id}`
+        : "http://localhost:4000/api/superStudent/create";
+
+      const method = isEditMode ? "PUT" : "POST";
+
+      const res = await fetch(url, {
+        method: method,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -70,12 +161,19 @@ export const AddStudent = () => {
       });
 
       const result = await res.json();
+
       if (result?.success) {
-        toast.success("Student created successfully");
-        form.resetFields();
-        navigate("/eduworm-admin/student/list");
+        toast.success(isEditMode ? "Student updated successfully" : "Student created successfully");
+
+        // Navigate to student details or list page
+        const studentId = result?.data?._id || id;
+        if (studentId) {
+          navigate(`/eduworm-admin/student/list/${studentId}`);
+        } else {
+          message.error("Student ID not found");
+        }
       } else {
-        message.error(result?.message || "Failed to create student");
+        message.error(result?.message || (isEditMode ? "Failed to update student" : "Failed to create student"));
       }
     } catch (err) {
       console.error(err);
@@ -86,13 +184,26 @@ export const AddStudent = () => {
   return (
     <div className="max-w-8xl mx-auto">
       <ToastContainer />
-      <Card title="Create Student">
+      <Card title={isEditMode ? "Edit Student" : "Create Student"}>
         <Form
           form={form}
           layout="vertical"
           onFinish={onFinish}
-          initialValues={{ parents: [] }} // ✅ removed unnecessary defaults
+          initialValues={{
+            parents: [],
+            documents: {
+              transferCertificate: '',
+              aadharCard: '',
+              studentIDCard: ''
+            },
+            emergencyContact: {
+              name: '',
+              relation: '',
+              phone: ''
+            }
+          }}
         >
+          {/* School Details Row */}
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item name="schoolId" label="School" rules={[{ required: true }]}>
@@ -118,6 +229,7 @@ export const AddStudent = () => {
             </Col>
           </Row>
 
+          {/* Class and Photo Row */}
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item name="classId" label="Class" rules={[{ required: true }]}>
@@ -137,6 +249,7 @@ export const AddStudent = () => {
             </Col>
           </Row>
 
+          {/* Name Row */}
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item name="firstName" label="First Name" rules={[{ required: true }]}>
@@ -150,6 +263,7 @@ export const AddStudent = () => {
             </Col>
           </Row>
 
+          {/* Gender and Date of Birth Row */}
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item name="gender" label="Gender" rules={[{ required: true }]}>
@@ -167,6 +281,7 @@ export const AddStudent = () => {
             </Col>
           </Row>
 
+          {/* Roll No and Admission Number Row */}
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item name="rollNo" label="Roll No" rules={[{ required: true }]}>
@@ -180,6 +295,7 @@ export const AddStudent = () => {
             </Col>
           </Row>
 
+          {/* Date of Joining and Blood Group Row */}
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item name="dateOfJoining" label="Date of Joining" rules={[{ required: true }]}>
@@ -199,6 +315,7 @@ export const AddStudent = () => {
             </Col>
           </Row>
 
+          {/* Enrollment Status and Unique ID Row */}
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item name="enrollmentStatus" label="Enrollment Status">
@@ -212,7 +329,7 @@ export const AddStudent = () => {
             </Col>
           </Row>
 
-          {/* Documents */}
+          {/* Documents Section */}
           <Form.Item label="Transfer Certificate" name={["documents", "transferCertificate"]}>
             <Input />
           </Form.Item>
@@ -223,7 +340,7 @@ export const AddStudent = () => {
             <Input />
           </Form.Item>
 
-          {/* Emergency Contact */}
+          {/* Emergency Contact Section */}
           <Row gutter={16}>
             <Col span={8}>
               <Form.Item label="Emergency Contact Name" name={["emergencyContact", "name"]}>
@@ -242,7 +359,7 @@ export const AddStudent = () => {
             </Col>
           </Row>
 
-          {/* Parents */}
+          {/* Parents Section */}
           <Form.List name="parents" rules={[{ required: true, message: "At least one parent is required." }]}>
             {(fields, { add, remove }) => (
               <>
@@ -277,28 +394,12 @@ export const AddStudent = () => {
                     </Row>
                     <Row gutter={16}>
                       <Col span={12}>
-                        <Form.Item {...restField} label="Relationship" name={[name, "relationship"]} rules={[{ required: true }]}>
-                          <Select>
-                            <Option value="Father">Father</Option>
-                            <Option value="Mother">Mother</Option>
-                            <Option value="Guardian">Guardian</Option>
-                          </Select>
-                        </Form.Item>
-                      </Col>
-                      <Col span={12}>
-                        <Form.Item {...restField} label="Phone Number" name={[name, "phoneNumber"]} rules={[{ required: true }]}>
-                          <Input />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                    <Row gutter={16}>
-                      <Col span={12}>
-                        <Form.Item {...restField} label="Email" name={[name, "email"]} rules={[{ required: true }]}>
+                        <Form.Item {...restField} label="Phone Number" name={[name, "phone"]} rules={[{ required: true }]}>
                           <Input />
                         </Form.Item>
                       </Col>
                       <Col span={12}>
-                        <Form.Item {...restField} label="Current Address" name={[name, "currentAddress"]}>
+                        <Form.Item {...restField} label="Email" name={[name, "email"]}>
                           <Input />
                         </Form.Item>
                       </Col>
@@ -309,9 +410,10 @@ export const AddStudent = () => {
             )}
           </Form.List>
 
+          {/* Submit Button */}
           <Form.Item>
             <Button type="primary" htmlType="submit" block>
-              Submit
+              {isEditMode ? "Update Student" : "Create Student"}
             </Button>
           </Form.Item>
         </Form>

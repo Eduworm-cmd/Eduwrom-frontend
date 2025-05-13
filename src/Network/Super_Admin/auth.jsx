@@ -160,6 +160,19 @@ const GetSchoolById = async (schoolId) => {
     });
 };
 
+const UpdateSchool = async (id, body) => {
+    return await apiRequest(`school/updateSchool/${id}`, {
+        method: "PUT",
+        body,
+    });
+};
+
+const studentGetById = async (id) => {
+    return await apiRequest(`superStudent/ById/${id}`, {
+        method: "GET",
+    });
+};
+
 // Get School Branches
 const GetSchoolBranches = async (schoolId) => {
     return await apiRequest("branches/forschool", {
@@ -310,6 +323,7 @@ const AddContent = async (body) => {
 
 
 export {
+    UpdateSchool,
     SetLocalStorage,
     ConvertImageToBase64,
     GetUser,
@@ -347,4 +361,5 @@ export {
     UpdateAcademicYear,
     GetSchoolBranches,
     AddContent,
+    studentGetById
 };

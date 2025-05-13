@@ -74,6 +74,7 @@ function App() {
           
           <Route path="school/list" element={<SchoolList />} />
           <Route path="school/add" element={<AddSchool />} />
+          <Route path="school/edit/:id" element={<AddSchool />} />  
           <Route path="school/view/:id" element={<SchoolView />} />
 
           <Route path="staff" element={<StaffList/>} />

@@ -1,17 +1,53 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Button, Input, Form, Select, DatePicker, Row, Col } from "antd";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { CreateSchool } from "@/Network/Super_Admin/auth";
-import { useNavigate } from "react-router-dom";
+import { CreateSchool, GetSchoolById, UpdateSchool } from "@/Network/Super_Admin/auth";
+import { useNavigate, useParams } from "react-router-dom";
+import dayjs from "dayjs";
 
 export const AddSchool = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
+  const { id } = useParams();
+
+  const isEditMode = Boolean(id); 
+
+  // Get school details in edit mode
+  useEffect(() => {
+    if (id) {
+      (async () => {
+        try {
+          const res = await GetSchoolById(id);
+          if (res?.school) {
+            const school = res.school;
+            form.setFieldsValue({
+              firstName: school.firstName,
+              lastName: school.lastName,
+              contact: {
+                email: school.contact?.email,
+                phone: school.contact?.phone,
+              },
+              schoolName: school.schoolName,
+              displayName: school.displayName,
+              startDate: dayjs(school.startDate),
+              endDate: dayjs(school.endDate),
+              country: school.country,
+              state: school.state,
+              city: school.city,
+              pincode: school.pincode,
+              address: school.address,
+            });
+          }
+        } catch (error) {
+          toast.error("Failed to fetch school details.");
+          console.error("Fetch error:", error);
+        }
+      })();
+    }
+  }, [id, form]);
 
   const handleSubmit = async (values) => {
-    console.log("Form Data Submitted:", values);
-
     const payload = {
       ...values,
       startDate: values.startDate?.format("YYYY-MM-DD"),
@@ -19,20 +55,22 @@ export const AddSchool = () => {
     };
 
     try {
-      const response = await CreateSchool(payload);
-      if (response) {
-        toast.success("School created successfully!", {
-          autoClose: 1000,
-          onClose: () => navigate('/eduworm-admin/school/list'),
-        });
+      const result = isEditMode
+        ? await UpdateSchool(id, payload)
+        : await CreateSchool(payload);
 
-        form.resetFields();
-      }
+      toast.success(`School ${isEditMode ? "updated" : "created"} successfully!`, {
+        autoClose: 1000,
+        onClose: () => navigate("/eduworm-admin/school/list"),
+      });
+
+      form.resetFields();
     } catch (error) {
       console.error("API Error:", error);
-      toast.error("Failed to create school");
+      toast.error(`Failed to ${isEditMode ? "update" : "create"} school`);
     }
   };
+
 
   const countryOptions = [
     { value: "India", label: "India" },
@@ -55,14 +93,16 @@ export const AddSchool = () => {
   return (
     <div className="container p-2">
       <ToastContainer />
-      <h1 className="text-2xl py-1 mb-4 font-semibold">School Details</h1>
+      <h1 className="text-2xl py-1 mb-4 font-semibold">
+        {id ? "Edit School" : "Add School"}
+      </h1>
+
       <Form
         form={form}
         layout="vertical"
         onFinish={handleSubmit}
         initialValues={{ isActive: true }}
       >
-        {/* School Admin Info */}
         <Row gutter={16}>
           <Col span={12}>
             <Form.Item
@@ -84,7 +124,6 @@ export const AddSchool = () => {
           </Col>
         </Row>
 
-        {/* Contact Info */}
         <Row gutter={16}>
           <Col span={12}>
             <Form.Item
@@ -106,7 +145,6 @@ export const AddSchool = () => {
           </Col>
         </Row>
 
-        {/* School Info */}
         <Row gutter={16}>
           <Col span={12}>
             <Form.Item
@@ -128,7 +166,6 @@ export const AddSchool = () => {
           </Col>
         </Row>
 
-        {/* Dates */}
         <Row gutter={16}>
           <Col span={12}>
             <Form.Item
@@ -150,7 +187,6 @@ export const AddSchool = () => {
           </Col>
         </Row>
 
-        {/* Location Info */}
         <Row gutter={16}>
           <Col span={8}>
             <Form.Item label="Country" name="country">
@@ -182,10 +218,9 @@ export const AddSchool = () => {
           </Col>
         </Row>
 
-        {/* Submit Button */}
         <Form.Item>
           <Button type="primary" htmlType="submit">
-            Submit
+            {id ? "Update" : "Submit"}
           </Button>
         </Form.Item>
       </Form>

@@ -32,7 +32,6 @@ const superAdminData = {
         { title: "School List", url: "/eduworm-admin/school/list" },
         { title: "Add Branch", url: "/eduworm-admin/schoolbranch/add" },
         { title: "Branch List", url: "/eduworm-admin/schoolbranch/list" },
-        { title: "Student Data", url: "/eduworm-admin/students/add" },
         { title: "Staff Data", url: "/eduworm-admin/staff" },
         { title: "Academic Year", url: "/eduworm-admin/academic Year" },
         // { title: "Grade Management", url: "/eduworm-admin/grade" },
