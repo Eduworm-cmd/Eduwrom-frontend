@@ -4,9 +4,11 @@ import { PlusCircle, Edit2, Trash2, Eye, EllipsisVertical, Search } from "lucide
 import { Table, Button, Dropdown } from "antd";
 import DownloadButton from "@/components/Buttons/DownloadButton/DownloadButton";
 import { ExportButton } from "@/components/Buttons/ExportButton/ExportButton";
-import { GetAllSchools } from "@/Network/Super_Admin/auth";
+import { DeleteSchoolById, GetAllSchools } from "@/Network/Super_Admin/auth";
 
 export const SchoolList = () => {
+ 
+  const [tableLoading, setTableLoading] = useState(false);
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [schoolData, setSchoolData] = useState([]);
@@ -19,7 +21,7 @@ export const SchoolList = () => {
     );
   });
 
-  console.log(filteredData);
+
 
   
  
@@ -125,12 +127,16 @@ export const SchoolList = () => {
                 label: (
                   <div
                     className="flex items-center gap-2 text-red-500"
-                    onClick={() => console.log("Delete", record.id)}
+                    onClick={() => {
+                      if (window.confirm("Are you sure you want to delete this school?")) {
+                        handleDelete(record.id);
+                      }
+                    }}
                   >
                     <Trash2 size={14} /> Delete
                   </div>
                 ),
-              },
+              }
             ],
           }}
         >
@@ -154,10 +160,21 @@ export const SchoolList = () => {
   ];
 
 
+  const handleDelete = async (schoolId) => {
+    try {
+      await DeleteSchoolById(schoolId);
+      setSchoolData((prev) => prev.filter((school) => school.id !== schoolId));
+    } catch (error) {
+      console.error("Failed to delete school:", error);
+    }
+  };
+  
+
   
 
   const fetchAllSchools = async () => {
     try {
+      setTableLoading(true);
       const response = await GetAllSchools();
 
       const formattedData = response.data.map((school) => ({
@@ -174,7 +191,13 @@ export const SchoolList = () => {
     } catch (error) {
       console.log("Error fetching school data:", error);
     }
+    finally{
+      setTableLoading(false);
+    }
   };
+
+
+
 
   useEffect(() => {
     fetchAllSchools();
@@ -209,6 +232,7 @@ export const SchoolList = () => {
 
       <div className="overflow-auto border rounded-md">
         <Table
+          loading={tableLoading}
           columns={columns}
           rowSelection={rowSelection}
           dataSource={filteredData}

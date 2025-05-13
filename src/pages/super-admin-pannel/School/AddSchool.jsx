@@ -8,10 +8,11 @@ import dayjs from "dayjs";
 
 export const AddSchool = () => {
   const [form] = Form.useForm();
+  const [loading, setLoading] = React.useState(false);
   const navigate = useNavigate();
   const { id } = useParams();
 
-  const isEditMode = Boolean(id); 
+  const isEditMode = Boolean(id);
 
   // Get school details in edit mode
   useEffect(() => {
@@ -32,15 +33,16 @@ export const AddSchool = () => {
               displayName: school.displayName,
               startDate: dayjs(school.startDate),
               endDate: dayjs(school.endDate),
-              country: school.country,
-              state: school.state,
-              city: school.city,
-              pincode: school.pincode,
-              address: school.address,
+              location: {
+                country: school.location?.country,
+                state: school.location?.state,
+                city: school.location?.city,
+                pinCode: school.location?.pinCode,
+                address: school.location?.address,
+              } 
             });
           }
         } catch (error) {
-          toast.error("Failed to fetch school details.");
           console.error("Fetch error:", error);
         }
       })();
@@ -48,6 +50,7 @@ export const AddSchool = () => {
   }, [id, form]);
 
   const handleSubmit = async (values) => {
+    setLoading(true);
     const payload = {
       ...values,
       startDate: values.startDate?.format("YYYY-MM-DD"),
@@ -67,7 +70,9 @@ export const AddSchool = () => {
       form.resetFields();
     } catch (error) {
       console.error("API Error:", error);
-      toast.error(`Failed to ${isEditMode ? "update" : "create"} school`);
+    }
+    finally {
+      setLoading(false);
     }
   };
 
@@ -146,7 +151,7 @@ export const AddSchool = () => {
         </Row>
 
         <Row gutter={16}>
-          <Col span={12}>
+          <Col span={24}>
             <Form.Item
               label="School Name"
               name="schoolName"
@@ -155,15 +160,7 @@ export const AddSchool = () => {
               <Input />
             </Form.Item>
           </Col>
-          <Col span={12}>
-            <Form.Item
-              label="Display Name"
-              name="displayName"
-              rules={[{ required: true, message: "Display name is required!" }]}
-            >
-              <Input />
-            </Form.Item>
-          </Col>
+          
         </Row>
 
         <Row gutter={16}>
@@ -189,17 +186,17 @@ export const AddSchool = () => {
 
         <Row gutter={16}>
           <Col span={8}>
-            <Form.Item label="Country" name="country">
+            <Form.Item label="Country" name={['location', 'country']} rules={[{ required: true, message: "Country is required!" }]}>
               <Select options={countryOptions} />
             </Form.Item>
           </Col>
           <Col span={8}>
-            <Form.Item label="State" name="state">
+            <Form.Item label="State" name={['location', 'state']} rules={[{ required: true, message: "State is required!" }]}>
               <Select options={stateOptions} />
             </Form.Item>
           </Col>
           <Col span={8}>
-            <Form.Item label="City" name="city">
+            <Form.Item label="City" name={['location', 'city']} rules={[{ required: true, message: "City is required!" }]}>
               <Select options={cityOptions} />
             </Form.Item>
           </Col>
@@ -207,19 +204,19 @@ export const AddSchool = () => {
 
         <Row gutter={16}>
           <Col span={8}>
-            <Form.Item label="Pincode" name="pincode">
+            <Form.Item label="Pincode" name={['location', 'pinCode']} rules={[{ required: true, message: "Pincode is required!" }]}>
               <Input />
             </Form.Item>
           </Col>
           <Col span={16}>
-            <Form.Item label="Address" name="address">
+            <Form.Item label="Address" name={['location', 'address']} rules={[{ required: true, message: "Address is required!" }]}>
               <Input.TextArea />
             </Form.Item>
           </Col>
         </Row>
 
         <Form.Item>
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" htmlType="submit" loading={loading}>
             {id ? "Update" : "Submit"}
           </Button>
         </Form.Item>

@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Eye, Edit2, Trash2, EllipsisVertical, PlusCircle, Search } from "lucide-react";
 import { Table, Button, Dropdown } from "antd";
-import { GetAllStudentByBranch } from "@/Network/Super_Admin/auth";
+import { DeleteStudent, GetAllStudentByBranch } from "@/Network/Super_Admin/auth";
+import { toast } from "react-toastify";
 
 export const StudentList = () => {
   const params = useParams();
@@ -64,6 +65,22 @@ useEffect(() => {
     fetchStudent();
   }
 }, [id]);
+
+  const handleDelete = async (id) => {
+    console.log("Staff iD", id);
+
+    if (!window.confirm("Are you sure you want to delete this academic year?")) return;
+
+    try {
+      const response = await DeleteStudent(id);
+      toast.success(response.message || "Deleted!", {
+        autoClose: 1000,
+        onClose: () => fetchStudent(),
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   const onSelectChange = (selectedKeys) => {
     setSelectedRowKeys(selectedKeys);
@@ -145,7 +162,7 @@ useEffect(() => {
                 label: (
                   <div
                     className="flex items-center gap-2 text-red-500"
-                    onClick={() => console.log("Delete", record.id)}
+                    onClick={() => handleDelete(record.id)}
                   >
                     <Trash2 size={14} /> Delete
                   </div>

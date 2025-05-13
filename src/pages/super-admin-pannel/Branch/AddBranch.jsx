@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { UploadOutlined } from "@ant-design/icons";
+import dayjs from "dayjs";
 import {
   Button,
   Input,
@@ -11,7 +12,7 @@ import {
   Col,
 } from "antd";
 import { ToastContainer, toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   AcademicYearDropdown,
   ClassesDropdown,
@@ -19,22 +20,74 @@ import {
   SchoolsDropdwon,
 } from "@/Network/Super_Admin/auth";
 import axios from "axios";
+import { set } from "date-fns";
 
 export const AddBranch = () => {
+
+  const {id} = useParams();
+  const isEditMode = Boolean(id);
   const [logoPreview, setLogoPreview] = useState(null);
   const [logoName, setLogoName] = useState("");
   const [logoBuffer, setLogoBuffer] = useState(null);
   const [classOptions, setClassOptions] = useState([]);
   const [academicYearOptions, setAcademicYearOptions] = useState([]);
   const [schoolOptions, setSchoolOptions] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [form] = Form.useForm();
   const navigate = useNavigate();
 
+
+  useEffect(() => {
+    const fetchBranchData = async () => {
+      try {
+        if (isEditMode) {
+          const res = await axios.get(`http://localhost:4000/api/auth_SchoolBranch/GetBranch/${id}`); 
+          const branch = res.data;
+
+          console.log("dd", branch.data.role);
+
+          const data = res.data.data;
+          
+
+          // Set form fields
+          form.setFieldsValue({
+            schoolId: data?.school?._id,
+            name: data?.name,
+            displayName: data?.displayName,
+            startDate: data?.startDate ? dayjs(data?.startDate) : null,
+            endDate: data?.endDate ? dayjs(data?.endDate) : null,
+            country: data?.location?.country,
+            state: data?.location?.state,
+            city: data?.location?.city,
+            pincode: data?.location?.pincode,
+            address: data?.location?.address,
+            branchEmail: data?.contact?.email,
+            phone: data?.contact?.phone,
+            classes: data?.classes,
+            academicYear: data?.academicYear,
+            affiliation_board: data?.affiliation_board,
+          });
+
+          if (branch.branchLogo) {
+            setLogoPreview(`data:image/png;base64,${branch.branchLogo}`);
+            setLogoBuffer(branch.branchLogo);
+            setLogoName("Existing Logo");
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching branch data:", error);
+      }
+    };
+
+    fetchBranchData();
+  }, [isEditMode, id]);
+  
+
   useEffect(() => {
     const fetchData = async () => {
-      setIsLoading(true);
+      
       try {
+        setIsLoading(true);
         const [classesResponse, academicYearsResponse, schoolResponse] = await Promise.all([
           ClassesDropdown(),
           AcademicYearDropdown(),
@@ -140,22 +193,36 @@ export const AddBranch = () => {
     };
 
     try {
-      const response = await CreateBranch(submissionData);
+      setIsLoading(true);
+      let response;
+      if (isEditMode) {
+        // ✅ Update API
+        response = await axios.put(
+          `http://localhost:4000/api/auth_SchoolBranch/UpdateBranch/${id}`,
+          submissionData
+        );
+      } else {
+        // ✅ Create API
+        response = await CreateBranch(submissionData);
+      }
 
       if (response) {
-        toast.success(response.message || "Branch created successfully!");
-        form.resetFields();
-        setLogoPreview(null);
-        setLogoName("");
-        setLogoBuffer(null);
+        toast.success(
+          response.data?.message || response.message ||
+          (isEditMode ? "Branch updated successfully!" : "Branch created successfully!")
+        );
         setTimeout(() => {
           navigate("/eduworm-admin/schoolbranch/list");
         }, 1000);
       }
     } catch (error) {
-      console.error("CreateBranch Error:", error);
+      console.error("Error submitting branch form:", error);
+      toast.error("Something went wrong");
+    } finally {
+      setIsLoading(false);
     }
   };
+  
 
   const countryOptions = [
     { value: "India", label: "India" },
@@ -182,14 +249,6 @@ export const AddBranch = () => {
     { value: "IB", label: "IB" },
     { value: "Other", label: "Other" },
   ];
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="text-lg">Loading form data...</div>
-      </div>
-    );
-  }
 
   return (
     <div className="container p-2">
@@ -337,19 +396,19 @@ export const AddBranch = () => {
 
         <Row gutter={16}>
           <Col span={8}>
-            <Form.Item
+          <Form.Item
               label="Branch Email"
               name="branchEmail"
-              rules={[{ required: true, message: "Please enter branch email" }]}
+              rules={[{ required: true, message: "Please enter a valid email", type: "email" }]}
             >
-              <Input />
+              <Input type="email" />
             </Form.Item>
           </Col>
           <Col span={8}>
             <Form.Item
-              label="Phone Number"
+              label="Phone"
               name="phone"
-              rules={[{ required: true, message: "Please enter phone number" }]}
+              rules={[{ required: true, message: "Please enter a phone number" }]}
             >
               <Input />
             </Form.Item>
@@ -358,7 +417,7 @@ export const AddBranch = () => {
             <Form.Item
               label="Branch Password"
               name="branchPassword"
-              rules={[{ required: true, message: "Please enter password" }]}
+              rules={[{ required: true, message: "Please enter a password" }]}
             >
               <Input.Password />
             </Form.Item>
@@ -366,8 +425,8 @@ export const AddBranch = () => {
         </Row>
 
         <Form.Item>
-          <Button type="primary" htmlType="submit" block>
-            Create Branch
+          <Button type="primary" htmlType="submit" loading={isLoading}>
+            {isEditMode ? "Update Branch" : "Create Branch"}
           </Button>
         </Form.Item>
       </Form>
