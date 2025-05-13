@@ -172,12 +172,23 @@ export const BranchList = () => {
                 label: (
                   <div
                     className="flex items-center gap-2 text-red-500"
-                    onClick={() => console.log("Delete", record.id)}
+                    onClick={async () => {
+                      if (window.confirm("Are you sure you want to delete this branch?")) {
+                        try {
+                          await axios.delete(`http://localhost:4000/api/auth_SchoolBranch/DeleteBranch/${record.id}`);
+                          fetchBranches(pagination.current, pagination.pageSize, searchQuery); // Refresh table
+                        } catch (error) {
+                          console.error("Error deleting branch:", error);
+                          alert("Failed to delete branch");
+                        }
+                      }
+                    }}
                   >
                     <Trash2 size={14} /> Delete
                   </div>
                 ),
               },
+
             ],
           }}
         >

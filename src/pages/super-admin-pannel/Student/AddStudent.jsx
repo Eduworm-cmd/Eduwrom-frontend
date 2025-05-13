@@ -15,11 +15,13 @@ import dayjs from "dayjs";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate, useParams } from "react-router-dom";
+import { CreateStudent, UpdateStudent } from "@/Network/Super_Admin/auth";
 
 const { Option } = Select;
 
 export const AddStudent = () => {
   const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
   const [schools, setSchools] = useState([]);
   const [branches, setBranches] = useState([]);
   const [classList, setClassList] = useState([]);
@@ -45,6 +47,12 @@ export const AddStudent = () => {
     }
   };
 
+  /*************  ✨ Windsurf Command ⭐  *************/
+  /**
+   * Fetch student details from API and populate form fields
+   * @param {string} id Student ID
+   */
+  /*******  91aeeaac-53cc-4510-a703-b7a1d29e2973  *******/
   const fetchStudentDetails = async () => {
     if (!id) return;
     try {
@@ -52,8 +60,10 @@ export const AddStudent = () => {
       const data = await res.json();
 
       if (data?.student) {
-       
+
         const student = data.student;
+
+        console.log('students', student);
 
         // Populate form with existing student data
         form.setFieldsValue({
@@ -65,9 +75,9 @@ export const AddStudent = () => {
           dateOfBirth: student.dateOfBirth ? dayjs(student.dateOfBirth) : null,
 
           // School Details
-          schoolId: student.schoolId,
-          branchId: student.branchId,
-          classId: student.classId,
+          schoolId: student.school?.schoolName,
+          branchId: student.schoolBranch?.name,
+          classId: student.class?.className,
 
           // Additional Details
           photo: student.photo,
@@ -136,7 +146,6 @@ export const AddStudent = () => {
   };
 
   const onFinish = async (values) => {
-    // Prepare payload with formatted dates
     const payload = {
       ...values,
       dateOfBirth: values.dateOfBirth?.format("YYYY-MM-DD"),
@@ -144,42 +153,27 @@ export const AddStudent = () => {
     };
 
     try {
-      const token = localStorage.getItem("token");
-      const url = isEditMode
-        ? `http://localhost:4000/api/superStudent/${id}`
-        : "http://localhost:4000/api/superStudent/create";
+      setLoading(true);
 
-      const method = isEditMode ? "PUT" : "POST";
+      const res = isEditMode
+        ? await UpdateStudent(id, payload)
+        : await CreateStudent(payload);
 
-      const res = await fetch(url, {
-        method: method,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
+      if (res?.success) {
+        toast.success(res.message || "Operation successful!");
 
-      const result = await res.json();
-
-      if (result?.success) {
-        toast.success(isEditMode ? "Student updated successfully" : "Student created successfully");
-
-        // Navigate to student details or list page
-        const studentId = result?.data?._id || id;
+        const studentId = res?.data?._id || id;
         if (studentId) {
           navigate(`/eduworm-admin/student/list/${studentId}`);
-        } else {
-          message.error("Student ID not found");
         }
-      } else {
-        message.error(result?.message || (isEditMode ? "Failed to update student" : "Failed to create student"));
       }
     } catch (err) {
       console.error(err);
-      message.error("Server error");
+    } finally {
+      setLoading(false);
     }
   };
+
 
   return (
     <div className="max-w-8xl mx-auto">
@@ -207,7 +201,7 @@ export const AddStudent = () => {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item name="schoolId" label="School" rules={[{ required: true }]}>
-                <Select placeholder="Select School" onChange={fetchBranches}>
+                <Select placeholder="Select School" disabled={isEditMode} onChange={fetchBranches} >
                   {schools.map((s) => (
                     <Option key={s._id} value={s._id}>
                       {s.schoolName}
@@ -218,7 +212,7 @@ export const AddStudent = () => {
             </Col>
             <Col span={12}>
               <Form.Item name="branchId" label="Branch" rules={[{ required: true }]}>
-                <Select placeholder="Select Branch" onChange={fetchClassDropdown}>
+                <Select placeholder="Select Branch" disabled={isEditMode} onChange={fetchClassDropdown}>
                   {branches.map((b) => (
                     <Option key={b._id} value={b._id}>
                       {b.name}
@@ -233,7 +227,7 @@ export const AddStudent = () => {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item name="classId" label="Class" rules={[{ required: true }]}>
-                <Select placeholder="Select Class">
+                <Select placeholder="Select Class" disabled={isEditMode}>
                   {classList.map((c) => (
                     <Option key={c._id} value={c._id}>
                       {c.className}
@@ -391,10 +385,11 @@ export const AddStudent = () => {
                           <Input />
                         </Form.Item>
                       </Col>
+
                     </Row>
                     <Row gutter={16}>
                       <Col span={12}>
-                        <Form.Item {...restField} label="Phone Number" name={[name, "phone"]} rules={[{ required: true }]}>
+                        <Form.Item {...restField} label="Phone Number" name={[name, "phoneNumber"]} rules={[{ required: true }]}>
                           <Input />
                         </Form.Item>
                       </Col>
@@ -412,7 +407,7 @@ export const AddStudent = () => {
 
           {/* Submit Button */}
           <Form.Item>
-            <Button type="primary" htmlType="submit" block>
+            <Button type="primary" htmlType="submit" block loading={loading}>
               {isEditMode ? "Update Student" : "Create Student"}
             </Button>
           </Form.Item>

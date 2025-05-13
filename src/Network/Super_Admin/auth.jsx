@@ -145,6 +145,9 @@ const GetAllSchools = async (body) => {
     });
 }
 
+
+
+
 // Create School By Super Admin
 const CreateSchool = async (body) =>{
     return await apiRequest('school/create',{
@@ -160,6 +163,16 @@ const GetSchoolById = async (schoolId) => {
     });
 };
 
+
+const DeleteSchoolById = async (schoolId) => {
+    return await apiRequest(`school/deleteSchool/${schoolId}`, {
+        method: "DELETE",
+    });
+};
+
+
+
+
 const UpdateSchool = async (id, body) => {
     return await apiRequest(`school/updateSchool/${id}`, {
         method: "PUT",
@@ -170,6 +183,13 @@ const UpdateSchool = async (id, body) => {
 const studentGetById = async (id) => {
     return await apiRequest(`superStudent/ById/${id}`, {
         method: "GET",
+    });
+};
+
+const CreateStudent = async (body) => {
+    return await apiRequest("superStudent/create", {
+        method: "POST",
+        body,
     });
 };
 
@@ -304,6 +324,18 @@ const GetStaffById = async (id,body) =>{
     })
 }
 
+const UpdateStudent = async (id, payload) => {
+    return await apiRequest(`superStudent/${id}`, {
+        method: "PUT",
+        body: payload,
+    });
+};
+const DeleteStudent = async (id) => {
+    return await apiRequest(`superStudent/${id}`, {
+        method: "DELETE",
+    });
+};
+
 
 
 
@@ -323,6 +355,9 @@ const AddContent = async (body) => {
 
 
 export {
+    UpdateStudent,
+    CreateStudent,
+    DeleteSchoolById,
     UpdateSchool,
     SetLocalStorage,
     ConvertImageToBase64,
@@ -361,5 +396,6 @@ export {
     UpdateAcademicYear,
     GetSchoolBranches,
     AddContent,
-    studentGetById
+    studentGetById,
+    DeleteStudent
 };
