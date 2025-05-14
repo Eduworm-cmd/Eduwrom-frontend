@@ -230,7 +230,7 @@ export const BranchList = () => {
         </div>
 
         <button
-          onClick={() => navigate("/eduworm-admin/branch/add")}
+          onClick={() => navigate("/eduworm-admin/schoolbranch/add")}
           className="flex items-center gap-2 text-white py-2 mt-4 px-5 outline-none rounded-sm font-semibold cursor-pointer text-[14px] bg-sky-500"
         >
           <PlusCircle /> Add Branch

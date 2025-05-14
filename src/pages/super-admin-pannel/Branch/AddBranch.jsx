@@ -44,8 +44,6 @@ export const AddBranch = () => {
           const res = await axios.get(`http://localhost:4000/api/auth_SchoolBranch/GetBranch/${id}`); 
           const branch = res.data;
 
-          console.log("dd", branch.data.role);
-
           const data = res.data.data;
           
 

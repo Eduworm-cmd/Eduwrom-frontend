@@ -88,11 +88,10 @@ export const School_Teacher_Login = () => {
                     if (response) {
                         toast.success("OTP sent successfully!");
                         setShowOtp(true);
-                    } else {
-                        toast.error(response?.message || "Failed to send OTP");
                     }
                 } catch (err) {
-                    toast.error(err.message || "Something went wrong");
+                    console.log(err);
+                    
                 }
             }
         } else if (role === "Staff") {

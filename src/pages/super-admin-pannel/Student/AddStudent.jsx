@@ -47,12 +47,6 @@ export const AddStudent = () => {
     }
   };
 
-  /*************  ✨ Windsurf Command ⭐  *************/
-  /**
-   * Fetch student details from API and populate form fields
-   * @param {string} id Student ID
-   */
-  /*******  91aeeaac-53cc-4510-a703-b7a1d29e2973  *******/
   const fetchStudentDetails = async () => {
     if (!id) return;
     try {
@@ -161,11 +155,7 @@ export const AddStudent = () => {
 
       if (res?.success) {
         toast.success(res.message || "Operation successful!");
-
-        const studentId = res?.data?._id || id;
-        if (studentId) {
-          navigate(`/eduworm-admin/student/list/${studentId}`);
-        }
+        navigate('/eduworm-admin/schoolbranch/list')
       }
     } catch (err) {
       console.error(err);

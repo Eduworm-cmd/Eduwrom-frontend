@@ -34,6 +34,7 @@ const superAdminData = {
         { title: "Branch List", url: "/eduworm-admin/schoolbranch/list" },
         { title: "Staff Data", url: "/eduworm-admin/staff" },
         { title: "Academic Year", url: "/eduworm-admin/academic Year" },
+        { title: "Add Student", url: "/eduworm-admin/students/add" },
         // { title: "Grade Management", url: "/eduworm-admin/grade" },
         { title: "Classroom Management", url: "/eduworm-admin/class" },
       ]
@@ -116,11 +117,9 @@ const schoolAdminData = {
       title: "Center Management",
       icon: Users,
       items: [
-        { title: "Student Data", url: "/eduworm-admin" },
-        { title: "Staff Data", url: "/eduworm-admin/school/list" },
-        // { title: "Academic Year", url: "/eduworm-admin/staff/add" },
-        // { title: "Grade Management", url: "/eduworm-admin/staff/list" },
-        // { title: "Classroom Management", url: "/eduworm-admin/staff/list" },
+        { title: "Student Data", url: "/eduworm-school/stundent/list" },
+        { title: "Staff Data", url: "/eduworm-school/staff/list" },
+      
       ]
     },
 
