@@ -42,8 +42,8 @@ import { GradeList } from "./pages/super-admin-pannel/GradeList/GradeList";
 import { ClassList } from "./pages/super-admin-pannel/ClassList/ClassList";
 import { SA_StaffList } from "./pages/ShoolAdmin/SA_Staff/SA_StaffList";
 import { SA_AddStaff } from "./pages/ShoolAdmin/SA_Staff/SA_AddStaff";
-import { SA_StundentList } from "./pages/ShoolAdmin/SA_Stundent/SA_StundentList";
 import { SA_Add_Student } from "./pages/ShoolAdmin/SA_Stundent/SA_Add_Student";
+import { SA_StundentList } from "./pages/ShoolAdmin/SA_Stundent/SA_StundentList";
 
 function App() {
   return (
