@@ -44,6 +44,7 @@ import { SA_StaffList } from "./pages/ShoolAdmin/SA_Staff/SA_StaffList";
 import { SA_AddStaff } from "./pages/ShoolAdmin/SA_Staff/SA_AddStaff";
 import { SA_StundentList } from "./pages/ShoolAdmin/SA_Stundent/SA_StundentList";
 import { SA_Add_Student } from "./pages/ShoolAdmin/SA_Stundent/SA_Add_Student";
+import { StudentView } from "./pages/super-admin-pannel/Student/StudentView";
 
 function App() {
   return (
@@ -92,6 +93,7 @@ function App() {
           <Route path="students/list/:id" element={<StudentList />} />
           <Route path="students/add" element={<AddStudent />} />
           <Route path="students/edit/:id" element={<AddStudent />} />
+          <Route path="students/view/:id" element={<StudentView />} />
 
           <Route path="schedule/List" element={<SP_ScheduleList />} />
           <Route path="lms" element={<Lms />} />

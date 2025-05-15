@@ -174,7 +174,14 @@ export const AddStudent = () => {
           layout="vertical"
           onFinish={onFinish}
           initialValues={{
-            parents: [],
+            parents: [
+              {
+                firstName: '',
+                lastName: '',
+                phoneNumber: '',
+                email: '',
+              },
+            ],
             documents: {
               transferCertificate: '',
               aadharCard: '',
@@ -187,6 +194,7 @@ export const AddStudent = () => {
             }
           }}
         >
+
           {/* School Details Row */}
           <Row gutter={16}>
             <Col span={12}>
@@ -227,7 +235,7 @@ export const AddStudent = () => {
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item name="photo" label="Photo URL">
+              <Form.Item name="photo" label="Photo URL" rules={[{ required: true }]}>
                 <Input />
               </Form.Item>
             </Col>
@@ -287,7 +295,7 @@ export const AddStudent = () => {
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item name="bloodGroup" label="Blood Group">
+              <Form.Item name="bloodGroup" label="Blood Group" rules={[{ required: true }]}>
                 <Select placeholder="Select Blood Group">
                   {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map((b) => (
                     <Option key={b} value={b}>
@@ -302,7 +310,7 @@ export const AddStudent = () => {
           {/* Enrollment Status and Unique ID Row */}
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item name="enrollmentStatus" label="Enrollment Status">
+              <Form.Item name="enrollmentStatus" label="Enrollment Status" rules={[{ required: true }]}>
                 <Input />
               </Form.Item>
             </Col>
@@ -314,30 +322,30 @@ export const AddStudent = () => {
           </Row>
 
           {/* Documents Section */}
-          <Form.Item label="Transfer Certificate" name={["documents", "transferCertificate"]}>
+          <Form.Item label="Transfer Certificate" name={["documents", "transferCertificate"]} rules={[{ required: true }]}>
             <Input />
           </Form.Item>
-          <Form.Item label="Aadhar Card" name={["documents", "aadharCard"]}>
+          <Form.Item label="Aadhar Card" name={["documents", "aadharCard"]} rules={[{ required: true }]}>
             <Input />
           </Form.Item>
-          <Form.Item label="Student ID Card" name={["documents", "studentIDCard"]}>
+          <Form.Item label="Student ID Card" name={["documents", "studentIDCard"]} rules={[{ required: true }]}>
             <Input />
           </Form.Item>
 
           {/* Emergency Contact Section */}
           <Row gutter={16}>
             <Col span={8}>
-              <Form.Item label="Emergency Contact Name" name={["emergencyContact", "name"]}>
+              <Form.Item label="Emergency Contact Name" name={["emergencyContact", "name"]} rules={[{ required: true }]}>
                 <Input />
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item label="Relation" name={["emergencyContact", "relation"]}>
+              <Form.Item label="Relation" name={["emergencyContact", "relation"]} rules={[{ required: true }]}>
                 <Input />
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item label="Phone" name={["emergencyContact", "phone"]}>
+              <Form.Item label="Phone" name={["emergencyContact", "phone"]} rules={[{ required: true }]}>
                 <Input />
               </Form.Item>
             </Col>
@@ -384,7 +392,7 @@ export const AddStudent = () => {
                         </Form.Item>
                       </Col>
                       <Col span={12}>
-                        <Form.Item {...restField} label="Email" name={[name, "email"]}>
+                        <Form.Item {...restField} label="Email" name={[name, "email"]} rules={[{ required: true }]}>
                           <Input />
                         </Form.Item>
                       </Col>
