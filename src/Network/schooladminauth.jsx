@@ -33,6 +33,20 @@ const SchoolStaffByStaffId = async(id) => {
     })
 }
 
+const deleteSchoolStaff = async(id, data) =>{
+    return await apiRequest(`staff/updateStaff/${id}`,{
+        method: "DELETE",
+        body:data
+    })
+}
+
+const updateSchoolStaff = async(id, data) =>{
+    return await apiRequest(`staff/updateStaff/${id}`,{
+        method: "PUT",
+        body:data
+    })
+}
+
 
 export {
     SchoolAdminLoginByEmail,
@@ -40,4 +54,5 @@ export {
     SchoolAdminVerifyOTP,
     SchoolStaffById,
     SchoolStaffByStaffId,
+    deleteSchoolStaff,
 }

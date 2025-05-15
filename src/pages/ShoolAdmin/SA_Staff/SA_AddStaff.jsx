@@ -8,6 +8,7 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { ClassByBranchId } from '@/Network/Super_Admin/auth';
+import { SchoolStaffByStaffId } from '@/Network/schooladminauth';
 
 const { Option } = Select;
 
@@ -30,9 +31,6 @@ export const SA_AddStaff = () => {
   const schoolId = user?.schoolId;
   const branchId = user?.id;
   
-  console.log("School ID:", schoolId);
-  console.log("Branch ID:", branchId);
-  
   useEffect(() => {
     const fetchClasses = async () => {
       try {
@@ -51,8 +49,8 @@ export const SA_AddStaff = () => {
       const fetchStaffDetails = async () => {
         setIsLoading(true);
         try {
-          const res = await axios.get(`/api/staff/${id}`);
-          const staffData = res.data;
+          const res = await SchoolStaffByStaffId(id);
+          const staffData = res;
           
           // Format dates for form
           if (staffData.dateOfBirth) staffData.dateOfBirth = moment(staffData.dateOfBirth);
