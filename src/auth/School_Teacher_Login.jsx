@@ -65,6 +65,7 @@ export const School_Teacher_Login = () => {
                                 lastName: response.user?.lastName,
                                 email: response.user?.email,
                                 phoneNumber: response.user?.phoneNumber,
+                                schoolId: response.user?.schoolId,
                                 schoolName: response.user?.schoolName,
                                 role: response?.user?.role,
                             },
@@ -91,7 +92,7 @@ export const School_Teacher_Login = () => {
                     }
                 } catch (err) {
                     console.log(err);
-                    
+
                 }
             }
         } else if (role === "Staff") {
@@ -119,11 +120,11 @@ export const School_Teacher_Login = () => {
                     });
                 } else {
                     console.log(error);
-                    
+
                 }
             } catch (err) {
                 console.log(error);
-                
+
             }
         }
 
@@ -148,6 +149,7 @@ export const School_Teacher_Login = () => {
                         lastName: response.user?.lastName,
                         email: response.user?.email,
                         phoneNumber: response.user?.phoneNumber,
+                        schoolId: response.user?.schoolId,
                         schoolName: response.user?.schoolName,
                         role: response?.user?.role,
                     },

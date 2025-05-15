@@ -77,14 +77,14 @@ const CreateClass = async (body) => {
 }
 
 // Update Classes 
-const UpdateClass = async (id,body) => {
+const UpdateClass = async (id, body) => {
     return await apiRequest(`class/${id}`, {
         method: "PUT",
         body
     })
 }
 // Delete Class 
-const DeleteClass = async (id,body) => {
+const DeleteClass = async (id, body) => {
     return await apiRequest(`class/${id}`, {
         method: "DELETE",
         body
@@ -92,7 +92,7 @@ const DeleteClass = async (id,body) => {
 }
 
 // Get Classe By Id 
-const Class_By_Id = async (id,body) => {
+const Class_By_Id = async (id, body) => {
     return await apiRequest(`class/view/${id}`, {
         method: "GET",
         body
@@ -113,6 +113,12 @@ const ClassesDropdown = async (body) => {
     return await apiRequest("class/dropdown", {
         method: "GET",
         body
+    })
+}
+
+const ClassByBranchId = async (branchId) => {
+    return await apiRequest(`class/${branchId}`, {
+        method: "GET",
     })
 }
 
@@ -182,9 +188,9 @@ const GetAllSchools = async (body) => {
 
 
 // Create School By Super Admin
-const CreateSchool = async (body) =>{
-    return await apiRequest('school/create',{
-        method:"POST",
+const CreateSchool = async (body) => {
+    return await apiRequest('school/create', {
+        method: "POST",
         body
     })
 }
@@ -238,30 +244,30 @@ const GetSchoolBranches = async (schoolId) => {
 const GetBranchById = async (id) => {
     return await apiRequest(`auth_SchoolBranch/branches/${id}`, {
         method: "GET",
-        
+
     });
 };
 
 // Create School By Super Admin
-const CreateBranch = async (body) =>{
-    return await apiRequest('auth_SchoolBranch/create_SchoolBranch',{
-        method:"POST",
+const CreateBranch = async (body) => {
+    return await apiRequest('auth_SchoolBranch/create_SchoolBranch', {
+        method: "POST",
         body
     });
 }
 
 // Get All Stundents 
-const GetAllStudent = async (body) =>{
-    return await apiRequest('superStudent/all',{
-        method:"GET",
+const GetAllStudent = async (body) => {
+    return await apiRequest('superStudent/all', {
+        method: "GET",
         body
     });
 }
 // Get All Stundents By branch 
 const GetAllStudentByBranch = async (id, page = 1, limit = 10) => {
-  return await apiRequest(`superStudent/branch/${id}?page=${page}&limit=${limit}`, {
-    method: "GET",
-  });
+    return await apiRequest(`superStudent/branch/${id}?page=${page}&limit=${limit}`, {
+        method: "GET",
+    });
 };
 
 
@@ -278,7 +284,7 @@ const GetLevels = async (body) => {
 // Get All Academic Year
 const GetAllAcademicYear = async (page = 1, limit = 10) => {
     return await apiRequest(`academicYear/AllAcademicYear?page=${page}&limit=${limit}`, {
-      method: "GET",
+        method: "GET",
     });
 };
 
@@ -289,7 +295,7 @@ const AcademicYearDropdown = async (body) => {
         body,
     })
 }
-  
+
 
 // Create Academic Year
 const CreateAcademicYear = async (body) => {
@@ -329,42 +335,42 @@ const GetAcademicYearsById = async (id) => {
 
 
 
-const StaffLogin = async(body) =>{
-    return await apiRequest("SA_Staff/staff_login",{
-        method:"POST",
+const StaffLogin = async (body) => {
+    return await apiRequest("SA_Staff/staff_login", {
+        method: "POST",
         body,
     })
 }
 
-const AddStaff = async(body) =>{
-    return await apiRequest("SA_Staff/staffCreate",{
-        method:"POST",
+const AddStaff = async (body) => {
+    return await apiRequest("SA_Staff/staffCreate", {
+        method: "POST",
         body
     })
 }
 
-const UpdateStaff = async(id,payload) =>{
-    return await apiRequest(`SA_Staff/${id}`,{
-        method:"PUT",
+const UpdateStaff = async (id, payload) => {
+    return await apiRequest(`SA_Staff/${id}`, {
+        method: "PUT",
         body: payload,
     })
 }
-const GetAllStaff = async(body) =>{
-    return await apiRequest("SA_Staff/all",{
-        method:"GET",
+const GetAllStaff = async (body) => {
+    return await apiRequest("SA_Staff/all", {
+        method: "GET",
         body
     })
 }
 
-const GetStaffById = async (id,body) =>{
-    return await apiRequest(`SA_Staff/${id}`,{
-        method:"GET",
+const GetStaffById = async (id, body) => {
+    return await apiRequest(`SA_Staff/${id}`, {
+        method: "GET",
         body
     })
 }
-const DeleteStaff = async (id) =>{
-    return await apiRequest(`SA_Staff/${id}`,{
-        method:"DELETE",
+const DeleteStaff = async (id) => {
+    return await apiRequest(`SA_Staff/${id}`, {
+        method: "DELETE",
     })
 }
 
@@ -413,6 +419,7 @@ export {
     SuperAdminLogin,
     GetClasses,
     CreateClass,
+    ClassByBranchId,
     DeleteClass,
     UpdateClass,
     Class_By_Id,

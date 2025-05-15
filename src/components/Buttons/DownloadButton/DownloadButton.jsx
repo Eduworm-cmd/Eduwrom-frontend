@@ -16,7 +16,7 @@ const DownloadButton = () => {
         <div>
             <button
             onClick={handleDownload}
-            className='flex gap-2 mt-4 text-white py-2 px-5 outline-none rounded-sm font-semibold cursor-pointer text-[14px] text-left bg-sky-500'>
+            className='flex gap-2 text-white py-2 px-5 outline-none rounded-sm font-semibold cursor-pointer text-[14px] text-left bg-sky-500'>
                 <Download /> Download
             </button>
         </div>

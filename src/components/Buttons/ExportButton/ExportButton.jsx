@@ -22,7 +22,7 @@ export const ExportButton = ({ columns, currentItems }) => {
         <div>
             <button 
             onClick={handleExport}
-            className='flex gap-2 mt-4 text-white py-2 px-5 outline-none rounded-sm font-semibold cursor-pointer text-[14px] text-left bg-green-500'>
+            className='flex gap-2 text-white py-2 px-5 outline-none rounded-sm font-semibold cursor-pointer text-[14px] text-left bg-green-500'>
                 <FileText />Export
             </button>
         </div>

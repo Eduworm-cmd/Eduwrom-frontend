@@ -155,7 +155,7 @@ export const AddStudent = () => {
 
       if (res?.success) {
         toast.success(res.message || "Operation successful!");
-        navigate('/eduworm-admin/schoolbranch/list')
+        window.history.back();
       }
     } catch (err) {
       console.error(err);

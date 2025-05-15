@@ -42,9 +42,9 @@ import { GradeList } from "./pages/super-admin-pannel/GradeList/GradeList";
 import { ClassList } from "./pages/super-admin-pannel/ClassList/ClassList";
 import { SA_StaffList } from "./pages/ShoolAdmin/SA_Staff/SA_StaffList";
 import { SA_AddStaff } from "./pages/ShoolAdmin/SA_Staff/SA_AddStaff";
-import { SA_StundentList } from "./pages/ShoolAdmin/SA_Stundent/SA_StundentList";
 import { SA_Add_Student } from "./pages/ShoolAdmin/SA_Stundent/SA_Add_Student";
 import { StudentView } from "./pages/super-admin-pannel/Student/StudentView";
+import { SA_StundentList } from "./pages/ShoolAdmin/SA_Stundent/SA_StundentList";
 
 function App() {
   return (
@@ -124,6 +124,8 @@ function App() {
           <Route path="stundent/list" element={<SA_StundentList />} />
           <Route path="stundent/edit/:id" element={<SA_Add_Student />} />
           <Route path="stundent/add" element={<SA_Add_Student />} />
+          <Route path="stundent/view/:id" element={<StudentView />} />
+          
 
 
           <Route path="home" element={<SAHomePage />} />

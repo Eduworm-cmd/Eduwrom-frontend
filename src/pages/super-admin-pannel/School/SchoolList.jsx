@@ -205,6 +205,7 @@ export const SchoolList = () => {
 
   return (
     <div className="max-w-8xl">
+    
       <div className="flex gap-2 justify-end mb-3">
         <div className="relative mt-3.5 ">
           <input

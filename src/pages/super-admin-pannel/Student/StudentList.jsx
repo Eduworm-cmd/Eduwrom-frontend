@@ -74,21 +74,18 @@ export const StudentList = () => {
   }, [id]);
 
   // Delete student handler with confirmation prompt
-  const handleDelete = async (studentId) => {
-    console.log("Deleting student with ID:", studentId); // Debug log to check ID
-
-    if (!window.confirm("Are you sure you want to delete this student?")) return;
-
+ const handleDelete = async (studentId) => {
     try {
-      const response = await DeleteStudent(studentId);
-      console.log("Delete response:", response); // Debug log API response
-      toast.success(response.message || "Student deleted successfully!", {
-        autoClose: 1000,
-        onClose: () => fetchStudent(),
-      });
-    } catch (error) {
-      console.error("Delete error:", error);
-      toast.error("Failed to delete student.");
+      const confirmed = window.confirm('Are you sure you want to delete this student?');
+      if (!confirmed) return;
+
+      setLoading(true);
+      await DeleteStudent(studentId);
+      setStundentData((prev) => prev.filter((student) => student.id !== studentId));
+    } catch (err) {
+      console.error('Failed to delete student:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -149,18 +146,17 @@ export const StudentList = () => {
                   </div>
                 ),
               },
-              {
-                key: "delete",
-                label: (
-                  // Changed: Added onClick to call handleDelete with correct student id
-                  <div
-                    className="flex items-center gap-2 text-red-500 cursor-pointer"
-                    onClick={() => handleDelete(record.id)}
-                  >
-                    <Trash2 size={14} /> Delete
-                  </div>
-                ),
-              },
+               {
+                             key: 'delete',
+                             label: (
+                               <div
+                                 className="flex items-center gap-2 text-red-500"
+                                 onClick={() => handleDelete(record.id)}
+                               >
+                                 <Trash2 size={14} /> Delete
+                               </div>
+                             ),
+                           },
             ],
           }}
         >
