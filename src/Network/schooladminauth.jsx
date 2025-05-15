@@ -27,11 +27,17 @@ const SchoolStaffById = async(id,limit,page) => {
     })
 }
 
+const SchoolStaffByStaffId = async(id) => {
+    return await apiRequest(`staff/getStaff/${id}`,{
+        method: "GET",
+    })
+}
 
 
 export {
     SchoolAdminLoginByEmail,
     SchoolAdminLoginByPhone,
     SchoolAdminVerifyOTP,
-    SchoolStaffById
+    SchoolStaffById,
+    SchoolStaffByStaffId,
 }
