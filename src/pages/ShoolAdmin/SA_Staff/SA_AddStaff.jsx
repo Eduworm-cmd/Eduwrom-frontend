@@ -15,6 +15,7 @@ export const SA_AddStaff = () => {
   const [form] = Form.useForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [profilePreview, setProfilePreview] = useState(null);
+  const [profileFile, setProfileFile] = useState(null);
   const [employeeRole, setEmployeeRole] = useState('staff');
   const [classes, setClasses] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -42,7 +43,7 @@ export const SA_AddStaff = () => {
       }
     };
     fetchClasses();
-  }, []);
+  }, [branchId]);
 
   // For editing mode - fetch staff details
   useEffect(() => {
@@ -58,12 +59,27 @@ export const SA_AddStaff = () => {
           if (staffData.dateofJoining) staffData.dateofJoining = moment(staffData.dateofJoining);
           if (staffData.marriageAnniversary) staffData.marriageAnniversary = moment(staffData.marriageAnniversary);
           
+          // Handle nested fields
+          if (staffData.address) {
+            staffData.currentAddress = staffData.address.currentAddress;
+            staffData.permanentAddress = staffData.address.permanentAddress;
+          }
+          
+          if (staffData.employeeBankDeatils) {
+            const bankDetails = staffData.employeeBankDeatils;
+            staffData.accountNumber = bankDetails.accountNumber;
+            staffData.nameAsPerBank = bankDetails.nameAsPerBank;
+            staffData.bankName = bankDetails.bankName;
+            staffData.bankBranch = bankDetails.bankBranch;
+            staffData.ifscCode = bankDetails.ifscCode;
+          }
+          
           form.setFieldsValue(staffData);
           setEmployeeRole(staffData.employeeRole);
           
           // Set profile preview if available
-          if (staffData.profilePicture) {
-            setProfilePreview(staffData.profilePicture);
+          if (staffData.profile) {
+            setProfilePreview(staffData.profile);
           }
         } catch (err) {
           toast.error("Failed to load staff details");
@@ -77,6 +93,7 @@ export const SA_AddStaff = () => {
   }, [id, isEditMode, form]);
 
   const handleProfileUpload = (file) => {
+    setProfileFile(file);
     const reader = new FileReader();
     reader.onload = () => setProfilePreview(reader.result);
     reader.readAsDataURL(file);
@@ -87,6 +104,20 @@ export const SA_AddStaff = () => {
     setEmployeeRole(value);
   };
 
+  const convertFileToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      if (!file) {
+        resolve(null);
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
   const handleSubmit = async (values) => {
     setIsSubmitting(true);
 
@@ -94,88 +125,93 @@ export const SA_AddStaff = () => {
       toast.error('Aadhar card is required');
       setIsSubmitting(false);
       return;
-    }
+    } 
 
     try {
-      const formData = new FormData();
+      // Convert files to base64
+      const profileBase64 = await convertFileToBase64(profileFile);
+      const aadharBase64 = await convertFileToBase64(aadharFile);
+      const panBase64 = await convertFileToBase64(panFile);
 
-      // Append scalar values
-      formData.append('schoolId', schoolId);
-      formData.append('branchId', branchId);
-      formData.append('firstName', values.firstName);
-      formData.append('lastName', values.lastName);
-      formData.append('dateOfBirth', moment(values.dateOfBirth).format("YYYY-MM-DD"));
-      formData.append('gender', values.gender);
-      formData.append('phoneNumber', values.phoneNumber);
-      formData.append('emailId', values.emailId);
+      const payload = {
+        schoolId,
+        branchId,
+        firstName: values.firstName,
+        lastName: values.lastName,
+        dateOfBirth: moment(values.dateOfBirth).format("YYYY-MM-DD"),
+        gender: values.gender,
+        phoneNumber: values.phoneNumber,
+        emailId: values.emailId,
+        employeeRole: values.employeeRole,
+        dateofJoining: moment(values.dateofJoining).format("YYYY-MM-DD"),
+        bloodGroup: values.bloodGroup || '',
+        maritalStatus: values.maritalStatus || '',
+        marriageAnniversary: values.marriageAnniversary
+          ? moment(values.marriageAnniversary).format("YYYY-MM-DD")
+          : null,
+        department: values.department,
+        subDepartment: values.subDepartment,
+        emergencyContact: values.emergencyContact,
+        nationality: values.nationality,
+        religion: values.religion,
+        
+        // Properly nested address object
+        address: {
+          currentAddress: values.currentAddress,
+          permanentAddress: values.permanentAddress
+        },
+        
+        // Properly nested bank details object
+        employeeBankDeatils: {
+          accountNumber: values.accountNumber,
+          nameAsPerBank: values.nameAsPerBank,
+          bankName: values.bankName,
+          bankBranch: values.bankBranch,
+          ifscCode: values.ifscCode
+        }
+      };
+
+      // Add base64 images if available
+      if (profileBase64) {
+        payload.profile = profileBase64;
+      }
       
-      // Only append password for new staff
+      if (aadharBase64) {
+        payload.aadharCard = aadharBase64;
+      }
+      
+      if (panBase64) {
+        payload.panCard = panBase64;
+      }
+
       if (!isEditMode && values.password) {
-        formData.append('password', values.password);
+        payload.password = values.password;
       }
-      
-      formData.append('employeeRole', values.employeeRole);
-      formData.append('dateofJoining', moment(values.dateofJoining).format("YYYY-MM-DD"));
-      formData.append('bloodGroup', values.bloodGroup || '');
-      formData.append('maritalStatus', values.maritalStatus || '');
-      if (values.marriageAnniversary)
-        formData.append('marriageAnniversary', moment(values.marriageAnniversary).format("YYYY-MM-DD"));
 
-      formData.append('department', values.department);
-      formData.append('subDepartment', values.subDepartment);
-      formData.append('emergencyContact', values.emergencyContact);
-      formData.append('nationality', values.nationality);
-      formData.append('religion', values.religion);
-
-      // Address
-      formData.append('currentAddress', values.currentAddress);
-      formData.append('permanentAddress', values.permanentAddress);
-
-      // Bank Details
-      formData.append('accountNumber', values.accountNumber);
-      formData.append('nameAsPerBank', values.nameAsPerBank);
-      formData.append('bankName', values.bankName);
-      formData.append('bankBranch', values.bankBranch);
-      formData.append('ifscCode', values.ifscCode);
-
-      // Optional Teacher Fields
       if (employeeRole === 'teacher') {
-        formData.append('classId', values.classId);
-        formData.append('assignClassId', values.assignClassId || '');
-        formData.append('teacherName', values.teacherName || `${values.firstName} ${values.lastName}`);
+        payload.classId = values.classId;
+        payload.teacherName = values.teacherName || `${values.firstName} ${values.lastName}`;
       }
 
-      // Upload Files
-      if (profilePreview && !profilePreview.startsWith('http')) {
-        // Only append if it's a new upload (not a URL from the server)
-        const blob = await fetch(profilePreview).then(res => res.blob());
-        formData.append('profile', blob, 'profile.jpg');
-      }
+      const endpoint = isEditMode
+        ? `/api/staff/${id}`
+        : 'http://localhost:4000/api/staff/create';
 
-      // Only append files if they exist
-      if (aadharFile) formData.append('aadharCard', aadharFile);
-      if (panFile) formData.append('panCard', panFile);
-
-      // Use the correct API endpoint - for PUT in edit mode, POST for create
-      const endpoint = isEditMode 
-        ? `/api/staff/${id}` 
-        : 'http://localhost:4000/api/staff/create'; // Using the endpoint you specified
-      
       const method = isEditMode ? 'put' : 'post';
-      
+
       await axios({
         method,
         url: endpoint,
-        data: formData,
-        headers: { 'Content-Type': 'multipart/form-data' },
+        data: payload,
+        headers: { 'Content-Type': 'application/json' },
       });
 
       toast.success(isEditMode ? "Staff updated successfully" : "Staff created successfully");
-      
+
       if (!isEditMode) {
-        // Only reset for new staff creation
         form.resetFields();
         setProfilePreview(null);
+        setProfileFile(null);
         setAadharFile(null);
         setPanFile(null);
       }
@@ -238,9 +274,6 @@ export const SA_AddStaff = () => {
           <>
             <Row gutter={16}>
               <Col span={12}><Form.Item label="Class" name="classId" rules={[{ required: true }]}><Select placeholder="Select class">{classes.map(cls => (<Option key={cls._id} value={cls._id}>{cls.className} {cls.section}</Option>))}</Select></Form.Item></Col>
-              <Col span={12}><Form.Item label="Assign Class (optional)" name="assignClassId"><Select allowClear placeholder="Optional">{classes.map(cls => (<Option key={cls._id} value={cls._id}>{cls.className} {cls.section}</Option>))}</Select></Form.Item></Col>
-            </Row>
-            <Row gutter={16}>
               <Col span={12}><Form.Item label="Teacher Name" name="teacherName"><Input placeholder="Optional" /></Form.Item></Col>
             </Row>
           </>

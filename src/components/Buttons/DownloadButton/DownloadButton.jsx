@@ -1,26 +1,24 @@
-import { Download } from 'lucide-react'
-import React from 'react'
+import { Download } from 'lucide-react';
+import React from 'react';
 
 const DownloadButton = () => {
-    const handleDownload = () =>{
-        const htmlContent = document.documentElement.outerHTML;
+  const handleDownload = () => {
+    const htmlContent = document.documentElement.outerHTML;
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'downloaded_page.html';
+    link.click();
+  };
 
-        const blob = new Blob([htmlContent],{ type: "text/html" });
+  return (
+    <button
+      onClick={handleDownload}
+      className="flex items-center gap-2 bg-sky-500 text-white py-2 px-4 rounded-sm font-semibold text-sm cursor-pointer"
+    >
+      <Download size={18} /> Download
+    </button>
+  );
+};
 
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "downloaded_page.html"; 
-        link.click();
-    }
-    return (
-        <div>
-            <button
-            onClick={handleDownload}
-            className='flex gap-2 mt-4 text-white py-2 px-5 outline-none rounded-sm font-semibold cursor-pointer text-[14px] text-left bg-sky-500'>
-                <Download /> Download
-            </button>
-        </div>
-    )
-}
-
-export default DownloadButton
+export default DownloadButton;

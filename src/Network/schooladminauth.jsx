@@ -21,8 +21,17 @@ const SchoolAdminVerifyOTP = async(body) => {
     })
 }
 
+const SchoolStaffById = async(id,limit,page) => {
+    return await apiRequest(`staff/${id}?limit=${limit}&page=${page}`,{
+        method: "GET",
+    })
+}
+
+
+
 export {
     SchoolAdminLoginByEmail,
     SchoolAdminLoginByPhone,
     SchoolAdminVerifyOTP,
+    SchoolStaffById
 }
