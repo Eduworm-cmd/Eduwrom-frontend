@@ -27,11 +27,32 @@ const SchoolStaffById = async(id,limit,page) => {
     })
 }
 
+const SchoolStaffByStaffId = async(id) => {
+    return await apiRequest(`staff/getStaff/${id}`,{
+        method: "GET",
+    })
+}
+
+const deleteSchoolStaff = async(id, data) =>{
+    return await apiRequest(`staff/updateStaff/${id}`,{
+        method: "DELETE",
+        body:data
+    })
+}
+
+const updateSchoolStaff = async(id, data) =>{
+    return await apiRequest(`staff/updateStaff/${id}`,{
+        method: "PUT",
+        body:data
+    })
+}
 
 
 export {
     SchoolAdminLoginByEmail,
     SchoolAdminLoginByPhone,
     SchoolAdminVerifyOTP,
-    SchoolStaffById
+    SchoolStaffById,
+    SchoolStaffByStaffId,
+    deleteSchoolStaff,
 }

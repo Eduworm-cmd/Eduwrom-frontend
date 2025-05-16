@@ -184,7 +184,6 @@ export const SA_StaffList = () => {
     },
   ];
 
-  // Get all unique roles for dropdown
   const roleOptions = [...new Set(staffData.map((staff) => staff.employeeRole))];
 
   return (
@@ -216,7 +215,6 @@ export const SA_StaffList = () => {
         <button
           onClick={() => navigate("/eduworm-school/staff/add")}
           className="flex items-center gap-2 bg-sky-500 text-white py-2 px-4 rounded-sm font-semibold text-sm cursor-pointer">
-
           <PlusCircle size={18} /> Add Staff
         </button>
 
