@@ -204,32 +204,39 @@ export const SchoolList = () => {
   }, []);
 
   return (
-    <div className="max-w-8xl">
-    
-      <div className="flex gap-2 justify-end mb-3">
-        <div className="relative mt-3.5 ">
+    <div className="w-full  ">
+   <div className="flex items-center justify-between align-center relative">
+        <div className="w-[400px]  relative border-sky-300 mb-3 rounded-1  ml-135 ">
+          <Search
+            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+            size={18}
+          />
           <input
             type="text"
-            placeholder="Search..."
-            className="w-100 bg-white rounded-md p-2 pl-10 border border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500 transition"
+            placeholder="Search students..."
+            className="w-full pl-10 pr-4 py-2 rounded-sm border border-sky-500  focus:outline-none focus:ring-1 focus:ring-sky-300 transition-all duration-200  "
             value={searchTerm}
             onChange={handleSearch}
           />
-          <Search
-            className="absolute left-3 top-5 transform -translate-y-1/2 text-gray-500 "
-            size={18}
-          />
         </div>
-        <button
-          onClick={() => navigate("/eduworm-admin/school/add")}
-          className="flex gap-2 mt-4 text-white py-2 px-5 outline-none rounded-sm font-semibold cursor-pointer text-[14px] bg-sky-500"
-        >
-          <PlusCircle /> Add School
-        </button>
-        <DownloadButton />
 
-        <ExportButton columns={exportColumns} currentItems={schoolData} />
-      </div>
+        <div className="flex gap-2 justify-end mb-3 ">
+
+          <div>
+            <button
+              onClick={() => navigate("/eduworm-admin/school/add")}
+              className="flex items-center gap-2 bg-green-500 text-white py-2 px-4 rounded-sm font-semibold text-sm cursor-pointer"
+            >
+              <PlusCircle /> Add School
+            </button>
+          </div>
+          <div className="flex gap-2">
+            <DownloadButton />
+
+            <ExportButton columns={exportColumns} currentItems={schoolData} />
+          </div>
+        </div>
+   </div>
 
       <div className="overflow-auto border rounded-md">
         <Table

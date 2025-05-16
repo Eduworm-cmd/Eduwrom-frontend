@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 
 export const StudentList = () => {
   const params = useParams();
+  const [items, setItems] = useState([]);
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -74,20 +75,26 @@ export const StudentList = () => {
   }, [id]);
 
   // Delete student handler with confirmation prompt
- const handleDelete = async (studentId) => {
+  const handleDelete = async (studentId) => {
     try {
       const confirmed = window.confirm('Are you sure you want to delete this student?');
       if (!confirmed) return;
 
       setLoading(true);
       await DeleteStudent(studentId);
-      setStundentData((prev) => prev.filter((student) => student.id !== studentId));
+
+      // ✅ Correctly update the schoolData list after deletion
+      setSchoolData(prevData => prevData.filter(student => student.id !== studentId));
+
+      toast.success("Student deleted successfully!");
     } catch (err) {
       console.error('Failed to delete student:', err);
+      toast.error("Failed to delete student.");
     } finally {
       setLoading(false);
     }
   };
+  
 
   // Handle selection of rows in table
   const onSelectChange = (selectedKeys) => {

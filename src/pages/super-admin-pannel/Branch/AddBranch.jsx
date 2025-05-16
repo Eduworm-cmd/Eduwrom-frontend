@@ -17,10 +17,10 @@ import {
   AcademicYearDropdown,
   ClassesDropdown,
   CreateBranch,
+  GetBranchById,
   SchoolsDropdwon,
 } from "@/Network/Super_Admin/auth";
 import axios from "axios";
-import { set } from "date-fns";
 
 export const AddBranch = () => {
 
@@ -41,10 +41,10 @@ export const AddBranch = () => {
     const fetchBranchData = async () => {
       try {
         if (isEditMode) {
-          const res = await axios.get(`http://localhost:4000/api/auth_SchoolBranch/GetBranch/${id}`); 
+          const res = await GetBranchById(id);
           const branch = res.data;
 
-          const data = res.data.data;
+          const data = res.data;
           
 
           // Set form fields
@@ -195,7 +195,8 @@ export const AddBranch = () => {
       let response;
       if (isEditMode) {
         // ✅ Update API
-        response = await axios.put(
+        response = await axios
+        .put(
           `http://localhost:4000/api/auth_SchoolBranch/UpdateBranch/${id}`,
           submissionData
         );
