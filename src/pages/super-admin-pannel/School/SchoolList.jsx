@@ -7,7 +7,7 @@ import { ExportButton } from "@/components/Buttons/ExportButton/ExportButton";
 import { DeleteSchoolById, GetAllSchools } from "@/Network/Super_Admin/auth";
 
 export const SchoolList = () => {
- 
+
   const [tableLoading, setTableLoading] = useState(false);
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
@@ -23,10 +23,10 @@ export const SchoolList = () => {
 
 
 
-  
- 
 
-  
+
+
+
 
 
   const onSelectChange = (selectedKeys) => {
@@ -40,7 +40,7 @@ export const SchoolList = () => {
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
-    
+
   };
 
 
@@ -168,9 +168,9 @@ export const SchoolList = () => {
       console.error("Failed to delete school:", error);
     }
   };
-  
 
-  
+
+
 
   const fetchAllSchools = async () => {
     try {
@@ -191,7 +191,7 @@ export const SchoolList = () => {
     } catch (error) {
       console.log("Error fetching school data:", error);
     }
-    finally{
+    finally {
       setTableLoading(false);
     }
   };
@@ -204,39 +204,37 @@ export const SchoolList = () => {
   }, []);
 
   return (
-    <div className="w-full  ">
-   <div className="flex items-center justify-between align-center relative">
-        <div className="w-[400px]  relative border-sky-300 mb-3 rounded-1  ml-135 ">
+    <div className="w-full">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-4">
+        {/* Search Input */}
+        <div className="relative w-full md:w-[400px]">
           <Search
             className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
             size={18}
           />
           <input
             type="text"
-            placeholder="Search students..."
-            className="w-full pl-10 pr-4 py-2 rounded-sm border border-sky-500  focus:outline-none focus:ring-1 focus:ring-sky-300 transition-all duration-200  "
+            placeholder="Search school..."
+            className="w-full pl-10 pr-4 py-2 border border-sky-500 rounded-sm focus:outline-none focus:ring-1 focus:ring-sky-300 transition duration-200"
             value={searchTerm}
             onChange={handleSearch}
           />
         </div>
 
-        <div className="flex gap-2 justify-end mb-3 ">
+        {/* Action Buttons */}
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => navigate("/eduworm-admin/school/add")}
+            className="flex items-center gap-2 bg-green-500 text-white py-2 px-4 rounded-sm font-semibold text-sm hover:bg-green-600 transition"
+          >
+            <PlusCircle size={16} /> Add School
+          </button>
 
-          <div>
-            <button
-              onClick={() => navigate("/eduworm-admin/school/add")}
-              className="flex items-center gap-2 bg-green-500 text-white py-2 px-4 rounded-sm font-semibold text-sm cursor-pointer"
-            >
-              <PlusCircle /> Add School
-            </button>
-          </div>
-          <div className="flex gap-2">
-            <DownloadButton />
-
-            <ExportButton columns={exportColumns} currentItems={schoolData} />
-          </div>
+          <DownloadButton />
+          <ExportButton columns={exportColumns} currentItems={schoolData} />
         </div>
-   </div>
+      </div>
+
 
       <div className="overflow-auto border rounded-md">
         <Table
@@ -247,11 +245,11 @@ export const SchoolList = () => {
           pagination={{
             position: ["bottomRight"],
             pageSizeOptions: ["10", "20", "50"],
-            showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`, 
+            showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
             pageSize: 8,
             showLessItems: true,
           }}
-          scroll={{ x: 1200, y: 400 }}
+          scroll={{ x: "max-content", y: 350 }}
           className="custom-table"
           rowKey="id"
         />

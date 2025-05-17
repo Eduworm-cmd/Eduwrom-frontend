@@ -46,6 +46,9 @@ import { SA_Add_Student } from "./pages/ShoolAdmin/SA_Stundent/SA_Add_Student";
 import { StudentView } from "./pages/super-admin-pannel/Student/StudentView";
 import { SA_StundentList } from "./pages/ShoolAdmin/SA_Stundent/SA_StundentList";
 import { SA_StaffView } from "./pages/ShoolAdmin/SA_Staff/SA_StaffView";
+import { All_View_StaffList } from "./pages/super-admin-pannel/Staff/AllStaff/All_View_StaffList";
+import { All_Add_StaffList } from "./pages/super-admin-pannel/Staff/AllStaff/All_Add_StaffList";
+import { StaffByBranch } from "./pages/super-admin-pannel/Staff/StaffByBranch/StaffByBranch";
 
 function App() {
   return (
@@ -88,6 +91,11 @@ function App() {
           <Route path="staff/view/:id" element={<StaffView/>} />
           <Route path="staff/edit/:id" element={<CreateStaff/>} />
 
+          <Route path="branchstaff/list/:id" element={<StaffByBranch/>} />
+          
+          <Route path="allstaff/list" element={<All_View_StaffList/>} />
+          <Route path="allstaff/add" element={<All_Add_StaffList/>} />
+
           <Route path="academic Year" element={<AcademicList />} />
           <Route path="grade" element={<GradeList />} />
           <Route path="class" element={<ClassList />} />
@@ -127,8 +135,6 @@ function App() {
           <Route path="stundent/edit/:id" element={<SA_Add_Student />} />
           <Route path="stundent/add" element={<SA_Add_Student />} />
           <Route path="stundent/view/:id" element={<StudentView />} />
-          
-
 
           <Route path="home" element={<SAHomePage />} />
           <Route path="playlist" element={<PlayListAssignment />} />

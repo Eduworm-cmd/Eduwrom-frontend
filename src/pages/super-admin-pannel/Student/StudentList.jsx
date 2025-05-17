@@ -7,96 +7,81 @@ import { toast } from "react-toastify";
 
 export const StudentList = () => {
   const params = useParams();
-  const [items, setItems] = useState([]);
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [schoolData, setSchoolData] = useState([]);
   const [loading, setLoading] = useState(false);
-
-  // Added 'tableKey' state to force table rerender on data changes (especially after delete)
-  const [tableKey, setTableKey] = useState(Date.now());
-
-  const { id } = params;
+  const {id} = params;
 
   const page = 1;
   const limit = 10;
 
-  // Filtering data based on search term (case insensitive)
-  const filteredData = schoolData.filter((item) => {
+  const filteredData = schoolData.filter((item)=>{
     const search = searchTerm.toLowerCase();
-    return item.name?.toLowerCase().includes(search);
-  });
+    return (
+      item.name?.toLowerCase().includes(search)
+    );
+  })
 
-  // Search input handler
+  console.log(filteredData);
+
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
+
   };
 
-  // Fetch student list from backend and format it for Ant Design Table
-  const fetchStudent = async () => {
-    if (!id) return; // added safe check for id existence
-    setLoading(true);
+const fetchStudent = async () => {
+  if (!id) return; 
+  setLoading(true);
+  try {
+    const response = await GetAllStudentByBranch(id, page, limit);
+    const { data } = response;
+
+    const formattedData = data.map((student, index) => ({
+      key: student._id,
+      id: student._id,
+      sno: index + 1,
+      name: `${student.firstName} ${student.lastName}`,
+      branchname: student.schoolBranch?.name,
+      contact: student.parents?.[0]?.phoneNumber || "N/A",
+      email: student.parents?.[0]?.email || "N/A",
+      academicYear: "2023-2024", 
+      studentClass: student.class?.className || "N/A", 
+      createdAt: new Date(student.createdAt).toLocaleDateString(),
+      status: student.isActive,
+    }));
+
+    setSchoolData(formattedData);
+  } catch (error) {
+    console.error("Error fetching students:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
+useEffect(() => {
+  if (id) {
+    fetchStudent();
+  }
+}, [id]);
+
+  const handleDelete = async (id) => {
+    console.log("Staff iD", id);
+
+    if (!window.confirm("Are you sure you want to delete this academic year?")) return;
+
     try {
-      const response = await GetAllStudentByBranch(id, page, limit);
-      const { data } = response;
-
-      // Format data so each row has consistent keys for the table columns
-      const formattedData = data.map((student, index) => ({
-        key: student._id,                 // Key used by AntD table for row identity
-        id: student._id,                  // ID used for actions like delete/edit
-        sno: index + 1,
-        name: `${student.firstName} ${student.lastName}`,
-        branchname: student.schoolBranch?.name,
-        contact: student.parents?.[0]?.phoneNumber || "N/A",
-        email: student.parents?.[0]?.email || "N/A",
-        academicYear: "2023-2024",
-        studentClass: student.class?.className || "N/A",
-        createdAt: new Date(student.createdAt).toLocaleDateString(),
-        status: student.isActive,
-      }));
-
-      setSchoolData(formattedData);
-
-      // Force rerender of Table after data update (fixes stale data issues)
-      setTableKey(Date.now());
+      const response = await DeleteStudent(id);
+      toast.success(response.message || "Deleted!", {
+        autoClose: 1000,
+        onClose: () => fetchStudent(),
+      });
     } catch (error) {
-      console.error("Error fetching students:", error);
-    } finally {
-      setLoading(false);
+      console.log(error);
     }
-  };
+  }
 
-  // Run fetchStudent on component mount or when 'id' param changes
-  useEffect(() => {
-    if (id) {
-      fetchStudent();
-    }
-  }, [id]);
-
-  // Delete student handler with confirmation prompt
-  const handleDelete = async (studentId) => {
-    try {
-      const confirmed = window.confirm('Are you sure you want to delete this student?');
-      if (!confirmed) return;
-
-      setLoading(true);
-      await DeleteStudent(studentId);
-
-      // ✅ Correctly update the schoolData list after deletion
-      setSchoolData(prevData => prevData.filter(student => student.id !== studentId));
-
-      toast.success("Student deleted successfully!");
-    } catch (err) {
-      console.error('Failed to delete student:', err);
-      toast.error("Failed to delete student.");
-    } finally {
-      setLoading(false);
-    }
-  };
-  
-
-  // Handle selection of rows in table
   const onSelectChange = (selectedKeys) => {
     setSelectedRowKeys(selectedKeys);
   };
@@ -106,13 +91,32 @@ export const StudentList = () => {
     onChange: onSelectChange,
   };
 
-  // Define columns for Ant Design Table
   const columns = [
-    { title: "Sno", dataIndex: "sno", key: "sno" },
-    { title: "Student Name", dataIndex: "name", key: "name" },
-    { title: "Branch Name", dataIndex: "branchname", key: "branchname" },
-    { title: "Class", dataIndex: "studentClass", key: "studentClass" },
-    { title: "Created Date", dataIndex: "createdAt", key: "createdAt" },
+    {
+      title: "Sno",
+      dataIndex: "sno",
+      key: "sno",
+    },
+    {
+      title: "Student Name",
+      dataIndex: "name",
+      key: "name",
+    },
+    {
+      title: "Branch Name",
+      key: "branchname",
+      dataIndex: "branchname",
+    },
+    {
+      title: "Class",
+      dataIndex: "studentClass",
+      key: "studentClass",
+    },
+    {
+      title: "Created Date",
+      dataIndex: "createdAt",
+      key: "createdAt",
+    },
     {
       title: "Status",
       dataIndex: "status",
@@ -135,7 +139,7 @@ export const StudentList = () => {
                 key: "view",
                 label: (
                   <div
-                    className="flex items-center gap-2 text-black cursor-pointer"
+                    className="flex items-center gap-2 text-black"
                     onClick={() => navigate(`/eduworm-admin/students/view/${record.id}`)}
                   >
                     <Eye size={14} /> View
@@ -146,24 +150,24 @@ export const StudentList = () => {
                 key: "edit",
                 label: (
                   <div
-                    className="flex items-center gap-2 text-black cursor-pointer"
+                    className="flex items-center gap-2 text-black"
                     onClick={() => navigate(`/eduworm-admin/students/edit/${record.id}`)}
                   >
                     <Edit2 size={14} /> Edit
                   </div>
                 ),
               },
-               {
-                             key: 'delete',
-                             label: (
-                               <div
-                                 className="flex items-center gap-2 text-red-500"
-                                 onClick={() => handleDelete(record.id)}
-                               >
-                                 <Trash2 size={14} /> Delete
-                               </div>
-                             ),
-                           },
+              {
+                key: "delete",
+                label: (
+                  <div
+                    className="flex items-center gap-2 text-red-500"
+                    onClick={() => handleDelete(record.id)}
+                  >
+                    <Trash2 size={14} /> Delete
+                  </div>
+                ),
+              },
             ],
           }}
         >
@@ -178,16 +182,16 @@ export const StudentList = () => {
   return (
     <div className="overflow-x-auto">
       <div className="flex justify-end gap-2 mb-4">
-        <div className="relative">
+        <div className="relative  ">
           <input
             type="text"
             placeholder="Search..."
-            className="w-100 bg-white rounded-md p-2 pl-10 border border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500 transition"
+            className="w-100 bg-white rounded-md    p-2 pl-10 border border-sky-500  focus:outline-none focus:ring-2 focus:ring-sky-500 transition"
             value={searchTerm}
             onChange={handleSearch}
           />
           <Search
-            className="absolute left-3 top-5 transform -translate-y-1/2 text-gray-500"
+            className="absolute left-3 top-5 transform -translate-y-1/2 text-gray-500 "
             size={18}
           />
         </div>
@@ -199,9 +203,7 @@ export const StudentList = () => {
         </button>
       </div>
 
-      {/* Added key={tableKey} to force table rerender when data updates */}
       <Table
-        key={tableKey}
         loading={loading}
         rowSelection={rowSelection}
         columns={columns}

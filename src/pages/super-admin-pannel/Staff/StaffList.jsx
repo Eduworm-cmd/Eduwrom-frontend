@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Eye, Edit2, Trash2, EllipsisVertical, PlusCircle, EyeIcon } from "lucide-react";
+import { Eye, Edit2, Trash2, EllipsisVertical, PlusCircle, EyeIcon, List } from "lucide-react";
 import { Table, Button, Dropdown } from "antd";
 import { DeleteStaff, GetAllStaff } from "@/Network/Super_Admin/auth";
 import { toast, ToastContainer } from "react-toastify";
@@ -40,10 +40,7 @@ export const StaffList = () => {
 
 
   const handleDelete = async (id) => {
-    console.log("Staff iD", id);
-
     if (!window.confirm("Are you sure you want to delete this academic year?")) return;
-
     try {
       const response = await DeleteStaff(id);
       toast.success(response.message || "Deleted!", {
@@ -158,6 +155,12 @@ export const StaffList = () => {
     <div className="overflow-x-auto">
       <ToastContainer />
       <div className="flex justify-end gap-2 mb-4">
+        <button
+          onClick={() => navigate("/eduworm-admin/allstaff/add")}
+          className="flex items-center gap-2 bg-sky-500 text-white font-semibold text-sm py-2 px-4 rounded"
+        >
+          <PlusCircle size={18} /> Staff For School
+        </button>
         <button
           onClick={() => navigate("/eduworm-admin/staff/add")}
           className="flex items-center gap-2 bg-sky-500 text-white font-semibold text-sm py-2 px-4 rounded"

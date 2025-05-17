@@ -234,9 +234,8 @@ const CreateStudent = async (body) => {
 
 // Get School Branches
 const GetSchoolBranches = async (schoolId) => {
-    return await apiRequest("branches/forschool", {
+    return await apiRequest(`auth_SchoolBranch/${schoolId}`, {
         method: "GET",
-        params: { schoolId },
     });
 };
 
@@ -248,6 +247,12 @@ const GetBranchById = async (id) => {
     });
 };
 
+const GetAllBranch = async (page,limit) => {
+    return await apiRequest(`auth_SchoolBranch/allBranches?page=${page}&limit=${limit}`, {
+        method: "GET",
+    });
+};
+
 // Create School By Super Admin
 const CreateBranch = async (body) => {
     return await apiRequest('auth_SchoolBranch/create_SchoolBranch', {
@@ -255,6 +260,7 @@ const CreateBranch = async (body) => {
         body
     });
 }
+
 
 // Get All Stundents 
 const GetAllStudent = async (body) => {
@@ -432,6 +438,7 @@ export {
     GetAllStudent,
     CreateSchool,
     CreateBranch,
+    GetAllBranch,
     StaffLogin,
     AddStaff,
     GetAllStaff,

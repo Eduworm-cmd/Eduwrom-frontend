@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { BookOpen, DollarSign, Edit, GraduationCap, Trash, User, User2, Users } from 'lucide-react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import user from "../../../assets/Images/teacher.webp";
 import Barcharts from '@/components/Charts/Barcharts';
 import { PieChart } from '@/components/Charts/PieChart';
-import { GetBranchById,} from '@/Network/Super_Admin/auth';
+import { GetBranchById, } from '@/Network/Super_Admin/auth';
 import { toast } from 'react-toastify';
 
 export const BranchView = () => {
@@ -16,21 +16,24 @@ export const BranchView = () => {
   const statusList = [
     {
       title: "Students",
-      value: school?.total_Students || "15.00K",
+      value: school?.total_Students?.length || "15.00K",
       icon: <GraduationCap className="text-purple-500" size={30} />,
       bgColor: "bg-purple-100",
+      link:`/eduworm-admin/students/list/${id}`
     },
     {
-      title: "Teachers",
-      value: school?.total_Teachers ||"2.00K",
+      title: "Class",
+      value: school?.classes?.length|| "2.00K",
       icon: <User className="text-sky-600" size={30} />,
       bgColor: "bg-blue-50",
+      // link:"/eduworm-admin/class/list"
     },
     {
       title: "Staff",
-      value: school?.total_Staff ||"5.6K",
+      value: school?.total_Staff?.length || "5.6K",
       icon: <Users className="text-orange-500" size={30} />,
       bgColor: "bg-orange-50",
+      link:`/eduworm-admin/branchstaff/list/${id}`
     },
     {
       title: "Earnings",
@@ -57,7 +60,7 @@ export const BranchView = () => {
   }, [id]);
 
   if (loading) return <p className="p-4 text-lg">Loading school data...</p>;
-  
+
 
   return (
     <div>
@@ -67,7 +70,7 @@ export const BranchView = () => {
           <img src={user} alt="School Logo" className="w-32 h-32 rounded-full object-cover border-2 bg-slate-200 border-white shadow" />
           <h2 className="mt-4 text-lg font-bold text-gray-800">{school?.name || '—'}</h2>
           <div className="space-x-4 mt-2 flex w-full justify-center items-center my-6">
-            <button className='bg-yellow-500 px-4 py-2 cursor-pointer flex text-white rounded-sm gap-2' onClick={() => navigate(`/eduworm-admin/schoolbranch/edit/${id}`)}> 
+            <button className='bg-yellow-500 px-4 py-2 cursor-pointer flex text-white rounded-sm gap-2' onClick={() => navigate(`/eduworm-admin/schoolbranch/edit/${id}`)}>
               <Edit /> Edit
             </button>
             <button className='bg-red-500 px-4 py-2 cursor-pointer flex text-white rounded-sm gap-2'>
@@ -110,7 +113,7 @@ export const BranchView = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 py-10">
             {
               Array.isArray(statusList) && statusList.map((s, index) => (
-                <div
+                <Link to={s.link}><div
                   key={index}
                   className={`flex justify-between items-center rounded-md px-4 py-4 shadow-md ${s.bgColor}`}
                 >
@@ -122,6 +125,7 @@ export const BranchView = () => {
                     {s.icon ? React.cloneElement(s.icon, { className: "w-12 h-12 sm:w-16 sm:h-16" }) : null}
                   </div>
                 </div>
+                </Link>
               ))
             }
           </div>

@@ -1,40 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  PlusCircle, Edit2, Trash2, Eye, EllipsisVertical,
-  Search,
+  PlusCircle, Edit2, Trash2, Eye, EllipsisVertical, Search,
 } from "lucide-react";
-import { Space, Table, Button, Dropdown, Input } from "antd";
+import { Table, Button, Dropdown } from "antd";
 import DownloadButton from "@/components/Buttons/DownloadButton/DownloadButton";
 import { ExportButton } from "@/components/Buttons/ExportButton/ExportButton";
-import "./BranchList.css";
-import axios from "axios";
-
+import { GetAllBranch } from "@/Network/Super_Admin/auth";
+import './Branchlist.css'
 export const BranchList = () => {
   const navigate = useNavigate();
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [schoolData, setSchoolData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const onSelectChange = (selectedKeys) => {
-    setSelectedRowKeys(selectedKeys);
-  };
-
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: onSelectChange,
-  };
-
   const fetchBranches = async (page = 1, limit = 10, query = "") => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:4000/api/auth_SchoolBranch/allBranches?page=${page}&limit=${limit}`);
-      const { data, totalBranches } = response.data;
+      const { data, totalBranches } = await GetAllBranch(page, limit);
 
-      const formattedData = data.map((branch) => ({
+      const formatted = data.map(branch => ({
         key: branch._id,
         id: branch._id,
         name: branch.name || branch.displayName,
@@ -44,23 +31,21 @@ export const BranchList = () => {
         phone: branch.contact?.phone || "N/A",
         status: branch.isActive,
         students: branch.total_Students.length,
-        AY: Array.isArray(branch.academicYear)
-          ? branch.academicYear.map(ay => ay.name).join(", ")
-          : "",
+        AY: branch.academicYear.name
+      
       }));
 
-      setSchoolData(formattedData);
       setPagination({ current: page, pageSize: limit, total: totalBranches });
 
       if (query) {
-        const filtered = formattedData.filter(branch =>
-          branch.name.toLowerCase().includes(query.toLowerCase()) ||
-          branch.email.toLowerCase().includes(query.toLowerCase()) ||
-          branch.phone.toLowerCase().includes(query.toLowerCase())
+        const lower = query.toLowerCase();
+        const startsWith = formatted.filter(b => b.name.toLowerCase().startsWith(lower));
+        const includes = formatted.filter(
+          b => !b.name.toLowerCase().startsWith(lower) && b.name.toLowerCase().includes(lower)
         );
-        setFilteredData(filtered);
+        setFilteredData([...startsWith, ...includes]);
       } else {
-        setFilteredData(formattedData);
+        setFilteredData(formatted);
       }
     } catch (error) {
       console.error("Error fetching branch data:", error);
@@ -69,14 +54,21 @@ export const BranchList = () => {
     }
   };
 
-  const handleTableChange = (pagination) => {
-    fetchBranches(pagination.current, pagination.pageSize, searchQuery);
+  const handleSearch = (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    fetchBranches(pagination.current, pagination.pageSize, query);
   };
 
-  const handleSearch = (e) => {
-    const value = e.target.value;
-    setSearchQuery(value);
-    fetchBranches(pagination.current, pagination.pageSize, value);
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this branch?")) {
+      try {
+        await axios.delete(`http://localhost:4000/api/auth_SchoolBranch/DeleteBranch/${id}`);
+        fetchBranches(pagination.current, pagination.pageSize, searchQuery);
+      } catch (err) {
+        console.error("Error deleting branch:", err);
+      }
+    }
   };
 
   useEffect(() => {
@@ -87,50 +79,43 @@ export const BranchList = () => {
     {
       title: "Branch Name",
       dataIndex: "name",
-      key: "name",
     },
     {
       title: "Contact",
-      key: "contact",
-      render: (_, record) => (
-        <div>
-          <div>{record.email}</div>
-          <div>{record.phone}</div>
-        </div>
+      render: (_, r) => (
+        <>
+          <div>{r.email}</div>
+          <div>{r.phone}</div>
+        </>
       ),
     },
     {
       title: "Academic Year",
       dataIndex: "AY",
-      key: "AY",
     },
     {
       title: "Start Date",
       dataIndex: "StartDate",
-      key: "StartDate",
     },
     {
       title: "End Date",
       dataIndex: "EndDate",
-      key: "EndDate",
     },
     {
       title: "Students",
       dataIndex: "students",
-      key: "students",
-      render: (students, record) => (
+      render: (val, r) => (
         <div
           className="flex items-center gap-2 text-black cursor-pointer"
-          onClick={() => navigate(`/eduworm-admin/students/list/${record.id}`)}
+          onClick={() => navigate(`/eduworm-admin/students/list/${r.id}`)}
         >
-          {students} <Eye size={14} />
+          {val} <Eye size={14} />
         </div>
       ),
     },
     {
       title: "Status",
       dataIndex: "status",
-      key: "status",
       render: (status) => (
         <span className={`font-semibold ${status ? "text-green-600" : "text-red-500"}`}>
           {status ? "Active" : "Inactive"}
@@ -139,8 +124,7 @@ export const BranchList = () => {
     },
     {
       title: "Action",
-      key: "action",
-      render: (_, record) => (
+      render: (_, r) => (
         <Dropdown
           trigger={["click"]}
           menu={{
@@ -148,10 +132,7 @@ export const BranchList = () => {
               {
                 key: "edit",
                 label: (
-                  <div
-                    className="flex items-center gap-2 text-black"
-                    onClick={() => navigate(`/eduworm-admin/schoolbranch/edit/${record.id}`)}
-                  >
+                  <div onClick={() => navigate(`/eduworm-admin/schoolbranch/edit/${r.id}`)} className="flex items-center gap-2 text-black">
                     <Edit2 size={14} /> Edit
                   </div>
                 ),
@@ -159,10 +140,7 @@ export const BranchList = () => {
               {
                 key: "view",
                 label: (
-                  <div
-                    className="flex items-center gap-2 text-black"
-                    onClick={() => navigate(`/eduworm-admin/schoolbranch/view/${record.id}`)}
-                  >
+                  <div onClick={() => navigate(`/eduworm-admin/schoolbranch/view/${r.id}`)} className="flex items-center gap-2 text-black">
                     <Eye size={14} /> View
                   </div>
                 ),
@@ -170,25 +148,11 @@ export const BranchList = () => {
               {
                 key: "delete",
                 label: (
-                  <div
-                    className="flex items-center gap-2 text-red-500"
-                    onClick={async () => {
-                      if (window.confirm("Are you sure you want to delete this branch?")) {
-                        try {
-                          await axios.delete(`http://localhost:4000/api/auth_SchoolBranch/DeleteBranch/${record.id}`);
-                          fetchBranches(pagination.current, pagination.pageSize, searchQuery); // Refresh table
-                        } catch (error) {
-                          console.error("Error deleting branch:", error);
-                          alert("Failed to delete branch");
-                        }
-                      }
-                    }}
-                  >
+                  <div onClick={() => handleDelete(r.id)} className="flex items-center gap-2 text-red-500">
                     <Trash2 size={14} /> Delete
                   </div>
                 ),
               },
-
             ],
           }}
         >
@@ -205,7 +169,7 @@ export const BranchList = () => {
     {
       key: "contact",
       label: "Contact",
-      render: (value, row) => `${row.email} | ${row.phone}`,
+      render: (_, row) => `${row.email} | ${row.phone}`,
     },
     { key: "StartDate", label: "Start Date" },
     { key: "EndDate", label: "End Date" },
@@ -213,66 +177,56 @@ export const BranchList = () => {
   ];
 
   return (
-    <div className="w-full ">
-      <div className="flex items-center justify-between align-center relative">
-        <div className="w-[400px]  relative border-sky-300 mb-3 rounded-1  ml-80">
-          <Search
-            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-            size={18}
-          />
+    <div className="w-full">
+      {/* Header: Search + Actions */}
+      <div className="flex flex-col md:flex-row items-center justify-between mb-4 gap-4">
+        <div className="relative w-full md:w-[400px]">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
           <input
             type="text"
-            placeholder="Search by Branch Name, Contact, or Phone"
-            className="w-full pl-10 pr-4 py-2 rounded-sm border border-sky-500  focus:outline-none focus:ring-1 focus:ring-sky-300 transition-all duration-200  "
+            placeholder="Search by Branch Name"
+            className="w-full pl-10 py-1 rounded-sm border border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-300 transition-all duration-200"
             value={searchQuery}
             onChange={handleSearch}
           />
-
-        </div>
-        <div className="flex gap-2 justify-end mb-3 ">
-
-          <div>
-            <button
-              onClick={() => navigate("/eduworm-admin/schoolbranch/add")}
-              className="flex items-center gap-2 bg-green-500 text-white py-2 px-4 rounded-sm font-semibold text-sm cursor-pointer"
-            >
-              <PlusCircle /> Add Branch
-            </button>
-          </div>
-
-          <div className="flex gap-2">
-            <DownloadButton />
-            <ExportButton columns={exportColumns} currentItems={filteredData} />
-          </div>
-
-          
         </div>
 
-        
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => navigate("/eduworm-admin/schoolbranch/add")}
+            className="flex items-center gap-2 bg-green-500 text-white py-2 px-4 rounded-sm font-semibold text-sm hover:bg-green-600 transition"
+          >
+            <PlusCircle size={16} /> Add Branch
+          </button>
+          <DownloadButton />
+          <ExportButton columns={exportColumns} currentItems={filteredData} />
+        </div>
       </div>
 
-
-
-   <div className="overflow-auto border rounded-md">
+      {/* Table */}
+      <div className="overflow-auto border rounded-md">
         <Table
           columns={columns}
-          rowSelection={rowSelection}
+          rowSelection={{
+            selectedRowKeys,
+            onChange: setSelectedRowKeys,
+          }}
           dataSource={filteredData}
           loading={loading}
           pagination={{
             current: pagination.current,
             pageSize: pagination.pageSize,
             total: pagination.total,
+            showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
             position: ["bottomRight"],
             pageSizeOptions: ["10", "20", "50"],
-            showTotal: (total, range) => `${range[0]}-${range[1]} of ${total}`,
             showLessItems: true,
           }}
-          onChange={handleTableChange}
+          onChange={({ current, pageSize }) => fetchBranches(current, pageSize, searchQuery)}
           scroll={{ x: "max-content", y: 350 }}
           className="custom-table"
         />
-     </div>
+      </div>
     </div>
   );
 };
