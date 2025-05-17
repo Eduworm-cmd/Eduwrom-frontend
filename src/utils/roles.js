@@ -5,6 +5,7 @@ export const Roles = {
   SCHOOLADMIN: 'schooladmin',
   TEACHER: 'teacher',
   ACCOUNT: 'accountadmin',
+  CONTENT: 'contentcreator'
 }
 
 const superAdminData = {
@@ -271,7 +272,45 @@ const accountAdminData = {
 
 }
 
+const contentcreatorData = {
+  title: "Account Admin Pannel",
+  buttons: [
+    {
+      title: "Dashboard",
+      url: "/eduworm-school/home",
+      icon: LayoutDashboard,
+    },
+  ],
+  footersBtns: [
+    {
+      title: "Settings",
+      url: "/home",
+      icon: Settings,
+    },
+  ],
 
+  navMain: [
+    {
+      title: "Content Management",
+      icon: Users,
+      items: [
+        { title: "Create Unit", url: "/eduworm-content/Unit/add" },
+        { title: "Create Lesson", url: "/eduworm-content/content/add" },
+        { title: "Add Content", url: "/eduworm-content/content/add" },
+        { title: "Manage Content", url: "/eduworm-content/content/manage" },
+      ]
+    },
+    {
+      title: "Document Management",
+      icon: Users,
+      items: [
+        { title: "Manage Documents", url: "/admin/teachers" },
+        { title: "Daily Diary", url: "/admin/teachers/add" },
+      ]
+    },
+  ]
+
+}
 
 export const MangeRoles = (role = "") => {
   switch (role) {
@@ -283,6 +322,8 @@ export const MangeRoles = (role = "") => {
       return schoolAdminData;
     case 'accountadmin' :
       return accountAdminData;
+    case 'contentcreator':
+      return contentcreatorData;
     default:
       throw new Error("Invalid role");
   }

@@ -204,6 +204,7 @@ export const CreateStaff = () => {
               <Select placeholder="Select role">
                 <Option value="staff">Staff</Option>
                 <Option value="teacher">Teacher</Option>
+                <Option value="contentcreator">Content Creator</Option>
               </Select>
             </Form.Item>
           </Col>

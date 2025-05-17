@@ -9,6 +9,7 @@ const SetLocalStorage = (key, value) => {
     }
 };
 
+
 // Convert Image To Base64
 const ConvertImageToBase64 = (file) => {
     return new Promise((resolve, reject) => {
@@ -53,6 +54,14 @@ const GetUser = () => {
 //Super Admin Register
 const SuperAdminRegister = async (body) => {
     return await apiRequest("superadmin-auth/register", {
+        method: "POST",
+        body,
+    });
+};
+
+
+const PostUnit = async (body) => {
+    return await apiRequest("unit/createUnit", {
         method: "POST",
         body,
     });
@@ -271,6 +280,19 @@ const GetAllStudentByBranch = async (id, page = 1, limit = 10) => {
 };
 
 
+const GetUnitsByClassId = async (classId) => {
+    return await apiRequest(`unit/UnitByClass/${classId}`, {
+        method: "GET",
+    });
+};
+
+const GetDaysByUnitId = async (unitId) => {
+    return await apiRequest(`Day/getDayByUnitId/${unitId}`, {
+        method: "GET",
+    });
+}
+
+
 
 
 // Get All Levels
@@ -358,6 +380,13 @@ const UpdateStaff = async (id, payload) => {
 const GetAllStaff = async (body) => {
     return await apiRequest("SA_Staff/all", {
         method: "GET",
+        body
+    })
+}
+
+const CreateLesson = async (body) => {
+    return await apiRequest("Lesson/createLesson", {
+        method: "POST",
         body
     })
 }
@@ -454,5 +483,9 @@ export {
     GetSchoolBranches,
     AddContent,
     studentGetById,
-    DeleteStudent
+    DeleteStudent,
+    PostUnit,
+    GetUnitsByClassId,
+    GetDaysByUnitId,
+    CreateLesson
 };

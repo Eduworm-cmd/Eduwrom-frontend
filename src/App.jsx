@@ -46,6 +46,7 @@ import { SA_Add_Student } from "./pages/ShoolAdmin/SA_Stundent/SA_Add_Student";
 import { StudentView } from "./pages/super-admin-pannel/Student/StudentView";
 import { SA_StundentList } from "./pages/ShoolAdmin/SA_Stundent/SA_StundentList";
 import { SA_StaffView } from "./pages/ShoolAdmin/SA_Staff/SA_StaffView";
+import CreateUnit from "./pages/ContentAdmin/CreateUnit";
 
 function App() {
   return (
@@ -110,9 +111,14 @@ function App() {
 
 
           {/* Teacher Admin Panel Routes */}
-          <Route path="content/mange" element={<Content_Manage />} />
-          <Route path="content/add" element={<Add_Content />} />
         </Route>
+
+        <Route path="/eduworm-content" element={<AdminPannelLayout />}>
+          <Route path="content/manage" element={<Content_Manage />} />
+          <Route path="content/add" element={<Add_Content />} />
+          <Route path="Unit/add" element={<CreateUnit />} />
+        </Route>
+
 
 
         <Route path="/eduworm-school" element={<AdminPannelLayout />}>
