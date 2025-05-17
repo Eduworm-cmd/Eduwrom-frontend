@@ -49,6 +49,7 @@ import { SA_StaffView } from "./pages/ShoolAdmin/SA_Staff/SA_StaffView";
 import { All_View_StaffList } from "./pages/super-admin-pannel/Staff/AllStaff/All_View_StaffList";
 import { All_Add_StaffList } from "./pages/super-admin-pannel/Staff/AllStaff/All_Add_StaffList";
 import { StaffByBranch } from "./pages/super-admin-pannel/Staff/StaffByBranch/StaffByBranch";
+import CreateUnit from "./pages/ContentAdmin/CreateUnit";
 
 function App() {
   return (
@@ -118,9 +119,14 @@ function App() {
 
 
           {/* Teacher Admin Panel Routes */}
-          <Route path="content/mange" element={<Content_Manage />} />
-          <Route path="content/add" element={<Add_Content />} />
         </Route>
+
+        <Route path="/eduworm-content" element={<AdminPannelLayout />}>
+          <Route path="content/manage" element={<Content_Manage />} />
+          <Route path="content/add" element={<Add_Content />} />
+          <Route path="Unit/add" element={<CreateUnit />} />
+        </Route>
+
 
 
         <Route path="/eduworm-school" element={<AdminPannelLayout />}>

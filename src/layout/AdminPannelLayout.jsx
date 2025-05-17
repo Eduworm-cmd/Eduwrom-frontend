@@ -50,6 +50,8 @@ export const AdminPannelLayout = () => {
           return Roles.TEACHER;
         case Roles.ACCOUNT:
           return Roles.ACCOUNT;
+        case Roles.CONTENT:
+          return Roles.CONTENT;
         default:
           return null;
       }
