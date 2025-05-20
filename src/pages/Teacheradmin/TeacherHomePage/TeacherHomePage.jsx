@@ -1,54 +1,61 @@
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import LessonCard from "@/components/LessonCard/LessonCard";
-import { Book, Clock } from "lucide-react";
-import React from "react";
-export const TeacherHomePage = () => {
-  const lessonsData = [
-    {
-      id: 1,
-      title: "Settling Time - Copy My Movement",
-      duration: 20,
-      description: "This lesson helps students follow movement patterns.",
-      classLevel: "UKG",
-      activities: [
-        { name: "Interactive Activities", title: "आरामदायक गतिविधियां" },
-        { name: "Fun Learning", title: "खेल आधारित शिक्षा" },
-      ],
-    },
+import { GetLessonsDaysId } from "@/Network/Super_Admin/auth";
 
-    {
-      id: 2,
-      title: "My Home-Drawing",
-      duration: 30,
-      description: "Students will learn color mixing through painting exercises.",
-      classLevel: "LKG",
-      activities: [
-        { name: "Color Games", title: "रंग पहेली" },
-        { name: "Painting Fun", title: "चित्रकारी मजा" },
-      ],
-    },
-    {
-      id: 3,
-      title: "Basic Math with Counting",
-      duration: 25,
-      description: "Introduction to counting and number recognition.",
-      classLevel: "Grade 1",
-      activities: [
-      ],
-    },
-    {
-      id: 4,
-      title: "Basic Math with Counting",
-      duration: 25,
-      description: "Introduction to counting and number recognition.",
-      classLevel: "Grade 1",
-      activities: [
-      ],
-    },
-  ];
+export const TeacherHomePage = () => {
+  const [lessons, setLessons] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const selectedDayId = useSelector(
+    (state) => state.selectedDay?.selectedDayId
+  );
+
+  useEffect(() => {
+    const fetchLessons = async () => {
+      if (!selectedDayId) return;
+
+      setLoading(true);
+      try {
+        const response = await GetLessonsDaysId(selectedDayId);
+        const rawData = response?.data || [];
+
+        const formattedLessons = rawData.map((lesson) => ({
+          id: lesson._id,
+          title: lesson.lessonTitle,
+          duration: lesson.duration,
+          description: lesson.description || "",
+          classLevel: lesson.classLevel || "N/A",
+          activities: lesson.interactiveActivity || [], // 👈 use this instead
+          avatar: lesson.lessonAvatar,
+          objectives: lesson.objectives || [],
+        }));
+
+        setLessons(formattedLessons);
+      } catch (error) {
+        console.error("Failed to fetch lessons:", error);
+        setLessons([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLessons();
+  }, [selectedDayId]);
 
   return (
-    <div>
-      <LessonCard lessons={lessonsData} />    
+    <div className="p-4">
+      {loading ? (
+        <div className="text-center text-gray-600">Loading lessons...</div>
+      ) : lessons.length > 0 ? (
+        <LessonCard lessons={lessons} />
+      ) : (
+        <div className="text-center text-gray-500">
+          No lessons available for the selected day.
+        </div>
+      )}
     </div>
   );
 };
+
+export default TeacherHomePage;

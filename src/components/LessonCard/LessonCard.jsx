@@ -5,13 +5,14 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 const LessonCard = ({ lessons }) => {
+
   const navigate = useNavigate();
   const [expandedIndex, setExpandedIndex] = useState(null);
   const [shuffledPairs, setShuffledPairs] = useState([]);
 
   const baseColors = ["#b2f4ff", "#ffde8d", "#beed8f", "#fdcce2"];
-  const btnColors = ["#68e9fc","#fed15e","#a4da6c","#fdb2d6"];
-  const barColors = ["#55d0e6", "#fab301", "#91cb56", "#f957a2"];
+  const btnColors = ["#68e9fc", "#fed15e", "#a4da6c", "#fdb2d6"];
+  const barColors = ["#55d0e6", "#fab301", "#91cb56", "#f957a2"]; 
 
   useEffect(() => {
     const shuffledIndices = shuffleArray([0, 1, 2, 3]);
@@ -38,7 +39,7 @@ const LessonCard = ({ lessons }) => {
   };
 
   const handleLessonClick = () => {
-    navigate("/view");
+    navigate(`/view/${lessons.id}`);
   };
 
   const handleViewMoreClick = (index) => {
@@ -49,12 +50,13 @@ const LessonCard = ({ lessons }) => {
     <div>
       {Array.isArray(lessons) && lessons.length > 0 ? (
         lessons.map((lesson, index) => {
-          const { base, btn,bar } = getColorPairByIndex(index);
+          const { base, btn, bar } = getColorPairByIndex(index);
           return (
             <div
               className="lessoncard w-full rounded-2xl border-gray-300 mb-5"
               key={index}
               style={{ backgroundColor: base }}
+              onClick={() => handleViewMoreClick(index)}
             >
               <div className="lession-card-inner border-gray-300">
                 <div className="bg-white p-3 rounded-md border shadow text-sm text-center flex flex-col gap-1 items-center">
@@ -90,7 +92,12 @@ const LessonCard = ({ lessons }) => {
                         <span className="text-slate-500 text-xl">📖</span>
                         <span className="text-gray-700 font-medium">Lesson Guidelines</span>
                       </div>
-                      <span className="text-slate-500 cursor-pointer" onClick={handleLessonClick}>View &gt;</span>
+                      <span
+                        className="text-slate-500 cursor-pointer"
+                        onClick={() => navigate(`/view/${lesson.id}`)}
+                      >
+                        View &gt;
+                      </span>
                     </div>
 
                     {Array.isArray(lesson.activities) && lesson.activities.length > 0 ? (
@@ -124,14 +131,14 @@ const LessonCard = ({ lessons }) => {
                   className="flex items-center justify-center"
                   style={{ backgroundColor: bar }}
                 >
-                  <span className="text-black flex  px-5 py-1 font-medium cursor-pointer" style={{backgroundColor : btn}}
+                  <span className="text-black flex  px-5 py-1 font-medium cursor-pointer" style={{ backgroundColor: btn }}
                     onClick={() => handleViewMoreClick(index)}>
                     {expandedIndex === index ? "View Less" : "View More"}
-                    
-                  <ChevronRight
-                    className={`w-5 h-5 ml-1 mt-[4px] transition-transform text-black duration-300 ${expandedIndex === index ? "rotate-90" : ""
-                      }`}
-                  />
+
+                    <ChevronRight
+                      className={`w-5 h-5 ml-1 mt-[4px] transition-transform text-black duration-300 ${expandedIndex === index ? "rotate-90" : ""
+                        }`}
+                    />
                   </span>
                 </div>
               </div>

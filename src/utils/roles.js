@@ -185,8 +185,8 @@ const teacherData = {
       icon: LayoutDashboard,
     },
     {
-      title: "AI Reports",
-      url: "/eduworm-admin/home",
+      title: "Lesson Plan",
+      url: "/eduworm-Teacher",
       icon: LayoutDashboard,
     },
 
@@ -211,17 +211,6 @@ const teacherData = {
       ]
     },
 
-    {
-      title: "Lesson Management",
-      icon: Users,
-      items: [
-        { title: "Lesson Plan", url: "/admin/teachers" },
-        { title: "PlayList / Assignment", url: "/eduworm-school/playlist" },
-        { title: "Content", url: "/eduworm-school/content" },
-        { title: "Schedule List", url: "/eduworm-school/scheduleList" },
-        { title: "Tech", url: "/admin/teachers" },
-      ]
-    },
     {
       title: "",
       icon: Users,

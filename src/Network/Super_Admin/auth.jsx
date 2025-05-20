@@ -297,6 +297,11 @@ const GetDaysByUnitId = async (unitId) => {
         method: "GET",
     });
 }
+const GetLessonsDaysId = async (id) => {
+    return await apiRequest(`Lesson/getLessonsByDay/${id}`, {
+        method: "GET",
+    });
+}
 
 
 
@@ -494,5 +499,6 @@ export {
     PostUnit,
     GetUnitsByClassId,
     GetDaysByUnitId,
-    CreateLesson
+    CreateLesson,
+    GetLessonsDaysId
 };

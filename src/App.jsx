@@ -50,6 +50,7 @@ import { All_View_StaffList } from "./pages/super-admin-pannel/Staff/AllStaff/Al
 import { All_Add_StaffList } from "./pages/super-admin-pannel/Staff/AllStaff/All_Add_StaffList";
 import { StaffByBranch } from "./pages/super-admin-pannel/Staff/StaffByBranch/StaffByBranch";
 import CreateUnit from "./pages/ContentAdmin/CreateUnit";
+// import { StaffByBranchAdd } from "./pages/super-admin-pannel/Staff/StaffByBranch/StaffByBranchAdd";
 
 function App() {
   return (
@@ -68,7 +69,7 @@ function App() {
 
         <Route element={<MainLayout />}>
           <Route path="/days" element={<DaysView />} />
-          <Route path="/view" element={<CourseView />} />
+          <Route path="/view/:id" element={<CourseView />} />
           <Route path="/unit" element={<UnitSummary />} />
         </Route>
 
@@ -96,6 +97,7 @@ function App() {
           
           <Route path="allstaff/list" element={<All_View_StaffList/>} />
           <Route path="allstaff/add" element={<All_Add_StaffList/>} />
+          <Route path="allstaff/edit/:id" element={<All_Add_StaffList/>} />
 
           <Route path="academic Year" element={<AcademicList />} />
           <Route path="grade" element={<GradeList />} />
