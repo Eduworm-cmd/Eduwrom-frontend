@@ -17,6 +17,7 @@ const RichtoolEditor = ({ editorValue, onEditorChange }) => {
             [{ 'align': [] }],
             ['bold', 'italic', 'underline', 'strike'],
             ['link'],
+            ['link', 'image'], 
             [{ 'color': [] }, { 'background': [] }],
             ['blockquote'],
             ['code-block'],
