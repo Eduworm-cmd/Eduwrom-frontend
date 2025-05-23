@@ -25,8 +25,7 @@ export const TeacherHomePage = () => {
           title: lesson.lessonTitle,
           duration: lesson.duration,
           description: lesson.description || "",
-          classLevel: lesson.classLevel || "N/A",
-          activities: lesson.interactiveActivity || [], // 👈 use this instead
+          activities: lesson.interactiveActivity || [], 
           avatar: lesson.lessonAvatar,
           objectives: lesson.objectives || [],
         }));

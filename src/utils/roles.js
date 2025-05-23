@@ -285,7 +285,7 @@ const contentcreatorData = {
       items: [
         { title: "Create Unit", url: "/eduworm-content/Unit/add" },
         { title: "Create Lesson", url: "/eduworm-content/content/add" },
-        { title: "Add Content", url: "/eduworm-content/content/add" },
+        // { title: "Add Content", url: "/eduworm-content/content/add" },
         { title: "Manage Content", url: "/eduworm-content/content/manage" },
       ]
     },

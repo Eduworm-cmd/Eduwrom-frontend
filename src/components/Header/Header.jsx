@@ -20,15 +20,53 @@ import {
 import DaySlider from "../DaySlider/DaySlider";
 import { useNavigate } from "react-router-dom";
 import { SchoolStaffByStaffId } from "@/Network/schooladminauth";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { GetDaysByUnitId, GetUnitsByClassId } from "@/Network/Super_Admin/auth";
+import { setSelectedDayId } from "@/slice/selectedDaySlice";
 
 export const Header = () => {
+  const [openDialog, setOpenDialog] = useState(false);
   const [loading, setLoading] = useState(true);
   const [staffData, setStaffData] = useState(null);
   const [classId, setClassId] = useState();
   const user = useSelector((state) => state.auth?.user);
   const userId = user?.id;
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+
+  const handleCloseDailog = () => {
+    setOpenDialog(false)
+  }
+  const handleClassChange = (value) => {
+    setClassId(value);
+  };
+
+  useEffect(() => {
+    const loadInitialDay = async () => {
+      if (!classId) return;
+
+      try {
+        const unitsResponse = await GetUnitsByClassId(classId);
+        const units = unitsResponse?.data || [];
+        if (units.length === 0) return;
+
+        const firstUnitId = units[0]._id;
+
+        const daysResponse = await GetDaysByUnitId(firstUnitId);
+        const days = daysResponse?.data || [];
+
+        if (days.length > 0) {
+          const firstDayId = days[0]._id;
+          dispatch(setSelectedDayId(firstDayId));
+        }
+      } catch (error) {
+        console.error("Failed to load initial day data:", error);
+      }
+    };
+
+    loadInitialDay();
+  }, [classId]);
 
   useEffect(() => {
     if (!userId) return;
@@ -47,10 +85,13 @@ export const Header = () => {
     fetchStaffData(userId);
   }, [userId]);
 
-  const handleClassChange = (value) => {
-    console.log("Selected classId:", value);
-    setClassId(value);
-  };
+  // Automatically select first class
+  useEffect(() => {
+    if (Array.isArray(staffData?.class) && staffData.class.length > 0) {
+      const firstClass = staffData.class[0];
+      setClassId(firstClass._id);
+    }
+  }, [staffData?.class]);
 
   if (loading) {
     return <div className="flex justify-center items-center">Loading...</div>;
@@ -101,7 +142,7 @@ export const Header = () => {
               <Book className="w-5 h-5" />
             </button>
 
-            <Dialog>
+            <Dialog open={openDialog} onOpenChange={setOpenDialog}>
               <DialogTrigger asChild>
                 <button className="bg-white border cursor-pointer shadow-md transition-all ease-in p-2 text-gray-500 rounded-full hover:bg-sky-600 hover:text-white">
                   <Menu className="w-5 h-5" />
@@ -116,31 +157,26 @@ export const Header = () => {
                   </DialogDescription>
                 </DialogHeader>
                 <div className="w-full overflow-hidden">
-                  <DaySlider classId={classId} />
+                  <DaySlider classId={classId} onDaySelected={handleCloseDailog} />
                 </div>
-                <DialogFooter>
-                  <button className="bg-white border cursor-pointer shadow-md transition-all ease-in p-2 text-gray-500 rounded-full hover:bg-sky-600 hover:text-white">
-                    Save Changes
-                  </button>
-                </DialogFooter>
               </DialogContent>
             </Dialog>
           </div>
 
           {/* Class Selection */}
-          <Select onValueChange={handleClassChange}>
-            <SelectTrigger>
+          <Select value={classId} onValueChange={handleClassChange}>
+            <SelectTrigger className="w-[140px]">
               <SelectValue placeholder="Select a class" />
             </SelectTrigger>
             <SelectContent>
-              {Array.isArray(staffData?.class) &&
-                staffData.class.map((cls, index) => (
-                  <SelectItem key={index} value={cls._id}>
-                    {cls.className}
-                  </SelectItem>
-                ))}
+              {staffData?.class?.map((cls, index) => (
+                <SelectItem key={index} value={cls._id}>
+                  {cls.className}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
+
         </div>
       </div>
     </div>
