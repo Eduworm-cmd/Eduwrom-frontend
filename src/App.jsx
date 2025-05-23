@@ -51,7 +51,7 @@ import { All_Add_StaffList } from "./pages/super-admin-pannel/Staff/AllStaff/All
 import { StaffByBranch } from "./pages/super-admin-pannel/Staff/StaffByBranch/StaffByBranch";
 import CreateUnit from "./pages/ContentAdmin/CreateUnit";
 import SubjectCreate from "./pages/ContentCreateForBook/SubjectCreate";
-import CreateSubjectPages from "./pages/ContentCreateForBook/CreateSubjectPages";
+import SubjectPageCreate from "./pages/ContentCreateForBook/SubjectPageCreate";
 
 function App() {
   return (
@@ -129,7 +129,7 @@ function App() {
           <Route path="content/add" element={<Add_Content />} />
           <Route path="Unit/add" element={<CreateUnit />} />
           <Route path="Subject/add" element={<SubjectCreate/>} />
-          <Route path="SubjectPage/add" element={<CreateSubjectPages/>} />
+          <Route path="subjectPage/add/:id" element={<SubjectPageCreate/>} />
         </Route>
 
 

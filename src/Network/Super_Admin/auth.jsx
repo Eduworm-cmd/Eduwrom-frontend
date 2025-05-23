@@ -127,9 +127,14 @@ const ClassesDropdown = async (body) => {
 
 
 const createSubjectPage = async (body) => {
-    return await apiRequest("bookPage/create", {
+    return await apiRequest("subjectPage/create", {
         method: "POST",
         body
+    })
+}
+const AllPagesBySubjectId = async (id,page,limit) => {
+    return await apiRequest(`subjectPage/allPages/${id}?page=${page}&limit=${limit}`, {
+        method: "GET",
     })
 }
 const ClassByBranchId = async (branchId) => {
@@ -528,10 +533,8 @@ export {
     GetUnitsByClassId,
     GetDaysByUnitId,
     CreateLesson,
-<<<<<<< HEAD
     GetLessonsDaysId,
-    GetLessonsByLessonId
-=======
-    CreateSubject
->>>>>>> 22d962a05313488932750d38f9f9a4b51c68f88a
+    GetLessonsByLessonId,
+    CreateSubject,
+    AllPagesBySubjectId,
 };
