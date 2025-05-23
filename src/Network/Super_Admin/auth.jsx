@@ -444,6 +444,20 @@ const getSubjectByClassId = async (classId) => {
 };
 
 
+const dropdownSubjectPages = async (subjectId) => {
+    return await apiRequest(`bookPage/${subjectId}`, {
+        method: "GET",
+    })
+}
+
+
+const subjectPageContentCreate = async (body) => {
+    return await apiRequest("subject_PageContent/create", {
+        method: "POST",
+        body
+    })
+} 
+
 
 
 
@@ -461,6 +475,8 @@ const AddContent = async (body) => {
 
 
 export {
+    subjectPageContentCreate,
+    dropdownSubjectPages,
     createSubjectPage,
     getSubjectByClassId,
     UpdateStudent,

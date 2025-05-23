@@ -305,7 +305,7 @@ const contentcreatorData = {
       items: [
         { title: "Create Subject", url: "/eduworm-content/Subject/add" },
         { title: "Create Pages", url: "/eduworm-content/SubjectPage/add" },
-        { title: "PageContent", url: "/eduworm-content/PageContent/manage" },
+        { title: "Subject Pages Content", url: "/eduworm-content/SubjectPage/Content" },
       ]
     },
     {
