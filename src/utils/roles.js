@@ -285,8 +285,20 @@ const contentcreatorData = {
       items: [
         { title: "Create Unit", url: "/eduworm-content/Unit/add" },
         { title: "Create Lesson", url: "/eduworm-content/content/add" },
+<<<<<<< HEAD
         // { title: "Add Content", url: "/eduworm-content/content/add" },
+=======
+>>>>>>> 22d962a05313488932750d38f9f9a4b51c68f88a
         { title: "Manage Content", url: "/eduworm-content/content/manage" },
+      ]
+    },
+    {
+      title: "Books Management",
+      icon: Users,
+      items: [
+        { title: "Create Subject", url: "/eduworm-content/Subject/add" },
+        { title: "Create Pages", url: "/eduworm-content/SubjectPage/add" },
+        { title: "PageContent", url: "/eduworm-content/PageContent/manage" },
       ]
     },
     {
