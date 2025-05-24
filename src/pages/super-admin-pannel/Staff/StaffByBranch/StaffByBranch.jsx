@@ -23,6 +23,7 @@ export const StaffByBranch = () => {
     const [searchText, setSearchText] = useState("");
     const [selectedRole, setSelectedRole] = useState("");
     const { id } = params;
+    const branchId = id;
     const pageSize = 8;
 
     const fetchStaffData = async (id, page = 1, limit = pageSize) => {
@@ -149,7 +150,7 @@ export const StaffByBranch = () => {
                                 label: (
                                     <div
                                         className="flex items-center gap-2 text-black"
-                                        onClick={() => navigate(`/eduworm-school/staff/edit/${record._id}`, {
+                                        onClick={() => navigate(`/eduworm-admin/allstaff/edit/${record._id}`, {
                                             state: {
                                                 branchId: id,
                                             },
@@ -219,11 +220,11 @@ export const StaffByBranch = () => {
                     ))}
                 </Select>
 
-                <button
+                {/* <button
                     onClick={() => navigate("/eduworm-school/staff/add")}
                     className="flex items-center gap-2 bg-sky-500 text-white py-2 px-4 rounded-sm font-semibold text-sm cursor-pointer">
                     <PlusCircle size={18} /> Add Staff
-                </button>
+                </button> */}
 
                 <ExportButton />
                 <DownloadButton />

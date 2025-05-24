@@ -26,9 +26,9 @@ export const AddStudent = () => {
   const [branches, setBranches] = useState([]);
   const [classList, setClassList] = useState([]);
   const navigate = useNavigate();
-  const { id } = useParams(); // Use this to fetch student ID from URL
+  const { id } = useParams();
 
-  const isEditMode = Boolean(id); // Check if we are in edit mode
+  const isEditMode = Boolean(id);
 
   useEffect(() => {
     fetchSchools();
@@ -56,9 +56,6 @@ export const AddStudent = () => {
       if (data?.student) {
 
         const student = data.student;
-
-        console.log('students', student);
-
         // Populate form with existing student data
         form.setFieldsValue({
           // Basic Information

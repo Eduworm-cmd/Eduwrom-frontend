@@ -1,6 +1,7 @@
 // store.js
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "../auth/authSlice";
+import selectedDayReducer from "../slice/selectedDaySlice"
 
 const loadState = () => {
   try {
@@ -28,6 +29,7 @@ const saveState = (state) => {
 export const store = configureStore({
   reducer: {
     auth: authReducer,
+    selectedDay: selectedDayReducer
   },
   preloadedState: loadState(),
 });

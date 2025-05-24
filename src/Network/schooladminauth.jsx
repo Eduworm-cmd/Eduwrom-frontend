@@ -60,6 +60,7 @@ const updateSchoolStaff = async (id, data) => {
         body: data
     })
 }
+
 const createSchoolStaff = async (data) => {
     return await apiRequest('staff/create', {
         method: "POST",

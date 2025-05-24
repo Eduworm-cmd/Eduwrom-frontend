@@ -51,8 +51,8 @@ import { All_Add_StaffList } from "./pages/super-admin-pannel/Staff/AllStaff/All
 import { StaffByBranch } from "./pages/super-admin-pannel/Staff/StaffByBranch/StaffByBranch";
 import CreateUnit from "./pages/ContentAdmin/CreateUnit";
 import SubjectCreate from "./pages/ContentCreateForBook/SubjectCreate";
-import CreateSubjectPages from "./pages/ContentCreateForBook/CreateSubjectPages";
 import CreateSubjectPagesContent from "./pages/ContentCreateForBook/CreateSubjectPagesContent";
+import SubjectPageCreate from "./pages/ContentCreateForBook/SubjectPageCreate";
 
 function App() {
   return (
@@ -71,7 +71,7 @@ function App() {
 
         <Route element={<MainLayout />}>
           <Route path="/days" element={<DaysView />} />
-          <Route path="/view" element={<CourseView />} />
+          <Route path="/view/:id" element={<CourseView />} />
           <Route path="/unit" element={<UnitSummary />} />
         </Route>
 
@@ -99,6 +99,7 @@ function App() {
           
           <Route path="allstaff/list" element={<All_View_StaffList/>} />
           <Route path="allstaff/add" element={<All_Add_StaffList/>} />
+          <Route path="allstaff/edit/:id" element={<All_Add_StaffList/>} />
 
           <Route path="academic Year" element={<AcademicList />} />
           <Route path="grade" element={<GradeList />} />
@@ -129,8 +130,8 @@ function App() {
           <Route path="content/add" element={<Add_Content />} />
           <Route path="Unit/add" element={<CreateUnit />} />
           <Route path="Subject/add" element={<SubjectCreate/>} />
-          <Route path="SubjectPage/add" element={<CreateSubjectPages/>} />
           <Route path="SubjectPage/Content" element={<CreateSubjectPagesContent/>} />
+          <Route path="subjectPage/add/:id" element={<SubjectPageCreate/>} />
         </Route>
 
 
