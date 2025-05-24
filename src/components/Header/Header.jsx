@@ -130,13 +130,13 @@ export const Header = () => {
         <div className="flex items-center gap-4 flex-col">
           <div className="flex w-full gap-4 items-center justify-end max-md:gap-2">
             <button
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/eduworm-Teacher")}
               className="bg-white cursor-pointer border shadow-md transition-all ease-in p-2 text-gray-500 rounded-full hover:bg-sky-600 hover:text-white"
             >
               <CalendarDays className="w-5 h-5" />
             </button>
             <button
-              onClick={() => navigate("/books")}
+              onClick={() => navigate("/eduworm-Teacher/books")}
               className="bg-white border cursor-pointer shadow-md transition-all ease-in p-2 text-gray-500 rounded-full hover:bg-sky-600 hover:text-white"
             >
               <Book className="w-5 h-5" />
