@@ -37,7 +37,6 @@ const SubjectPageCreate = () => {
     const params = useParams();
     const [form] = Form.useForm();
 
-    // State management
     const [pagesData, setPagesData] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
     const [previewImage, setPreviewImage] = useState('');
@@ -58,8 +57,6 @@ const SubjectPageCreate = () => {
         current: 1,
         pageSize: 8,
         total: 0,
-        showSizeChanger: true,
-        showQuickJumper: true,
         showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
     });
 
@@ -120,7 +117,7 @@ const SubjectPageCreate = () => {
         try {
             setTableLoading(true);
             setError(null);
-            
+
             const limit = pagination.pageSize;
             const response = await AllPagesBySubjectId(subjectId, page, limit);
 
@@ -142,9 +139,9 @@ const SubjectPageCreate = () => {
 
             setPagesData(formattedData);
             setFilteredData(formattedData);
-            
+
             // Extract subject info from first item if available
-            if (formattedData.length > 0 && !subjectInfo) {                
+            if (formattedData.length > 0 && !subjectInfo) {
                 setSubjectInfo({
                     name: formattedData[0].subjectName,
                     totalPages: response.pagination?.totalItems || formattedData.length,
@@ -199,12 +196,12 @@ const SubjectPageCreate = () => {
             };
 
             const response = await createSubjectPage(payload);
-            
+
             if (response?.success !== false) {
                 message.success('Subject page created successfully');
                 setIsModalOpen(false);
                 resetForm();
-                
+
                 // Refresh data to show new page
                 await fetchPagesData(pagination.current);
             } else {
@@ -229,7 +226,7 @@ const SubjectPageCreate = () => {
         //     if (typeof deleteSubjectPage === 'function') {
         //         await deleteSubjectPage(pageId);
         //         message.success(`Page "${pageTitle}" deleted successfully`);
-                
+
         //         // Refresh the pages list
         //         await fetchPagesData(pagination.current);
         //     } else {
@@ -258,7 +255,7 @@ const SubjectPageCreate = () => {
             console.error('Error processing image:', error);
         }
 
-        return false; // Prevent automatic upload
+        return false;
     };
 
     const handleModalCancel = useCallback(() => {
@@ -280,7 +277,7 @@ const SubjectPageCreate = () => {
 
     const handleSearch = useCallback((value) => {
         setSearchTerm(value);
-        
+
         if (!value.trim()) {
             setFilteredData(pagesData);
         } else {
@@ -290,7 +287,7 @@ const SubjectPageCreate = () => {
             );
             setFilteredData(filtered);
         }
-        
+
         // Reset pagination when searching
         setPagination(prev => ({ ...prev, current: 1 }));
     }, [pagesData]);
@@ -305,9 +302,9 @@ const SubjectPageCreate = () => {
             setError('Subject ID is missing');
             return;
         }
-        
+
         fetchPagesData(1);
-    }, [subjectId]); // Remove fetchPagesData from deps to avoid infinite loop
+    }, [subjectId]);
 
     useEffect(() => {
         handleSearch(searchTerm);
@@ -324,16 +321,16 @@ const SubjectPageCreate = () => {
 
     // Memoized values
     const columns = useMemo(() => [
-        { 
-            title: 'S.No', 
-            dataIndex: 'sno', 
+        {
+            title: 'S.No',
+            dataIndex: 'sno',
             key: 'sno',
             width: 60,
             align: 'center',
         },
-        { 
-            title: 'Subject Name', 
-            dataIndex: 'subjectName', 
+        {
+            title: 'Subject Name',
+            dataIndex: 'subjectName',
             key: 'subjectName',
             ellipsis: true,
             render: (text) => (
@@ -342,9 +339,9 @@ const SubjectPageCreate = () => {
                 </Tooltip>
             ),
         },
-        { 
-            title: 'Page Title', 
-            dataIndex: 'pagetitle', 
+        {
+            title: 'Page Title',
+            dataIndex: 'pagetitle',
             key: 'pagetitle',
             ellipsis: true,
             render: (text) => (
@@ -454,57 +451,22 @@ const SubjectPageCreate = () => {
     const isFormDisabled = isLoading || isUploading;
 
     return (
-        <div className="p-4">
-            {/* Header */}
-            <div className="mb-6">
-                <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-4">
-                        <Button 
-                            icon={<ArrowLeft size={16} />} 
-                            onClick={handleGoBack}
-                            type="text"
-                        >
-                            Back
-                        </Button>
-                        <Title level={3} className="mb-0">Subject Pages</Title>
-                    </div>
-                    
-                    <Space>
-                        <Tooltip title="Refresh data">
-                            <Button 
-                                icon={<RefreshCw size={16} />} 
-                                onClick={handleRefresh}
-                                loading={tableLoading}
-                            />
-                        </Tooltip>
-                        <Button
-                            type="primary"
-                            icon={<PlusCircle size={18} />}
-                            onClick={() => setIsModalOpen(true)}
-                        >
-                            Create Page
-                        </Button>
-                    </Space>
-                </div>
-
-                {/* Subject Info Card */}
-                {subjectInfo && (
-                    <Card className="mb-4">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                {console.log(subjectInfo)}
-                                
-                                <Title level={4} className="mb-1">{subjectInfo?.name}</Title>
-                            </div>
-                            <Statistic
-                                title="Total Pages"
-                                value={subjectInfo.totalPages}
-                                prefix={<span className="text-blue-600">📄</span>}
-                            />
+        <div className="p-0">
+            {/* Subject Info Card */}
+            {subjectInfo && (
+                <Card className="mb-4">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <Title level={4} className="mb-1">{subjectInfo?.name}</Title>
                         </div>
-                    </Card>
-                )}
-            </div>
+                        <Statistic
+                            title="Total Pages"
+                            value={subjectInfo.totalPages}
+                            prefix={<span className="text-blue-600">📄</span>}
+                        />
+                    </div>
+                </Card>
+            )}
 
             {/* Error Alert */}
             {error && (
@@ -520,17 +482,33 @@ const SubjectPageCreate = () => {
             )}
 
             {/* Search and Controls */}
-            <div className="mb-4">
+            <div className="mb-4 mt-2 flex items-center justify-between">
                 <AntSearch
                     placeholder="Search by subject name or page title..."
                     allowClear
                     enterButton={<Search size={16} />}
-                    size="large"
+                    size="middle"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     onSearch={handleSearch}
                     style={{ maxWidth: 400 }}
                 />
+                <Space>
+                    <Tooltip title="Refresh data">
+                        <Button
+                            icon={<RefreshCw size={16} />}
+                            onClick={handleRefresh}
+                            loading={tableLoading}
+                        />
+                    </Tooltip>
+                    <Button
+                        type="primary"
+                        icon={<PlusCircle size={18} />}
+                        onClick={() => setIsModalOpen(true)}
+                    >
+                        Create Page
+                    </Button>
+                </Space>
             </div>
 
             {/* Table */}
@@ -549,17 +527,17 @@ const SubjectPageCreate = () => {
                     className="custom-table"
                     locale={{
                         emptyText: (
-                            <Empty 
+                            <Empty
                                 description={
-                                    searchTerm 
-                                        ? "No pages found matching your search" 
+                                    searchTerm
+                                        ? "No pages found matching your search"
                                         : "No pages found for this subject"
-                                } 
+                                }
                                 image={Empty.PRESENTED_IMAGE_SIMPLE}
                             >
                                 {!searchTerm && (
-                                    <Button 
-                                        type="primary" 
+                                    <Button
+                                        type="primary"
                                         onClick={() => setIsModalOpen(true)}
                                         icon={<PlusCircle size={16} />}
                                     >
@@ -581,9 +559,9 @@ const SubjectPageCreate = () => {
                 width={600}
                 destroyOnClose
             >
-                <Form 
-                    form={form} 
-                    layout="vertical" 
+                <Form
+                    form={form}
+                    layout="vertical"
                     onFinish={handleSubmit}
                     disabled={isFormDisabled}
                 >
@@ -604,8 +582,8 @@ const SubjectPageCreate = () => {
                         />
                     </Form.Item>
 
-                    <Form.Item 
-                        label="Page Image" 
+                    <Form.Item
+                        label="Page Image"
                         required
                         extra="Supported formats: JPEG, PNG, WebP (Max 10MB)"
                     >
@@ -641,8 +619,8 @@ const SubjectPageCreate = () => {
                             beforeUpload={handleImageUpload}
                             disabled={isUploading}
                         >
-                            <Button 
-                                icon={<UploadOutlined />} 
+                            <Button
+                                icon={<UploadOutlined />}
                                 loading={isUploading}
                                 disabled={isFormDisabled}
                                 size="large"
@@ -680,9 +658,9 @@ const SubjectPageCreate = () => {
                     centered
                     width="auto"
                 >
-                    <Image 
-                        src={previewImage} 
-                        alt="Page Preview" 
+                    <Image
+                        src={previewImage}
+                        alt="Page Preview"
                         style={{ maxWidth: '100%', maxHeight: '80vh' }}
                     />
                 </Modal>

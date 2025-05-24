@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { 
-    Button, 
-    Dropdown, 
-    Form, 
-    Input, 
-    Modal, 
-    Select, 
-    Table, 
-    Upload, 
-    message, 
+import {
+    Button,
+    Dropdown,
+    Form,
+    Input,
+    Modal,
+    Select,
+    Table,
+    Upload,
+    message,
     Spin,
     Empty,
     Tooltip,
@@ -17,14 +17,13 @@ import {
     Alert
 } from 'antd';
 import { UploadOutlined, LoadingOutlined } from '@ant-design/icons';
-import { ClassesDropdown, CreateSubject, getSubjectByClassId} from '@/Network/Super_Admin/auth';
+import { ClassesDropdown, CreateSubject, getSubjectByClassId } from '@/Network/Super_Admin/auth';
 import { Edit2, EllipsisVertical, Eye, EyeIcon, PlusCircle, Trash2, RefreshCw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const { Option } = Select;
 
 const SubjectCreate = () => {
-    // State management
     const [classes, setClasses] = useState([]);
     const [subjectImagePreview, setSubjectImagePreview] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -40,11 +39,9 @@ const SubjectCreate = () => {
         current: 1,
         pageSize: 8,
         total: 0,
-        showSizeChanger: true,
-        showQuickJumper: true,
         showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
     });
-    
+
     const [form] = Form.useForm();
     const navigate = useNavigate();
 
@@ -54,7 +51,7 @@ const SubjectCreate = () => {
             setIsLoading(true);
             setError(null);
             const response = await ClassesDropdown();
-            
+
             if (response?.data) {
                 setClasses(response.data);
             } else {
@@ -78,10 +75,10 @@ const SubjectCreate = () => {
             setIsLoading(true);
             setError(null);
             const response = await getSubjectByClassId(classId);
-            
+
             if (response?.data) {
                 const formattedData = response.data.map((item, index) => ({
-                    key: item._id, // Add key for table
+                    key: item._id,
                     _id: item._id,
                     sno: index + 1,
                     subjectName: item.title || 'Untitled',
@@ -187,14 +184,12 @@ const SubjectCreate = () => {
             };
 
             const response = await CreateSubject(payload);
-            
+
             if (response?.success !== false) {
                 message.success('Subject created successfully');
                 setIsModalOpen(false);
                 form.resetFields();
                 resetImageState();
-                
-                // Refresh the subjects list if the same class is selected
                 if (selectedClassId === classId) {
                     await fetchSubjectsByClassId(classId);
                 }
@@ -214,12 +209,12 @@ const SubjectCreate = () => {
     const handleDelete = async (id, subjectName) => {
         // try {
         //     setIsDeleting(id);
-            
+
         //     // If deleteSubject API exists, use it
         //     if (typeof deleteSubject === 'function') {
         //         await deleteSubject(id);
         //         message.success(`Subject "${subjectName}" deleted successfully`);
-                
+
         //         // Refresh the subjects list
         //         await fetchSubjectsByClassId(selectedClassId);
         //     } else {
@@ -280,9 +275,8 @@ const SubjectCreate = () => {
 
     const handleTotalPagesClick = useCallback((record) => {
         const { classId, _id } = record;
-        
+
         if (!_id || !classId) {
-            message.error('Missing required data for navigation');
             console.error('Missing required data:', { _id, classId });
             return;
         }
@@ -299,16 +293,16 @@ const SubjectCreate = () => {
 
     // Memoized values
     const columns = useMemo(() => [
-        { 
-            title: "S.No", 
-            dataIndex: "sno", 
+        {
+            title: "S.No",
+            dataIndex: "sno",
             key: "sno",
             width: 60,
             align: 'center',
         },
-        { 
-            title: "Subject Name", 
-            dataIndex: "subjectName", 
+        {
+            title: "Subject Name",
+            dataIndex: "subjectName",
             key: "subjectName",
             ellipsis: true,
             render: (text) => (
@@ -317,15 +311,15 @@ const SubjectCreate = () => {
                 </Tooltip>
             ),
         },
-        { 
-            title: "Class", 
-            dataIndex: "class", 
+        {
+            title: "Class",
+            dataIndex: "class",
             key: "class",
             width: 100,
         },
         {
-            title: "Subject Image", 
-            dataIndex: "subjectImage", 
+            title: "Subject Image",
+            dataIndex: "subjectImage",
             key: "subjectImage",
             width: 120,
             render: (image) => (
@@ -441,21 +435,7 @@ const SubjectCreate = () => {
     const isFormDisabled = isLoading || isUploading;
 
     return (
-        <div className="p-4">
-            {/* Header */}
-            <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold">Subject Management</h2>
-                <div className="flex gap-2">
-                    <Tooltip title="Refresh data">
-                        <Button 
-                            icon={<RefreshCw size={16} />} 
-                            onClick={handleRefresh}
-                            loading={isLoading}
-                        />
-                    </Tooltip>
-                </div>
-            </div>
-
+        <div className="p-0">
             {/* Error Alert */}
             {error && (
                 <Alert
@@ -471,6 +451,15 @@ const SubjectCreate = () => {
 
             {/* Controls */}
             <div className="flex justify-end gap-2 mb-4">
+                <div className="flex gap-2">
+                    <Tooltip title="Refresh data">
+                        <Button
+                            icon={<RefreshCw size={16} />}
+                            onClick={handleRefresh}
+                            loading={isLoading}
+                        />
+                    </Tooltip>
+                </div>
                 <Select
                     className="w-1/4 min-w-48"
                     placeholder="Select Class"
@@ -515,13 +504,13 @@ const SubjectCreate = () => {
                     className="custom-table"
                     locale={{
                         emptyText: selectedClassId ? (
-                            <Empty 
-                                description="No subjects found for this class" 
+                            <Empty
+                                description="No subjects found for this class"
                                 image={Empty.PRESENTED_IMAGE_SIMPLE}
                             />
                         ) : (
-                            <Empty 
-                                description="Please select a class to view subjects" 
+                            <Empty
+                                description="Please select a class to view subjects"
                                 image={Empty.PRESENTED_IMAGE_SIMPLE}
                             />
                         ),
@@ -549,7 +538,7 @@ const SubjectCreate = () => {
                         label="Class"
                         rules={[{ required: true, message: 'Please select a class' }]}
                     >
-                        <Select 
+                        <Select
                             placeholder="Select a class"
                             showSearch
                             filterOption={(input, option) =>
@@ -573,8 +562,8 @@ const SubjectCreate = () => {
                             { max: 100, message: 'Title must not exceed 100 characters' },
                         ]}
                     >
-                        <Input 
-                            placeholder="Enter subject title" 
+                        <Input
+                            placeholder="Enter subject title"
                             showCount
                             maxLength={100}
                         />
@@ -607,8 +596,8 @@ const SubjectCreate = () => {
                             beforeUpload={handleImageUpload}
                             disabled={isUploading}
                         >
-                            <Button 
-                                icon={<UploadOutlined />} 
+                            <Button
+                                icon={<UploadOutlined />}
                                 loading={isUploading}
                                 disabled={isFormDisabled}
                             >
@@ -643,9 +632,9 @@ const SubjectCreate = () => {
                     centered
                     width="auto"
                 >
-                    <Image 
-                        src={subjectImagePreview} 
-                        alt="Subject Preview" 
+                    <Image
+                        src={subjectImagePreview}
+                        alt="Subject Preview"
                         style={{ maxWidth: '100%', maxHeight: '80vh' }}
                     />
                 </Modal>
