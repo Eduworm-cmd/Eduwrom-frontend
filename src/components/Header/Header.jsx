@@ -23,6 +23,7 @@ import { SchoolStaffByStaffId } from "@/Network/schooladminauth";
 import { useDispatch, useSelector } from "react-redux";
 import { GetDaysByUnitId, GetUnitsByClassId } from "@/Network/Super_Admin/auth";
 import { setSelectedDayId } from "@/slice/selectedDaySlice";
+import { setSelectedClassId } from "@/slice/selectedClass";
 
 export const Header = () => {
   const [openDialog, setOpenDialog] = useState(false);
@@ -90,6 +91,7 @@ export const Header = () => {
     if (Array.isArray(staffData?.class) && staffData.class.length > 0) {
       const firstClass = staffData.class[0];
       setClassId(firstClass._id);
+      dispatch(setSelectedClassId(firstClass._id));
     }
   }, [staffData?.class]);
 
@@ -149,7 +151,7 @@ export const Header = () => {
                 </button>
               </DialogTrigger>
 
-              <DialogContent className="sm:max-w-[425px]">
+              <DialogContent className="sm:max-w-[725px]">
                 <DialogHeader>
                   <DialogTitle>Select Unit and Day</DialogTitle>
                   <DialogDescription>
