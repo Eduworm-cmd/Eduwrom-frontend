@@ -460,7 +460,7 @@ const getSubjectByClassId = async (classId) => {
 
 
 const dropdownSubjectPages = async (subjectId) => {
-    return await apiRequest(`bookPage/${subjectId}`, {
+    return await apiRequest(`subjectPage/${subjectId}`, {
         method: "GET",
     })
 }

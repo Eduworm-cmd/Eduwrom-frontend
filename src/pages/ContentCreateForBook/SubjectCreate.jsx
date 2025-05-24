@@ -209,7 +209,6 @@ const SubjectCreate = () => {
     const handleDelete = async (id, subjectName) => {
         // try {
         //     setIsDeleting(id);
-
         //     // If deleteSubject API exists, use it
         //     if (typeof deleteSubject === 'function') {
         //         await deleteSubject(id);
@@ -244,7 +243,7 @@ const SubjectCreate = () => {
             console.error('Error processing image:', error);
         }
 
-        return false; // Prevent automatic upload
+        return false; 
     };
 
     const resetImageState = useCallback(() => {
@@ -638,7 +637,7 @@ const SubjectCreate = () => {
                         style={{ maxWidth: '100%', maxHeight: '80vh' }}
                     />
                 </Modal>
-            )}
+            )}  
         </div>
     );
 };

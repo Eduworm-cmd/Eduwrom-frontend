@@ -53,6 +53,7 @@ import CreateUnit from "./pages/ContentAdmin/CreateUnit";
 import SubjectCreate from "./pages/ContentCreateForBook/SubjectCreate";
 import CreateSubjectPagesContent from "./pages/ContentCreateForBook/CreateSubjectPagesContent";
 import SubjectPageCreate from "./pages/ContentCreateForBook/SubjectPageCreate";
+import SubjectPageCreateContent from "./pages/ContentCreateForBook/SubjectPageCreateContent";
 
 function App() {
   return (
@@ -132,6 +133,7 @@ function App() {
           <Route path="Subject/add" element={<SubjectCreate/>} />
           <Route path="SubjectPage/Content" element={<CreateSubjectPagesContent/>} />
           <Route path="subjectPage/add/:id" element={<SubjectPageCreate/>} />
+          <Route path="subjectPage/add/content/:id" element={<SubjectPageCreateContent  />} />
         </Route>
 
 

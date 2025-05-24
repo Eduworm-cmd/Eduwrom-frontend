@@ -129,6 +129,8 @@ const SubjectPageCreate = () => {
             const formattedData = response.data.map((item, index) => ({
                 key: item._id,
                 sno: skip + index + 1,
+                classId: item.classId,
+                subjectId: item.SubjectId?._id || 'Unknown',
                 subjectName: item.SubjectId?.title || 'Unknown Subject',
                 pagetitle: item.title || `Page ${skip + index + 1}`,
                 pageImage: item.imageUrl,
@@ -308,7 +310,7 @@ const SubjectPageCreate = () => {
 
     useEffect(() => {
         handleSearch(searchTerm);
-    }, [searchTerm, pagesData]); // Re-filter when data changes
+    }, [searchTerm, pagesData]);
 
     // Cleanup URLs on unmount
     useEffect(() => {
@@ -319,6 +321,24 @@ const SubjectPageCreate = () => {
         };
     }, [previewImage]);
 
+
+    // Handle Add Page Content
+    const handleAddPageContent = useCallback((record)=>{
+        if(!record._id||!record.subjectId || !record.classId){
+            return
+        }        
+
+        try{
+            navigate(`/eduworm-content/subjectPage/add/content/${record._id}`, {
+                state: {
+                    subjectId: record.subjectId,
+                    classId: record.classId,
+                },
+            })
+        }catch(error){
+            console.log(error);
+        }
+    },[navigate])
     // Memoized values
     const columns = useMemo(() => [
         {
@@ -414,6 +434,15 @@ const SubjectPageCreate = () => {
                                     </div>
                                 ),
                                 onClick: () => message.info('Edit functionality coming soon'),
+                            },
+                            {
+                                key: 'AddPageContnent',
+                                label: (
+                                    <div className="flex items-center gap-2 text-blue-600">
+                                        <PlusCircle size={14} /> Add Page Content
+                                    </div>
+                                ),
+                                onClick: () => handleAddPageContent(record),
                             },
                             {
                                 key: 'delete',
