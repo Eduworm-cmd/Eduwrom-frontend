@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Clock, Target, BookOpen, Play, ChevronDown, ChevronUp } from 'lucide-react';
 
-export default function LessonPlanInterface() {
+export default function BookContentPreview() {
   const [lessonData, setLessonData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

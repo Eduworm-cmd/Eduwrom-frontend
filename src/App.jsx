@@ -52,6 +52,8 @@ import CreateUnit from "./pages/ContentAdmin/CreateUnit";
 import SubjectCreate from "./pages/ContentCreateForBook/SubjectCreate";
 import CreateSubjectPagesContent from "./pages/ContentCreateForBook/CreateSubjectPagesContent";
 import SubjectPageCreate from "./pages/ContentCreateForBook/SubjectPageCreate";
+import BookPages from "./pages/Teacheradmin/Book/BookHomePage/BookPages/BookPages";
+import BookPgContentOverView from "./pages/Teacheradmin/Book/BookHomePage/BookPageContentOverView/BookPgContentOverView";
 import SubjectPageCreateContent from "./pages/ContentCreateForBook/SubjectPageCreateContent";
 import BookContentPreview from "./pages/Teacheradmin/Book/BookPreview/BookContentPreview";
 
@@ -67,6 +69,8 @@ function App() {
         <Route path="eduworm-Teacher" element={<Layout />}>
           <Route index element={<TeacherHomePage />} />
           <Route path="books" element={<BookHomePage />} />
+          <Route path="book/pages/:id" element={<BookPages/>} />
+          <Route path="book/pgContent/:id" element={<BookPgContentOverView/>} />
         </Route>
 
         <Route element={<MainLayout />}>
