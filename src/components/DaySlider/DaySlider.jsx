@@ -117,7 +117,7 @@ const DaySlider = ({ classId, onDaySelected }) => {
 
   if (loading) {
     return (
-      <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl p-8 shadow-lg">
+      <div className="bg-gradient-to-br from-blue-50 to-sky-100 rounded-2xl p-8 shadow-lg">
         <div className="flex items-center justify-center space-x-3">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
           <span className="text-gray-600 font-medium">Loading curriculum...</span>
@@ -129,7 +129,7 @@ const DaySlider = ({ classId, onDaySelected }) => {
   return (
     <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
       {/* Header with Icon */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4">
+      <div className="bg-gradient-to-r from-sky-600 to-sky-600 px-6 py-2">
         <div className="flex items-center space-x-3">
           <div className="bg-white/20 p-2 rounded-lg">
             <BookOpen className="w-5 h-5 text-white" />
@@ -151,7 +151,7 @@ const DaySlider = ({ classId, onDaySelected }) => {
 
           <div
             ref={unitsScrollRef}
-            className="flex space-x-3 overflow-x-auto scrollbar-hide pb-2"
+            className="flex space-x-3 overflow-x-auto scrollbar-hide pb-2 pl-3 pt-2 gap-4"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
             {units.map((unit, index) => (
@@ -160,9 +160,9 @@ const DaySlider = ({ classId, onDaySelected }) => {
                 onClick={() => handleUnitClick(unit._id)}
                 className={`
                   relative px-6 py-3 rounded-xl border-2 transition-all duration-300 
-                  transform hover:scale-105 hover:shadow-lg whitespace-nowrap
+                  transform hover:scale-105
                   ${selectedUnitId === unit._id
-                    ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-blue-600 shadow-lg shadow-blue-200"
+                    ? "bg-gradient-to-r from-blue-600 to-sky-600 text-white border-white"
                     : "bg-white border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300"
                   }
                 `}
@@ -217,7 +217,7 @@ const DaySlider = ({ classId, onDaySelected }) => {
             {/* Days Container */}
             <div
               ref={daysScrollRef}
-              className="flex space-x-3 overflow-x-auto scrollbar-hide px-12 py-2"
+              className="flex space-x-3 overflow-x-auto scrollbar-hide px-12 py-2 gap-2"
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
               onScroll={checkScrollCapabilities}
             >
@@ -225,10 +225,10 @@ const DaySlider = ({ classId, onDaySelected }) => {
                 <button
                   key={dayObj._id}
                   className={`
-                    relative flex-shrink-0 px-5 py-4 rounded-lg border-2 transition-all duration-300
+                    relative flex-shrink-0 px-5 py-2 rounded-lg border-2 transition-all duration-300
                     transform hover:scale-105 hover:shadow-md whitespace-nowrap min-w-[80px]
                     ${currentSelectedDay === dayObj._id
-                      ? "bg-gradient-to-br from-blue-600 to-indigo-600 text-white border-blue-600 shadow-lg shadow-blue-200"
+                      ? "bg-gradient-to-br from-blue-600 to-sky-600 text-white border-blue-600 shadow-lg shadow-blue-200"
                       : "bg-white border-gray-200 text-gray-700 hover:bg-blue-50 hover:border-blue-300"
                     }
                   `}
