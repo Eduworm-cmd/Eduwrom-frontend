@@ -67,7 +67,7 @@ const BookCard = ({ subject }) => {
   const imageUrl = imageError ? PLACEHOLDER_IMAGE : (subject.imageUrl || PLACEHOLDER_IMAGE);
 
   return (
-    <div className="group   shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all ">
+    <div className="group shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all ">
       {/* Image Container */}
       <div className="relative aspect-[3/4] overflow-hidden bg-gray-100">
         {!imageLoaded && (
@@ -80,7 +80,7 @@ const BookCard = ({ subject }) => {
           src={imageUrl}
           alt={subject.title || 'Subject cover'}
           className={`w-full h-full object-cover pt-1 transition-transform duration-300 group-hover:scale-105 ${imageLoaded ? 'opacity-100' : 'opacity-0'
-}`}
+            }`}
           onLoad={handleImageLoad}
           onError={handleImageError}
           loading="lazy"
@@ -97,25 +97,26 @@ const BookCard = ({ subject }) => {
 
         {/* Preview overlay */}
         <div
-          className="absolute inset-0 bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer"
+          className="absolute inset-0 bg-white/50 backdrop-blur-sm transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer"
           onClick={handlePreviewClick}
         >
-          <div className="p-3 transform scale-75 group-hover:scale-100 transition-transform duration-200 shadow-lg">
+          <div className="p-3 transform scale-75 group-hover:scale-100 transition-transform duration-200">
             <Eye className="w-6 h-6 text-gray-700" />
           </div>
         </div>
+
       </div>
 
       {/* Content */}
       <div className="p-2">
         <h3 className="font-semibold text-gray-900 text-sm sm:text-base line-clamp-2 mb-2">
           {subject.title || 'Untitled Subject'}
-         
+
         </h3>
-        
+
 
         <div className="flex items-center gap-1  text-gray-500  justify-between">
-         <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1">
             <BookOpen className="w-3 h-3" />
             <span>{subject.SubjectPage?.length || 0} pages</span>
          </div>
@@ -204,16 +205,7 @@ export const BookHomePage = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-          {className ? `${className} Subjects` : 'Subjects'}
-        </h1>
-        <p className="text-gray-600">
-          {subjects.length} {subjects.length === 1 ? 'subject' : 'subjects'} available
-        </p>
-      </div>
-
+    <div className="container mx-auto px-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {subjects.map((subject) => (
           <BookCard

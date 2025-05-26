@@ -8,7 +8,6 @@ import UnitSummary from "./components/UnitSummary/UnitSummary";
 import { AdminPannelLayout } from "./layout/AdminPannelLayout";
 import { SAHomePage } from "./pages/super-admin-pannel/SAHomePage/SAHomePage";
 import { BookHomePage } from "./pages/Teacheradmin/Book/BookHomePage/BookHomePage";
-import { BookPreview } from "./pages/Teacheradmin/Book/BookPreview/BookPreview";
 import { Add_Content } from "./pages/ContentAdmin/Add_Content";
 import { Content_Manage } from "./pages/ContentAdmin/Content_Manage";
 import { Curriculum } from "./pages/Curriculum/Curriculum";
@@ -55,6 +54,8 @@ import CreateSubjectPagesContent from "./pages/ContentCreateForBook/CreateSubjec
 import SubjectPageCreate from "./pages/ContentCreateForBook/SubjectPageCreate";
 import BookPages from "./pages/Teacheradmin/Book/BookHomePage/BookPages/BookPages";
 import BookPgContentOverView from "./pages/Teacheradmin/Book/BookHomePage/BookPageContentOverView/BookPgContentOverView";
+import SubjectPageCreateContent from "./pages/ContentCreateForBook/SubjectPageCreateContent";
+import BookContentPreview from "./pages/Teacheradmin/Book/BookPreview/BookContentPreview";
 
 function App() {
   return (
@@ -68,7 +69,6 @@ function App() {
         <Route path="eduworm-Teacher" element={<Layout />}>
           <Route index element={<TeacherHomePage />} />
           <Route path="books" element={<BookHomePage />} />
-          <Route path="book/preview/:id" element={<BookPreview />} />
           <Route path="book/pages/:id" element={<BookPages/>} />
           <Route path="book/pgContent/:id" element={<BookPgContentOverView/>} />
         </Route>
@@ -77,6 +77,7 @@ function App() {
           <Route path="/days" element={<DaysView />} />
           <Route path="/view/:id" element={<CourseView />} />
           <Route path="/unit" element={<UnitSummary />} />
+          <Route path="/book/preview/:id" element={<BookContentPreview />} />
         </Route>
 
         <Route path="/eduworm-admin" element={<AdminPannelLayout />}>
@@ -136,6 +137,7 @@ function App() {
           <Route path="Subject/add" element={<SubjectCreate/>} />
           <Route path="SubjectPage/Content" element={<CreateSubjectPagesContent/>} />
           <Route path="subjectPage/add/:id" element={<SubjectPageCreate/>} />
+          <Route path="subjectPage/add/content/:id" element={<SubjectPageCreateContent  />} />
         </Route>
 
 

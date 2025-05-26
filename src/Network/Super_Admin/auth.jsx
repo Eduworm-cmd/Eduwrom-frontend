@@ -309,11 +309,13 @@ const GetDaysByUnitId = async (unitId) => {
         method: "GET",
     });
 }
+
 const GetLessonsDaysId = async (id) => {
     return await apiRequest(`Lesson/getLessonsByDay/${id}`, {
         method: "GET",
     });
 }
+
 const GetLessonsByLessonId = async (id) => {
     return await apiRequest(`Lesson/${id}`, {
         method: "GET",
@@ -460,7 +462,7 @@ const getSubjectByClassId = async (classId) => {
 
 
 const dropdownSubjectPages = async (subjectId) => {
-    return await apiRequest(`bookPage/${subjectId}`, {
+    return await apiRequest(`subjectPage/${subjectId}`, {
         method: "GET",
     })
 }
