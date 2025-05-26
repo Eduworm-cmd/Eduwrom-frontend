@@ -18,6 +18,10 @@ const SkillBuilderViewer = () => {
     const [rotation, setRotation] = useState(0);
     const params = useParams();
     const {id} = params;
+   
+
+
+   
 
     const navigate = useNavigate();
     
@@ -29,7 +33,7 @@ const SkillBuilderViewer = () => {
                     `http://localhost:4000/api/subjectPage/${id}`
                 );
                 const result = await response.json();
-
+                console.log(result);
                
                 if (result.success && Array.isArray(result.data)) {
                     setPages(result.data);
@@ -92,8 +96,12 @@ const SkillBuilderViewer = () => {
                             {/* Title below image */}
                             <div className="flex justify-between py-2 px-2 font-semibold">
                                 {page.title}
-                                <span onClick={() => navigate(`/eduworm-Teacher/book/pgContent/${id}`,{
-                                    state: page
+                                <span onClick={() => navigate(`/eduworm-Teacher/book/pgContent/${page._id}`,{
+                                    state: {
+                                        ...page,          // page object
+                                        pages: pages.length  // ✅ sending total number of pages
+                                    }
+                                    
                                 })} className="text-gray-400 flex cursor-pointer justify-end"> <CircleArrowRight /></span>
                                 
                             </div>

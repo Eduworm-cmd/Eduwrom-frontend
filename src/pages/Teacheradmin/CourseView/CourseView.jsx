@@ -8,6 +8,7 @@ import React, { useEffect, useState } from 'react';
 import intoGirl from "../../../assets/Images/Day-view-girl.png";
 import { Link, useParams } from 'react-router-dom';
 import { GetLessonsByLessonId } from '@/Network/Super_Admin/auth';
+import axios from 'axios';
 
 export const CourseView = () => {
     const params = useParams();
@@ -19,8 +20,10 @@ export const CourseView = () => {
     useEffect(() => {
         const fetchLesson = async () => {
             try {
-                const response = await GetLessonsByLessonId(id);
+                // const response = await GetLessonsByLessonId(id);
+                const response = await axios.get(`http://localhost:4000/api/subject_PageContent/getcontent/${id}`);
                 setLessonData(response.data);
+                console.log("dd",response.data);
             } catch (error) {
                 console.error("Error fetching lesson data:", error);
             } finally {
@@ -37,6 +40,8 @@ export const CourseView = () => {
     if (loading) {
         return <div className="text-center p-10">Loading...</div>;
     }
+
+    console.log("mm",lessonData);
 
     return (
         <div>
@@ -63,12 +68,12 @@ export const CourseView = () => {
             <div className="p-4 bg-gray-100 min-h-screen">
                 <div className="bg-white p-4 rounded-xl shadow-md mb-4">
                     <div className="flex justify-between items-center">
-                        <h3 className="text-lg font-semibold">Lesson: {lessonData.lessonTitle}</h3>
+                        <h3 className="text-lg font-semibold">Lesson: {lessonData?.data?.title}</h3>
                     </div>
 
                     {/* Objectives */}
                     <div className="mt-3 space-y-4">
-                        {lessonData?.objectives?.map((item, index) => (
+                        {lessonData?.data?.objectives?.map((item, index) => (
                             <div key={item._id}>
                                 <div
                                     className="flex items-center p-4 bg-gray-100 rounded-lg cursor-pointer"
@@ -92,13 +97,14 @@ export const CourseView = () => {
                             </div>
                         ))}
 
+
                     </div>
 
                     {/* Interactive Activities */}
-                    {lessonData?.interactiveActivity?.length > 0 && (
+                    {lessonData?.data?.interactiveActivity?.length > 0 && (
                         <div className="mt-8 bg-white p-4 rounded-lg shadow">
                             <h3 className="text-lg font-semibold">Interactive Activity</h3>
-                            {lessonData.interactiveActivity.map((activity) => (
+                            {lessonData.data.interactiveActivity.map((activity) => (
                                 <div key={activity._id} className="mt-4">
                                     <img
                                         src={activity.poster}
@@ -117,6 +123,7 @@ export const CourseView = () => {
                             ))}
                         </div>
                     )}
+
                 </div>
             </div>
         </div>
