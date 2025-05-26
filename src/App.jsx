@@ -53,6 +53,8 @@ import CreateUnit from "./pages/ContentAdmin/CreateUnit";
 import SubjectCreate from "./pages/ContentCreateForBook/SubjectCreate";
 import CreateSubjectPagesContent from "./pages/ContentCreateForBook/CreateSubjectPagesContent";
 import SubjectPageCreate from "./pages/ContentCreateForBook/SubjectPageCreate";
+import BookPages from "./pages/Teacheradmin/Book/BookHomePage/BookPages/BookPages";
+import BookPgContentOverView from "./pages/Teacheradmin/Book/BookHomePage/BookPageContentOverView/BookPgContentOverView";
 
 function App() {
   return (
@@ -67,6 +69,8 @@ function App() {
           <Route index element={<TeacherHomePage />} />
           <Route path="books" element={<BookHomePage />} />
           <Route path="book/preview/:id" element={<BookPreview />} />
+          <Route path="book/pages/:id" element={<BookPages/>} />
+          <Route path="book/pgContent/:id" element={<BookPgContentOverView/>} />
         </Route>
 
         <Route element={<MainLayout />}>

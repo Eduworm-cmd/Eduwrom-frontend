@@ -5,6 +5,7 @@ import { Image } from 'antd';
 import { BookOpen, AlertCircle, RefreshCw, Eye } from 'lucide-react';
 import 'antd/dist/reset.css';
 import { CircleArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 const PLACEHOLDER_IMAGE = "https://via.placeholder.com/300x400?text=No+Image";
 
 const BookSkeleton = () => (
@@ -47,11 +48,11 @@ const EmptyState = () => (
   </div>
 );
 
-const BookCard = ({ subject, onViewContent }) => {
+const BookCard = ({ subject }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [previewVisible, setPreviewVisible] = useState(false);
-
+  const navigate = useNavigate();
   const handleImageLoad = () => setImageLoaded(true);
   const handleImageError = () => {
     setImageError(true);
@@ -118,7 +119,7 @@ const BookCard = ({ subject, onViewContent }) => {
             <BookOpen className="w-3 h-3" />
             <span>{subject.SubjectPage?.length || 0} pages</span>
          </div>
-          <span onClick={() => onViewContent(subject)} className="text-gray-400 flex cursor-pointer justify-end"> <CircleArrowRight /></span>
+          <span onClick={() => navigate(`/eduworm-Teacher/book/pages/${subject._id}`)} className="text-gray-400 flex cursor-pointer justify-end"> <CircleArrowRight /></span>
         </div>
       </div>
     </div>
