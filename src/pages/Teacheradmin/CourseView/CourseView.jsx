@@ -1,29 +1,25 @@
 import {
     ArrowRight,
-    ChevronDown,
-    ChevronRight,
     Target
 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import intoGirl from "../../../assets/Images/Day-view-girl.png";
 import { Link, useParams } from 'react-router-dom';
-import { GetLessonsByLessonId } from '@/Network/Super_Admin/auth';
 import axios from 'axios';
 
 export const CourseView = () => {
     const params = useParams();
     const [loading, setLoading] = useState(true);
-    const [lessonData, setLessonData] = useState();
-    const [activeTaskIndex, setActiveTaskIndex] = useState([0]);
+    const [lessonData, setLessonData] = useState(null);
+    const [activeIndex, setActiveIndex] = useState(null);
     const { id } = params;
 
     useEffect(() => {
         const fetchLesson = async () => {
             try {
-                // const response = await GetLessonsByLessonId(id);
                 const response = await axios.get(`http://localhost:4000/api/subject_PageContent/getcontent/${id}`);
                 setLessonData(response.data);
-                console.log("dd",response.data);
+                console.log("Lesson Data:", response.data);
             } catch (error) {
                 console.error("Error fetching lesson data:", error);
             } finally {
@@ -33,15 +29,24 @@ export const CourseView = () => {
         fetchLesson();
     }, [id]);
 
-    const handleActiveToggle = (index) => {
-        setActiveTaskIndex(activeTaskIndex === index ? null : index);
+    const toggleObjective = (index) => {
+        setActiveIndex(activeIndex === index ? null : index);
+    };
+
+    // 🔍 Utility function to parse <li> tags into plain text list
+    const parseHtmlContent = (htmlString) => {
+        if (!htmlString) return [];
+        const listItems = htmlString.match(/<li[^>]*>(.*?)<\/li>/g) || [];
+        return listItems.map(item =>
+            item.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim()
+        ).filter(item => item.length > 0);
     };
 
     if (loading) {
         return <div className="text-center p-10">Loading...</div>;
     }
 
-    console.log("mm",lessonData);
+    const content = lessonData?.data;
 
     return (
         <div>
@@ -68,43 +73,44 @@ export const CourseView = () => {
             <div className="p-4 bg-gray-100 min-h-screen">
                 <div className="bg-white p-4 rounded-xl shadow-md mb-4">
                     <div className="flex justify-between items-center">
-                        <h3 className="text-lg font-semibold">Lesson: {lessonData?.data?.title}</h3>
+                        <h3 className="text-lg font-semibold">Lesson: {content?.title}</h3>
                     </div>
 
-                    {/* Objectives */}
-                    <div className="mt-3 space-y-4">
-                        {lessonData?.data?.objectives?.map((item, index) => (
-                            <div key={item._id}>
-                                <div
-                                    className="flex items-center p-4 bg-gray-100 rounded-lg cursor-pointer"
-                                    onClick={() => handleActiveToggle(index)}
-                                >
-                                    <div className={`w-8 h-8 ${activeTaskIndex === index ? 'bg-slate-500' : 'bg-slate-300'} text-white flex items-center justify-center rounded-full font-semibold`}>
-                                        <Target className="w-5 h-5" />
+                    {/* Objectives Section */}
+                    <div className="mt-6 space-y-4">
+                        {content?.objectives?.map((item, index) => {
+                            const parsedList = parseHtmlContent(item.objectiveValue);
+                            return (
+                                <div key={item._id}>
+                                    <div
+                                        className="flex items-center p-3 bg-gray-100 rounded-lg cursor-pointer"
+                                        onClick={() => toggleObjective(index)}
+                                    >
+                                        <div className={`w-8 h-8 ${activeIndex === index ? 'bg-slate-500' : 'bg-slate-300'} text-white flex items-center justify-center rounded-full`}>
+                                            <Target className="w-5 h-5" />
+                                        </div>
+                                        <p className="ml-3 font-semibold text-gray-800">{item.objectiveTitle}</p>
                                     </div>
-                                    <p className="ml-3 text-gray-700 font-semibold">{item.objectiveTitle}</p>
+
+                                    {activeIndex === index && (
+                                        <div className="bg-white p-4 rounded-xl shadow-inner border mt-2">
+                                            <ul className="list-disc ml-6 space-y-2 text-gray-700">
+                                                {parsedList.map((point, idx) => (
+                                                    <li key={idx}>{point}</li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
                                 </div>
-
-                                {activeTaskIndex === index && (
-                                    <div className="bg-white p-4 rounded-xl shadow-md">
-                                        <h3 className="text-lg font-semibold">{item.objectiveTitle}</h3>
-                                        <div
-                                            className="mt-3 prose max-w-full"
-                                            dangerouslySetInnerHTML={{ __html: item.objectiveValue }}
-                                        />
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-
-
+                            );
+                        })}
                     </div>
 
-                    {/* Interactive Activities */}
-                    {lessonData?.data?.interactiveActivity?.length > 0 && (
+                    {/* Interactive Activities Section */}
+                    {content?.interactiveActivity?.length > 0 && (
                         <div className="mt-8 bg-white p-4 rounded-lg shadow">
                             <h3 className="text-lg font-semibold">Interactive Activity</h3>
-                            {lessonData.data.interactiveActivity.map((activity) => (
+                            {content.interactiveActivity.map((activity) => (
                                 <div key={activity._id} className="mt-4">
                                     <img
                                         src={activity.poster}
@@ -113,7 +119,7 @@ export const CourseView = () => {
                                     />
                                     <p className="mt-2 font-semibold">{activity.title}</p>
                                     <Link
-                                        to={activity.link}
+                                        to={activity.link.startsWith("http") ? activity.link : `https://${activity.link}`}
                                         target="_blank"
                                         className="text-blue-600 underline"
                                     >
@@ -123,7 +129,6 @@ export const CourseView = () => {
                             ))}
                         </div>
                     )}
-
                 </div>
             </div>
         </div>
