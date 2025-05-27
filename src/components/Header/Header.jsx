@@ -36,6 +36,16 @@ export const Header = () => {
   const dispatch = useDispatch();
 
 
+  if(!userId) {
+    removeEventListener.staffData("Failed to fetch user ID");
+    return <div className="flex justify-center items-center">Loading...</div>;
+  }
+
+  loesson = loesson._id;
+  if(!lesson) {
+      console.log("Eror Not show Lesson");
+  }
+
   const handleCloseDailog = () => {
     setOpenDialog(false)
   }
@@ -49,6 +59,7 @@ export const Header = () => {
 
       try {
         const unitsResponse = await GetUnitsByClassId(classId);
+        // cosnt response = await employeeId
         const units = unitsResponse?.data || [];
         if (units.length === 0) return;
 
