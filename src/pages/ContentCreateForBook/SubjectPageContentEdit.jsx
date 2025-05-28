@@ -711,7 +711,12 @@ const SubjectPageContentEdit = () => {
                                             size="small"
                                             icon={<PlusOutlined />}
                                             onClick={addObjective}
-                                            className="rounded-lg"
+                                        className="rounded-lg "
+                                        style={{
+                                            backgroundColor: "#3b82f6",
+                                            color: "#fff",
+                                            borderColor: "#3b82f6",
+                                        }}
                                         >
                                             Add Objective
                                         </Button>
@@ -794,6 +799,11 @@ const SubjectPageContentEdit = () => {
                                         icon={<PlusOutlined />}
                                         onClick={addActivity}
                                         className="rounded-lg"
+                                        style={{
+                                            backgroundColor: "#3b82f6",
+                                            color: "#fff",
+                                            borderColor: "#3b82f6",
+                                        }}
                                     >
                                         Add Activity
                                     </Button>
