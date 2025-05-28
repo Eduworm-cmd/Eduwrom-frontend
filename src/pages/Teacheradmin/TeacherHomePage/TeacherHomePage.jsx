@@ -21,6 +21,7 @@ export const TeacherHomePage = () => {
         const rawData = response?.data || [];
 
         const formattedLessons = rawData.map((lesson) => ({
+          url:'/days/',
           id: lesson._id,
           title: lesson.title,
           avatar: lesson.contentAvtar,

@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import RichtoolEditor from '@/components/RichtoolEditor/RichtoolEditor';
 import axios from 'axios';
 import { ClassesDropdown, GetUnitsDropdownByClassId, GetSubjectsByClassId, GetSubjectsPagesBySubjectId, GetUnitsByClassId, GetDaysByUnitId } from '@/Network/Super_Admin/auth';
+import { toast, ToastContainer } from 'react-toastify';
 
 export const Add_Content = () => {
     const [classes, setClasses] = useState([]);
@@ -324,7 +325,7 @@ export const Add_Content = () => {
             );
 
             if (responses.every(res => res.data.success)) {
-                alert('All lessons created successfully!');
+                toast.success('All lessons created successfully!');
                 // Reset form
                 setFormData({
                     ClassId: '',
@@ -352,6 +353,7 @@ export const Add_Content = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 px-4">
+            <ToastContainer/>
             <div className="max-w-6xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-8">

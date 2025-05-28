@@ -1,199 +1,132 @@
-import React from 'react'
-import "./DaysView.css"
+import {
+    ArrowRight,
+    Target
+} from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 import intoGirl from "../../../assets/Images/Day-view-girl.png";
-import { ArrowRight } from 'lucide-react'
-import { Pen, Headphones, Volume2, Clock } from "lucide-react";
-import { useNavigate } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
+import { GetLessonsByLessonId } from '@/Network/Super_Admin/auth';
 
-const DaysView = () => {
-    const navigate = useNavigate();
+export const DaysView = () => {
+    const { id } = useParams();
+    const [loading, setLoading] = useState(true);
+    const [lessonData, setLessonData] = useState(null);
+    const [activeIndex, setActiveIndex] = useState(0); 
 
-    const handleViewMore = ()  =>{
-        navigate("/view")
-    }
+    useEffect(() => {
+        const fetchLesson = async () => {
+            try {
+                const response = await GetLessonsByLessonId(id);
+                setLessonData(response);
+                console.log("Lesson Data:", response.data);
+            } catch (error) {
+                console.error("Error fetching lesson data:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchLesson();
+    }, [id]);
+
+    const parseHtmlContent = (htmlString) => {
+        if (!htmlString) return [];
+        const listItems = htmlString.match(/<li[^>]*>(.*?)<\/li>/g) || [];
+        return listItems.map(item =>
+            item.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim()
+        ).filter(item => item.length > 0);
+    };
+
+    if (loading) return <div className="text-center p-10 text-lg">Loading lesson...</div>;
+
+    const content = lessonData?.data;
+
     return (
-        <div>
-            <div className="intora-day relative bg-slate-500 p-6 rounded-xl shadow-md text-white w-full max-w-2xl mx-auto flex items-center mt-5 mb-3">
-                <div className="absolute -top-7 left-4 w-32 h-32 md:w-40 md:h-40 lg:w-48 lg:h-48">
-                    <img
-                        src={intoGirl}
-                        alt="Beronica Peterson"
-                        className="w-full h-full"
-                    />
+        <div className="px-2 py-4 bg-gray-100 min-h-screen">
+            {/* Instructor Header */}
+            <div className="relative bg-gradient-to-r from-sky-500 to-sky-600 rounded-sm shadow-lg text-white p-4 max-w-6xl mx-auto mb-10 flex flex-col sm:flex-row items-center gap-6">
+                <div className="absolute -top-7 left-2 w-28 h-28 md:w-36 md:h-36">
+                    <img src={intoGirl} alt="Instructor" className="w-full" />
                 </div>
-                <div className="ml-auto pl-0 md:pl-32 lg:pl-60 w-full">
-                    <h3 className="text-xl md:text-2xl font-semibold">Beronica Peterson</h3>
-                    <p className="text-sm md:text-base text-blue-200">English Teacher</p>
-                    <div className="mt-4 flex items-center space-x-4">
-                        <p className="text-white flex items-center space-x-2">
-                            Moral <ArrowRight className="w-4 h-4 ml-2" />
-                        </p>
-                        <button className="px-4 py-2 bg-white text-slate-700 rounded-full font-medium">
-                        Social-Emotional
-                        </button>
+                <div className="pl-0 sm:pl-40 w-full">
+                    <h3 className="text-2xl font-bold">{content.title}</h3>
+                    <p className="text-blue-100 mt-1">English Teacher</p>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                        <span className="flex items-center bg-white text-blue-600 font-medium px-3 py-1 rounded-full shadow-sm">
+                            <ArrowRight className="w-4 h-4 mr-1" /> Subject
+                        </span>
+                        <span className="bg-white text-indigo-600 font-medium px-4 py-1 rounded-full shadow-sm">
+                            {content.SubjectId.title}
+                        </span>
                     </div>
                 </div>
             </div>
 
-            <div className="p-1 space-y-6">
-                <div>
-                    <h2 className="text-xl font-semibold text-gray-800">English Homework</h2>
-                    <div className="bg-white p-4 rounded-xl shadow-md mt-2">
-                        <div className="p-4 rounded-xl shadow-md bg-gray-100">
-                            <div className="flex items-center space-x-4">
-                                <div className="text-white bg-opacity-20 p-3 rounded-full bg-gray-100">
-                                    <Pen className="text-slate-700 w-6 h-6" />
+            {/* Lesson Content */}
+            <div className="bg-white p-4 rounded-sm shadow max-w-8xl mx-auto space-y-10">
+                {/* Objectives */}
+                <section>
+                    <h3 className="text-lg font-semibold text-gray-700 mb-4">Learning Objectives</h3>
+                    <div className="space-y-4">
+                        {content?.objectives?.map((item, index) => {
+                            const parsedList = parseHtmlContent(item.objectiveValue);
+                            return (
+                                <div key={item._id} className="border rounded-lg overflow-hidden">
+                                    <button
+                                        onClick={() => setActiveIndex(prevIndex => (prevIndex === index ? null : index))}
+                                        className="flex items-center w-full px-3 cursor-pointer py-2 bg-gray-100 hover:bg-gray-300 transition text-left"
+                                    >
+                                        <div className={`w-8 h-8 ${activeIndex === index ? 'bg-sky-600' : 'bg-gray-300'} text-white flex items-center justify-center rounded-full`}>
+                                            <Target className="w-5 h-5" />
+                                        </div>
+                                        <span className="ml-4 text-gray-800 font-medium">{item.objectiveTitle}</span>
+                                    </button>
+                                    {activeIndex === index && (
+                                        <div className="p-4 bg-white">
+                                            <ul className="list-disc ml-6 space-y-2 text-gray-700">
+                                                {parsedList.map((point, idx) => (
+                                                    <li key={idx}>{point}</li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
                                 </div>
-                                <div>
-                                    <h3 className="text-lg font-semibold text-gray-800">Basic English Writing</h3>
-                                    <p className="text-xs text-blue-500">CHAPTER-12</p>
-                                </div>
-                            </div>
-                            <p className="text-sm text-gray-600 mt-2">
-                                It is recommended that you complete this assign to improve your writing skills for beginner English.
-                            </p>
-                            <div className="mt-4 flex items-center justify-between">
-                                <button 
-                                 onClick={handleViewMore}
-                                className="px-4 py-2 cursor-pointer bg-slate-500 text-white rounded-lg font-medium flex items-center space-x-2">
-                                    View →
-                                </button>
-                                
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <h2 className="text-xl font-semibold text-gray-800">German Homework</h2>
-                    <div className="bg-slate-500 p-4 rounded-xl shadow-md mt-2">
-                        <div className="p-4 rounded-xl shadow-md bg-transparent">
-                            <div className="flex items-center space-x-4">
-                                <div className="text-white bg-opacity-20 p-3 rounded-full bg-gray-100">
-                                    <Headphones className="text-slate-700 w-6 h-6" />
-                                </div>
-                                <div>
-                                    <h3 className="text-lg font-semibold text-white">Basic German Listening</h3>
-                                    <p className="text-xs text-blue-300">CHAPTER-9</p>
-                                </div>
-                            </div>
-                            <p className="text-sm text-gray-300 mt-2">
-                                It is recommended that you complete this assign to improve your listening skills for beginner German.
-                            </p>
-                            <div className="mt-4 flex items-center justify-between">
-                                <button className="px-4 py-2 cursor-pointer bg-white text-slate-500 rounded-lg font-medium flex items-center space-x-2">
-                                    View →
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <h2 className="text-xl font-semibold text-gray-800">Spanish Homework</h2>
-                    <div className="bg-white p-4 rounded-xl shadow-md mt-2">
-                        <div className="p-4 rounded-xl shadow-md bg-gray-100">
-                            <div className="flex items-center space-x-4">
-                                <div className="text-white bg-opacity-20 p-3 rounded-full bg-gray-100">
-                                    <Volume2 className="text-slate-700 w-6 h-6" />
-                                </div>
-                                <div>
-                                    <h3 className="text-lg font-semibold text-gray-800">Basic English Speaking</h3>
-                                    <p className="text-xs text-blue-500">CHAPTER-12</p>
-                                </div>
-                            </div>
-                            <p className="text-sm text-gray-600 mt-2">
-                                It is recommended that you complete this assign to improve your speaking skills for beginner English.
-                            </p>
-                            <div className="mt-4 flex items-center justify-between">
-                                <button className="px-4 py-2 cursor-pointer bg-slate-500 text-white rounded-lg font-medium flex items-center space-x-2">
-                                    View →
-                                </button>
-                                
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                            );
+                        })}
 
-            <div className="p-1 space-y-6">
-                <div>
-                    <h2 className="text-xl font-semibold text-gray-800">English Homework</h2>
-                    <div className="bg-white p-4 rounded-xl shadow-md mt-2">
-                        <div className="p-4 rounded-xl shadow-md bg-gray-100">
-                            <div className="flex items-center space-x-4">
-                                <div className="text-white bg-opacity-20 p-3 rounded-full bg-gray-100">
-                                    <Pen className="text-slate-700 w-6 h-6" />
-                                </div>
-                                <div>
-                                    <h3 className="text-lg font-semibold text-gray-800">Basic English Writing</h3>
-                                    <p className="text-xs text-blue-500">CHAPTER-12</p>
-                                </div>
-                            </div>
-                            <p className="text-sm text-gray-600 mt-2">
-                                It is recommended that you complete this assign to improve your writing skills for beginner English.
-                            </p>
-                            <div className="mt-4 flex items-center justify-between">
-                                <button className="px-4 py-2 cursor-pointer bg-slate-500 text-white rounded-lg font-medium flex items-center space-x-2">
-                                    View →
-                                </button>
-                                
-                            </div>
-                        </div>
                     </div>
-                </div>
-                <div>
-                    <h2 className="text-xl font-semibold text-gray-800">German Homework</h2>
-                    <div className="bg-slate-500 p-4 rounded-xl shadow-md mt-2">
-                        <div className="p-4 rounded-xl shadow-md bg-transparent">
-                            <div className="flex items-center space-x-4">
-                                <div className="text-white bg-opacity-20 p-3 rounded-full bg-gray-100">
-                                    <Headphones className="text-slate-700 w-6 h-6" />
-                                </div>
-                                <div>
-                                    <h3 className="text-lg font-semibold text-white">Basic German Listening</h3>
-                                    <p className="text-xs text-blue-300">CHAPTER-9</p>
-                                </div>
-                            </div>
-                            <p className="text-sm text-gray-300 mt-2">
-                                It is recommended that you complete this assign to improve your listening skills for beginner German.
-                            </p>
-                            <div className="mt-4 flex items-center justify-between">
-                                <button className="px-4 py-2 cursor-pointer bg-white text-slate-500 rounded-lg font-medium flex items-center space-x-2">
-                                    View →
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <h2 className="text-xl font-semibold text-gray-800">Spanish Homework</h2>
-                    <div className="bg-white p-4 rounded-xl shadow-md mt-2">
-                        <div className="p-4 rounded-xl shadow-md bg-gray-100">
-                            <div className="flex items-center space-x-4">
-                                <div className="text-white bg-opacity-20 p-3 rounded-full bg-gray-100">
-                                    <Volume2 className="text-slate-700 w-6 h-6" />
-                                </div>
-                                <div>
-                                    <h3 className="text-lg font-semibold text-gray-800">Basic English Speaking</h3>
-                                    <p className="text-xs text-blue-500">CHAPTER-12</p>
-                                </div>
-                            </div>
-                            <p className="text-sm text-gray-600 mt-2">
-                                It is recommended that you complete this assign to improve your speaking skills for beginner English.
-                            </p>
-                            <div className="mt-4 flex items-center justify-between">
-                                <button className="px-4 py-2 cursor-pointer bg-slate-500 text-white rounded-lg font-medium flex items-center space-x-2">
-                                    View →
-                                </button>
-                                
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                </section>
 
+                {/* Activities */}
+                {content?.interactiveActivity?.length > 0 && (
+                    <section>
+                        <h3 className="text-lg font-semibold text-gray-700 mb-4">Interactive Activities</h3>
+                        <div className="space-y-6">
+                            {content.interactiveActivity.map((activity) => (
+                                <div
+                                    key={activity._id}
+                                    className="flex flex-col sm:flex-row items-start gap-4 p-0 bg-gray-50"
+                                >
+                                    <img
+                                        src={activity.poster}
+                                        alt="Activity Poster"
+                                        className="w-60 h-25 object-cover rounded-md"
+                                    />
+                                    <div>
+                                        <h4 className="font-semibold text-gray-800">{activity.title}</h4>
+                                        <Link
+                                            to={activity.link.startsWith("http") ? activity.link : `https://${activity.link}`}
+                                            target="_blank"
+                                            className="text-indigo-600 mt-2 inline-block hover:underline"
+                                        >
+                                            Go to Activity
+                                        </Link>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                )}
+            </div>
         </div>
-
-    )
-}
-
-export default DaysView
+    );
+};
