@@ -40,6 +40,8 @@ export const CourseView = () => {
 
     const content = lessonData?.data;
 
+    console.log(content?.SubjectId?.title);
+
     return (
         <div className="px-2 py-4 bg-gray-100 min-h-screen">
             {/* Instructor Header */}
@@ -48,14 +50,15 @@ export const CourseView = () => {
                     <img src={intoGirl} alt="Instructor" className="w-full" />
                 </div>
                 <div className="pl-0 sm:pl-40 w-full">
-                    <h3 className="text-2xl font-bold">B</h3>
-                    <p className="text-blue-100 mt-1">English Teacher</p>
+                    <h3 className="text-2xl font-bold">{content?.title}</h3>
+                    <div className="flex items-center">
+                        <p className="text-blue-100 mt-1">{content?.shcedule?.[0]?.unit},</p>
+                        <p className="text-blue-100 mt-1">Week{content?.shcedule?.[0]?.week},</p>
+                        <p className="text-blue-100 mt-1">Day{content?.shcedule?.[0]?.day}</p>
+                    </div>
                     <div className="mt-4 flex flex-wrap gap-2">
                         <span className="flex items-center bg-white text-blue-600 font-medium px-3 py-1 rounded-full shadow-sm">
-                            <ArrowRight className="w-4 h-4 mr-1" /> Moral
-                        </span>
-                        <span className="bg-white text-indigo-600 font-medium px-4 py-1 rounded-full shadow-sm">
-                            Social-Emotional
+                            <ArrowRight className="w-4 h-4 mr-1" /> {content?.SubjectId?.title}
                         </span>
                     </div>
                 </div>

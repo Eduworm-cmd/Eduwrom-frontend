@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import {
-    Form, Input, Button, Upload, Card, Space, Typography, Row, Col, Alert, message, Spin, Tooltip
+    Form, Input, Button, Upload, Card, Space, Typography, Row, Col, message, Spin, Tooltip
 } from 'antd';
 import {
     PlusOutlined,
@@ -13,8 +13,9 @@ import {
 import RichtoolEditor from '@/components/RichtoolEditor/RichtoolEditor';
 import { subjectPageContentCreate } from '@/Network/Super_Admin/auth';
 import { ToastContainer } from 'react-toastify';
+import { FileText } from 'lucide-react';
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 const { Dragger } = Upload;
 
 // Constants
@@ -72,6 +73,7 @@ const SubjectPageCreateContent = () => {
     });
 
     const [fileList, setFileList] = useState([]);
+    const [activityFileLists, setActivityFileLists] = useState({});
     const [previewImage, setPreviewImage] = useState('');
     const [previewVisible, setPreviewVisible] = useState(false);
 
@@ -101,6 +103,7 @@ const SubjectPageCreateContent = () => {
         } catch (error) {
             console.log(error);
             onError(error);
+            message.error(error.message);
         } finally {
             setLoading(prev => ({ ...prev, avatarUpload: false }));
         }
@@ -164,27 +167,70 @@ const SubjectPageCreateContent = () => {
             }
 
             const base64 = await convertFileToBase64(file);
+
+            // Update form data
             setFormData(prev => {
                 const newActivities = [...prev.interactiveActivity];
-                newActivities[index] = { ...newActivities[index], poster: base64 };
+                newActivities[index] = {
+                    ...newActivities[index],
+                    poster: base64
+                };
                 return { ...prev, interactiveActivity: newActivities };
             });
 
+            // Update file list for this specific activity
+            setActivityFileLists(prev => ({
+                ...prev,
+                [index]: [{
+                    uid: file.uid || `activity-${index}-${Date.now()}`,
+                    name: file.name,
+                    status: 'done',
+                    url: base64
+                }]
+            }));
+
             message.success('Activity poster uploaded successfully');
-            return false; // Prevent default upload behavior
+            return false;
         } catch (error) {
             console.log(error);
+            message.error(error.message);
             return false;
         }
     }, []);
 
+    const handleActivityPosterRemove = useCallback((index) => {
+        setFormData(prev => {
+            const newActivities = [...prev.interactiveActivity];
+            newActivities[index] = {
+                ...newActivities[index],
+                poster: null
+            };
+            return { ...prev, interactiveActivity: newActivities };
+        });
+
+        setActivityFileLists(prev => ({
+            ...prev,
+            [index]: []
+        }));
+
+        message.success('Activity poster removed');
+    }, []);
+
     const addActivity = useCallback(() => {
+        const newIndex = formData.interactiveActivity.length;
         setFormData(prev => ({
             ...prev,
             interactiveActivity: [...prev.interactiveActivity, { title: '', link: '', poster: null }]
         }));
+
+        // Initialize empty file list for new activity
+        setActivityFileLists(prev => ({
+            ...prev,
+            [newIndex]: []
+        }));
+
         message.success('New activity added');
-    }, []);
+    }, [formData.interactiveActivity.length]);
 
     const removeActivity = useCallback((index) => {
         if (formData.interactiveActivity.length <= 1) {
@@ -196,12 +242,31 @@ const SubjectPageCreateContent = () => {
             const newActivities = prev.interactiveActivity.filter((_, i) => i !== index);
             return { ...prev, interactiveActivity: newActivities };
         });
+
+        // Remove file list for removed activity and reindex remaining ones
+        setActivityFileLists(prev => {
+            const newLists = {};
+            Object.keys(prev).forEach(key => {
+                const keyIndex = parseInt(key);
+                if (keyIndex < index) {
+                    newLists[keyIndex] = prev[key];
+                } else if (keyIndex > index) {
+                    newLists[keyIndex - 1] = prev[key];
+                }
+                // Skip the removed index
+            });
+            return newLists;
+        });
+
         message.success('Activity removed');
     }, [formData.interactiveActivity.length]);
 
     // Form submission
     const handleSubmit = useCallback(async (values) => {
-        if (!classId || !subjectId || !id) { return; }
+        if (!classId || !subjectId || !id) {
+            message.error('Required IDs are missing');
+            return;
+        }
 
         setLoading(prev => ({ ...prev, submit: true }));
 
@@ -233,6 +298,8 @@ const SubjectPageCreateContent = () => {
                 )
             };
 
+            console.log('Submitting payload:', payload);
+
             const response = await subjectPageContentCreate(payload);
 
             if (response.data?.success) {
@@ -246,12 +313,13 @@ const SubjectPageCreateContent = () => {
                     interactiveActivity: [{ title: '', link: '', poster: null }]
                 });
                 setFileList([]);
+                setActivityFileLists({});
             } else {
                 throw new Error(response.data?.message || 'Failed to create content');
             }
         } catch (error) {
-            console.log(error);
-
+            console.error('Submit error:', error);
+            message.error(error.message || 'An error occurred while creating content');
         } finally {
             setLoading(prev => ({ ...prev, submit: false }));
         }
@@ -266,6 +334,7 @@ const SubjectPageCreateContent = () => {
             interactiveActivity: [{ title: '', link: '', poster: null }]
         });
         setFileList([]);
+        setActivityFileLists({});
         message.success('Form reset successfully');
     }, [form]);
 
@@ -273,9 +342,22 @@ const SubjectPageCreateContent = () => {
         <div className="">
             <ToastContainer />
             <div className="">
-                <Form form={form} layout="vertical" onFinish={handleSubmit} disabled={loading.submit} size="large">
+                <Form
+                    form={form}
+                    layout="vertical"
+                    onFinish={handleSubmit}
+                    disabled={loading.submit}
+                    size="large"
+                    preserve={false}
+                >
                     {/* Basic Information */}
-                    <Card title="📋 Basic Information" style={{ marginBottom: "20px" }} size="small">
+                    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                        <div className="bg-gradient-to-r from-sky-600 to-indigo-100 px-2 py-2 mb-6">
+                            <h2 className="text-xl font-semibold text-white flex items-center">
+                                <FileText className="mr-2" size={20} />
+                                Create Content
+                            </h2>
+                        </div>
                         <Row gutter={[24, 16]}>
                             <Col xs={24} lg={12}>
                                 <Form.Item
@@ -297,212 +379,250 @@ const SubjectPageCreateContent = () => {
                                     label="Duration"
                                     rules={[
                                         { required: true, message: 'Duration is required' },
-                                        { pattern: /^\d+\s*(minutes?|mins?|hours?|hrs?)$/i, message: 'Enter valid duration (e.g., "45 minutes")' }
                                     ]}
                                 >
                                     <Input
                                         placeholder="e.g., 45 minutes"
                                         className="rounded-lg"
+                                        type="number"
                                     />
                                 </Form.Item>
                             </Col>
                         </Row>
-                    </Card>
+                    </div>
 
                     {/* Content Image */}
-                    <Card title="🖼️ Title Image" size="small" style={{ marginBottom: "20px" }} >
-                        <div className="mb-3">
-                            <Text strong>Required * - Upload a representative image for this content</Text>
+                    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                        <div className="bg-gradient-to-r from-sky-600 to-indigo-100 px-2 py-2 mb-6">
+                            <h2 className="text-xl font-semibold text-white flex items-center">
+                                <FileText className="mr-2" size={20} />
+                                Title Image
+                            </h2>
                         </div>
+                        <Card size="small" style={{ marginBottom: "20px" }} >
+                            <div className="mb-3">
+                                <Text strong>Required * - Upload a representative image for this content</Text>
+                            </div>
 
-                        <Dragger
-                            name="avatar"
-                            listType="picture-card"
-                            fileList={fileList}
-                            customRequest={handleAvatarUpload}
-                            onPreview={handlePreview}
-                            onRemove={handleRemoveAvatar}
-                            maxCount={1}
-                            className="rounded-md"
-                        >
-                            {!formData.contentAvtar && (
-                                <div>
-                                    <p className="ant-upload-drag-icon">
-                                        <InboxOutlined style={{ fontSize: 48, color: '#1890ff' }} />
-                                    </p>
-                                    <p className="ant-upload-text text-lg font-medium">
-                                        Click or drag image to upload
-                                    </p>
-                                    <p className="ant-upload-hint text-gray-500">
-                                        Support JPEG, PNG, GIF, WebP (Max: 10MB)
-                                    </p>
+                            <Dragger
+                                name="avatar"
+                                listType="picture-card"
+                                fileList={fileList}
+                                customRequest={handleAvatarUpload}
+                                onPreview={handlePreview}
+                                onRemove={handleRemoveAvatar}
+                                maxCount={1}
+                                className="rounded-md"
+                            >
+                                {!formData.contentAvtar && (
+                                    <div>
+                                        <p className="ant-upload-drag-icon">
+                                            <InboxOutlined style={{ fontSize: 48, color: '#1890ff' }} />
+                                        </p>
+                                        <p className="ant-upload-text text-lg font-medium">
+                                            Click or drag image to upload
+                                        </p>
+                                        <p className="ant-upload-hint text-gray-500">
+                                            Support JPEG, PNG, GIF, WebP (Max: 10MB)
+                                        </p>
+                                    </div>
+                                )}
+                            </Dragger>
+
+                            {loading.avatarUpload && (
+                                <div className="text-center mt-4 p-4 bg-blue-50 rounded-lg">
+                                    <Spin size="small" />
+                                    <Text className="ml-2 text-blue-600">Uploading image...</Text>
                                 </div>
                             )}
-                        </Dragger>
-
-                        {loading.avatarUpload && (
-                            <div className="text-center mt-4 p-4 bg-blue-50 rounded-lg">
-                                <Spin size="small" />
-                                <Text className="ml-2 text-blue-600">Uploading image...</Text>
-                            </div>
-                        )}
-                    </Card>
+                        </Card>
+                    </div>
 
                     {/* Learning Objectives */}
-                    <Card title="🎯 Learning Objectives" style={{ marginBottom: "20px" }} extra={
-                        <Button
-                            type="default"
-                            size="small"
-                            icon={<PlusOutlined />}
-                            onClick={addObjective}
-                            className="rounded-lg"
-                        >
-                            Add Objective
-                        </Button>
-                    }
-                    >
-                        <Space direction="vertical" size="large" className="w-full">
-                            {formData.objectives.map((objective, index) => (
-                                <Card
-                                    key={index}
-                                    size="small"
-                                    className="border-dashed border-gray-300 bg-gray-50"
-                                    title={
-                                        <div className="flex justify-between items-center">
-                                            <Text strong className="text-blue-600">
-                                                Objective {index + 1}
-                                            </Text>
-                                            {formData.objectives.length > 1 && (
-                                                <Tooltip title="Remove objective">
-                                                    <Button
-                                                        type="text"
-                                                        danger
-                                                        size="small"
-                                                        icon={<DeleteOutlined />}
-                                                        onClick={() => removeObjective(index)}
-                                                        className="rounded-full"
-                                                    />
-                                                </Tooltip>
-                                            )}
-                                        </div>
-                                    }
-                                >
-                                    <Space direction="vertical" size="middle" className="w-full">
-                                        <div>
-                                            <Text strong className="text-red-500">* </Text>
-                                            <Text strong>Title</Text>
-                                            <Input
-                                                value={objective.objectiveTitle}
-                                                onChange={(e) => handleObjectiveChange(index, 'objectiveTitle', e.target.value)}
-                                                placeholder="Enter objective title"
-                                                className="mt-2 rounded-lg"
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <Text strong className="text-red-500">* </Text>
-                                            <Text strong>Content</Text>
-                                            <div className="mt-2 border border-gray-200 rounded-lg overflow-hidden">
-                                                <RichtoolEditor
-                                                    editorValue={objective.objectiveValue}
-                                                    onEditorChange={(newContent) =>
-                                                        handleObjectiveChange(index, 'objectiveValue', newContent)
-                                                    }
+                    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                        <div className="bg-gradient-to-r from-sky-600 to-indigo-100 px-2 py-2">
+                            <h2 className="text-xl font-semibold text-white flex justify-between">
+                                <div className='flex items-center'>
+                                    <FileText className="mr-2" size={20} />
+                                    Learning Objectives
+                                </div>
+                                <div>
+                                    <Button
+                                        type="default"
+                                        size="small"
+                                        icon={<PlusOutlined />}
+                                        onClick={addObjective}
+                                        className="rounded-lg"
+                                        style={{
+                                            backgroundColor: "#3b82f6",
+                                            color: "#fff",
+                                            borderColor: "#3b82f6",
+                                        }}
+                                    >
+                                        Add Objective
+                                    </Button>
+                                </div>
+                            </h2>
+                        </div>
+                        <Card title=" " className="p-0">
+                            <Space direction="vertical" size="large" className="w-full mt-0">
+                                {formData.objectives.map((objective, index) => (
+                                    <Card
+                                        key={index}
+                                        size="small"
+                                        className="border-dashed border-gray-300 bg-gray-50 !mt-0"
+                                        title={
+                                            <div className="flex justify-between items-center">
+                                                <Text strong className="text-blue-600">
+                                                    Objective {index + 1}
+                                                </Text>
+                                                {formData.objectives.length > 1 && (
+                                                    <Tooltip title="Remove objective">
+                                                        <Button
+                                                            type="text"
+                                                            danger
+                                                            size="small"
+                                                            icon={<DeleteOutlined />}
+                                                            onClick={() => removeObjective(index)}
+                                                            className="rounded-full"
+                                                        />
+                                                    </Tooltip>
+                                                )}
+                                            </div>
+                                        }
+                                    >
+                                        <Space direction="vertical" size="middle" className="w-full">
+                                            <div>
+                                                <Text strong className="text-red-500">* </Text>
+                                                <Text strong>Title</Text>
+                                                <Input
+                                                    value={objective.objectiveTitle}
+                                                    onChange={(e) => handleObjectiveChange(index, 'objectiveTitle', e.target.value)}
+                                                    placeholder="Enter objective title"
+                                                    className="mt-2 rounded-lg"
                                                 />
                                             </div>
-                                        </div>
-                                    </Space>
-                                </Card>
-                            ))}
-                        </Space>
-                    </Card>
+
+                                            <div>
+                                                <Text strong className="text-red-500">* </Text>
+                                                <Text strong>Content</Text>
+                                                <div className="mt-2 border border-gray-200 rounded-lg overflow-hidden">
+                                                    <RichtoolEditor
+                                                        editorValue={objective.objectiveValue}
+                                                        onEditorChange={(newContent) =>
+                                                            handleObjectiveChange(index, 'objectiveValue', newContent)
+                                                        }
+                                                    />
+                                                </div>
+                                            </div>
+                                        </Space>
+                                    </Card>
+                                ))}
+                            </Space>
+                        </Card>
+                    </div>
 
                     {/* Interactive Activities */}
-                    <Card
-                        title="🎮 Interactive Activities"
-                        extra={
-                            <Button
-                                type="default"
-                                size="small"
-                                icon={<PlusOutlined />}
-                                onClick={addActivity}
-                                className="rounded-lg"
-                            >
-                                Add Activity
-                            </Button>
-                        }
-                    >
-                        <div className="mb-4">
-                            <Text>Optional activities to enhance learning experience</Text>
+                    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                        <div className="bg-gradient-to-r from-sky-600 to-indigo-100 px-2 py-2">
+                            <h2 className="text-xl font-semibold text-white flex items-center justify-between">
+                                <div className='flex items-center'>
+                                    <FileText className="mr-2" size={20} />
+                                    Interactive Activities
+                                </div>
+
+                                <div>
+                                    <Button
+                                        type="default"
+                                        size="small"
+                                        icon={<PlusOutlined />}
+                                        onClick={addActivity}
+                                        className="rounded-lg"
+                                        style={{
+                                            backgroundColor: "#3b82f6",
+                                            color: "#fff",
+                                            borderColor: "#3b82f6",
+                                        }}
+                                    >
+                                        Add Activity
+                                    </Button>
+                                </div>
+                            </h2>
                         </div>
-                        <Space direction="vertical" size="large" className="w-full">
-                            {formData.interactiveActivity.map((activity, index) => (
-                                <Card
-                                    key={index}
-                                    size="small"
-                                    className="border-dashed border-gray-300 bg-gray-50"
-                                    title={
-                                        <div className="flex justify-between items-center">
-                                            <Text strong className="text-green-600">Activity {index + 1}</Text>
-                                            {formData.interactiveActivity.length > 1 && (
-                                                <Tooltip title="Remove activity">
-                                                    <Button
-                                                        type="text"
-                                                        danger
-                                                        size="small"
-                                                        icon={<DeleteOutlined />}
-                                                        onClick={() => removeActivity(index)}
-                                                        className="rounded-full"
-                                                    />
-                                                </Tooltip>
-                                            )}
-                                        </div>
-                                    }
-                                >
-                                    <Row gutter={[16, 16]}>
-                                        <Col xs={24} md={8}>
-                                            <Text strong>Activity Title</Text>
-                                            <Input
-                                                value={activity.title}
-                                                onChange={(e) => handleActivityChange(index, 'title', e.target.value)}
-                                                placeholder="Enter activity title"
-                                                className="mt-2 rounded-lg"
-                                            />
-                                        </Col>
-
-                                        <Col xs={24} md={8}>
-                                            <Text strong>Link</Text>
-                                            <Input
-                                                value={activity.link}
-                                                onChange={(e) => handleActivityChange(index, 'link', e.target.value)}
-                                                placeholder="https://example.com"
-                                                className="mt-2 rounded-lg"
-                                            />
-                                        </Col>
-
-                                        <Col xs={24} md={8}>
-                                            <Text strong>Poster Image</Text>
-                                            <Upload
-                                                listType="picture-card"
-                                                maxCount={1}
-                                                beforeUpload={(file) => handleActivityPosterUpload(index, file)}
-                                                showUploadList={{ showPreviewIcon: true, showRemoveIcon: true }}
-                                                onRemove={() => handleActivityChange(index, 'poster', null)}
-                                            >
-                                                {!activity.poster && (
-                                                    <div className="p-4">
-                                                        <PlusOutlined />
-                                                        <div style={{ marginTop: 8 }}>Upload</div>
-                                                    </div>
+                        <Card>
+                            <div className="mb-4">
+                                <Text>Optional activities to enhance learning experience</Text>
+                            </div>
+                            <Space direction="vertical" size="large" className="w-full">
+                                {formData.interactiveActivity.map((activity, index) => (
+                                    <Card
+                                        key={index}
+                                        size="small"
+                                        className="border-dashed border-gray-300 bg-gray-50"
+                                        title={
+                                            <div className="flex justify-between items-center">
+                                                <Text strong className="text-green-600">Activity {index + 1}</Text>
+                                                {formData.interactiveActivity.length > 1 && (
+                                                    <Tooltip title="Remove activity">
+                                                        <Button
+                                                            type="text"
+                                                            danger
+                                                            size="small"
+                                                            icon={<DeleteOutlined />}
+                                                            onClick={() => removeActivity(index)}
+                                                            className="rounded-full"
+                                                        />
+                                                    </Tooltip>
                                                 )}
-                                            </Upload>
-                                        </Col>
-                                    </Row>
-                                </Card>
-                            ))}
-                        </Space>
+                                            </div>
+                                        }
+                                    >
+                                        <Row gutter={[16, 16]}>
+                                            <Col xs={24} md={8}>
+                                                <Text strong>Activity Title</Text>
+                                                <Input
+                                                    value={activity.title}
+                                                    onChange={(e) => handleActivityChange(index, 'title', e.target.value)}
+                                                    placeholder="Enter activity title"
+                                                    className="mt-2 rounded-lg"
+                                                />
+                                            </Col>
 
-                    </Card>
+                                            <Col xs={24} md={8}>
+                                                <Text strong>Link</Text>
+                                                <Input
+                                                    value={activity.link}
+                                                    onChange={(e) => handleActivityChange(index, 'link', e.target.value)}
+                                                    placeholder="https://example.com"
+                                                    className="mt-2 rounded-lg"
+                                                />
+                                            </Col>
+
+                                            <Col xs={24} md={8}>
+                                                <Text strong>Poster Image</Text>
+                                                <Upload
+                                                    listType="picture-card"
+                                                    maxCount={1}
+                                                    fileList={activityFileLists[index] || []}
+                                                    beforeUpload={(file) => handleActivityPosterUpload(index, file)}
+                                                    showUploadList={{ showPreviewIcon: true, showRemoveIcon: true }}
+                                                    onRemove={() => handleActivityPosterRemove(index)}
+                                                    onPreview={handlePreview}
+                                                >
+                                                    {(!activity.poster || !activityFileLists[index]?.length) && (
+                                                        <div className="p-4">
+                                                            <PlusOutlined />
+                                                            <div style={{ marginTop: 8 }}>Upload</div>
+                                                        </div>
+                                                    )}
+                                                </Upload>
+                                            </Col>
+                                        </Row>
+                                    </Card>
+                                ))}
+                            </Space>
+                        </Card>
+                    </div>
 
                     {/* Form Actions */}
                     <div className="flex justify-end gap-4 mt-5">
@@ -524,7 +644,7 @@ const SubjectPageCreateContent = () => {
                             loading={loading.submit}
                             className="min-w-40 rounded-lg bg-blue-600 hover:bg-blue-700"
                         >
-                            {loading.submit ? 'Creating Content...' : 'Create Content'}
+                            {loading.submit ? 'Creating...' : 'Create Content'}
                         </Button>
                     </div>
                 </Form>
