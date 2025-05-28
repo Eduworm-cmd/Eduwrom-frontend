@@ -22,7 +22,7 @@ export const TeacherHomePage = () => {
 
         const formattedLessons = rawData.map((lesson) => ({
           id: lesson._id,
-          title: lesson.lessonTitle,
+          title: lesson.title,
           duration: lesson.duration,
           description: lesson.description || "",
           activities: lesson.interactiveActivity || [], 

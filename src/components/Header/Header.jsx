@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import teacher from "../../assets/images/teacher.webp";
-import { Book, CalendarDays, Menu } from "lucide-react";
+import { Book, CalendarDays, Menu, BookOpen, Calendar, Clock, ChevronLeft, ChevronRight, Info } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -17,11 +17,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import DaySlider from "../DaySlider/DaySlider";
 import { useNavigate } from "react-router-dom";
 import { SchoolStaffByStaffId } from "@/Network/schooladminauth";
 import { useDispatch, useSelector } from "react-redux";
-import { GetDaysByUnitId, GetUnitsByClassId } from "@/Network/Super_Admin/auth";
+import { GetUnitsByClassId } from "@/Network/Super_Admin/auth";
 import { setSelectedDayId } from "@/slice/selectedDaySlice";
 import { setSelectedClassId } from "@/slice/selectedClass";
 
@@ -30,27 +29,79 @@ export const Header = () => {
   const [loading, setLoading] = useState(true);
   const [staffData, setStaffData] = useState(null);
   const [classId, setClassId] = useState();
+  const [units, setUnits] = useState([]);
+  const [daysList, setDaysList] = useState([]);
+  const [selectedUnitId, setSelectedUnitId] = useState(null);
+  const [currentSelectedDay, setCurrentSelectedDay] = useState(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+  
+  const unitsScrollRef = useRef(null);
+  const daysScrollRef = useRef(null);
+  
   const user = useSelector((state) => state.auth?.user);
   const userId = user?.id;
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-
-  if(!userId) {
-    removeEventListener.staffData("Failed to fetch user ID");
-    return <div className="flex justify-center items-center">Loading...</div>;
-  }
-
-  loesson = loesson._id;
-  if(!lesson) {
-      console.log("Eror Not show Lesson");
-  }
-
   const handleCloseDailog = () => {
-    setOpenDialog(false)
-  }
+    setOpenDialog(false);
+  };
+
   const handleClassChange = (value) => {
     setClassId(value);
+  };
+
+  const handleDayClick = (dayId) => {
+    console.log("Selected Day ID:", dayId);
+    
+    setCurrentSelectedDay(dayId);
+    dispatch(setSelectedDayId(dayId));
+  };
+
+  // NEW: Handle unit click
+  const handleUnitClick = (unitId) => {
+    setSelectedUnitId(unitId);
+    
+    // Find the selected unit and load its days
+    const selectedUnit = units.find(unit => unit.unitId === unitId);
+    if (selectedUnit && selectedUnit.days) {
+      setDaysList(selectedUnit.days);
+      
+      // Auto-select first day of the unit and clear previous selection
+      if (selectedUnit.days.length > 0) {
+        setCurrentSelectedDay(selectedUnit.days[0]._id);
+        dispatch(setSelectedDayId(selectedUnit.days[0]._id));
+      } else {
+        setCurrentSelectedDay(null);
+        dispatch(setSelectedDayId(null));
+      }
+    } else {
+      // If no days in unit, clear the days list
+      setDaysList([]);
+      setCurrentSelectedDay(null);
+      dispatch(setSelectedDayId(null));
+    }
+  };
+
+  const smoothScroll = (element, direction) => {
+    if (!element) return;
+    const scrollAmount = 200;
+    const scrollLeft = direction === 'left' ? -scrollAmount : scrollAmount;
+    element.scrollBy({ left: scrollLeft, behavior: 'smooth' });
+  };
+
+  const checkScrollCapabilities = () => {
+    if (daysScrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = daysScrollRef.current;
+      setCanScrollLeft(scrollLeft > 0);
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth);
+    }
+  };
+
+  const handleViewSummary = () => {
+    // Handle view summary logic here
+    console.log("View summary clicked");
   };
 
   useEffect(() => {
@@ -59,18 +110,36 @@ export const Header = () => {
 
       try {
         const unitsResponse = await GetUnitsByClassId(classId);
-        // cosnt response = await employeeId
-        const units = unitsResponse?.data || [];
-        if (units.length === 0) return;
-
-        const firstUnitId = units[0]._id;
-
-        const daysResponse = await GetDaysByUnitId(firstUnitId);
-        const days = daysResponse?.data || [];
-
-        if (days.length > 0) {
-          const firstDayId = days[0]._id;
-          dispatch(setSelectedDayId(firstDayId));
+        console.log("Units Response:", unitsResponse);
+        
+        if (unitsResponse && unitsResponse.success && unitsResponse.data) {
+          setUnits(unitsResponse.data);
+          
+          // Find the active unit from the response
+          const activeUnit = unitsResponse.data.find(unit => unit.isActive);
+          
+          if (activeUnit) {
+            // Set active unit as selected
+            setSelectedUnitId(activeUnit.unitId);
+            
+            // Load days for active unit
+            if (activeUnit.days && activeUnit.days.length > 0) {
+              setDaysList(activeUnit.days);
+              // Auto-select first day
+              setCurrentSelectedDay(activeUnit.days[0]._id);
+              dispatch(setSelectedDayId(activeUnit.days[0]._id));
+            }
+          } else if (unitsResponse.data.length > 0) {
+            // Fallback: if no active unit, select first unit
+            const firstUnit = unitsResponse.data[0];
+            setSelectedUnitId(firstUnit.unitId);
+            
+            if (firstUnit.days && firstUnit.days.length > 0) {
+              setDaysList(firstUnit.days);
+              setCurrentSelectedDay(firstUnit.days[0]._id);
+              dispatch(setSelectedDayId(firstUnit.days[0]._id));
+            }
+          }
         }
       } catch (error) {
         console.error("Failed to load initial day data:", error);
@@ -78,7 +147,7 @@ export const Header = () => {
     };
 
     loadInitialDay();
-  }, [classId]);
+  }, [classId, dispatch]);
 
   useEffect(() => {
     if (!userId) return;
@@ -104,7 +173,12 @@ export const Header = () => {
       setClassId(firstClass._id);
       dispatch(setSelectedClassId(firstClass._id));
     }
-  }, [staffData?.class]);
+  }, [staffData?.class, dispatch]);
+
+  // Check scroll capabilities when days list changes
+  useEffect(() => {
+    checkScrollCapabilities();
+  }, [daysList]);
 
   if (loading) {
     return <div className="flex justify-center items-center">Loading...</div>;
@@ -170,7 +244,177 @@ export const Header = () => {
                   </DialogDescription>
                 </DialogHeader>
                 <div className="w-full overflow-hidden">
-                  <DaySlider classId={classId} onDaySelected={handleCloseDailog} />
+                  <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                    {/* Header with Icon */}
+                    <div className="bg-gradient-to-r from-sky-600 to-sky-600 px-6 py-2">
+                      <div className="flex items-center space-x-3">
+                        <div className="bg-white/20 p-2 rounded-lg">
+                          <BookOpen className="w-5 h-5 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="text-white font-semibold text-lg">Course Navigator</h3>
+                          <p className="text-blue-100 text-sm">Select your unit and day</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-6 bg-slate-100">
+                      {/* Units Section */}
+                      <div className="mb-6">
+                        <div className="flex items-center space-x-2 mb-4">
+                          <Calendar className="w-4 h-4 text-gray-500" />
+                          <span className="text-sm font-medium text-gray-700">Units</span>
+                        </div>
+
+                        <div
+                          ref={unitsScrollRef}
+                          className="flex space-x-3 overflow-x-auto scrollbar-hide pb-2 pl-3 pt-2 gap-4"
+                          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                        >
+                          {units.map((unit, index) => (
+                            <button
+                              key={unit.unitId}
+                              onClick={() => handleUnitClick(unit.unitId)} // FIXED: Added onClick handler
+                              className={`
+                                relative px-6 py-3 rounded-xl border-2 transition-all duration-300 
+                                transform hover:scale-105
+                                ${selectedUnitId === unit.unitId
+                                  ? "bg-gradient-to-r from-blue-600 to-sky-600 text-white border-white"
+                                  : "bg-white border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300"
+                                }
+                              `}
+                            >
+                              <div className="flex items-center space-x-2">
+                                <span className={`
+                                  w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold
+                                  ${selectedUnitId === unit.unitId ? "bg-white/20 text-white" : "bg-gray-100 text-gray-600"}
+                                `}>
+                                  {index + 1}
+                                </span>
+                                <span className="font-medium">{unit.name}</span>
+                              </div>
+                              {selectedUnitId === unit.unitId && (
+                                <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-white rounded-full"></div>
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Days Section */}
+                      <div className="mb-6">
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center space-x-2">
+                            <Clock className="w-4 h-4 text-gray-500" />
+                            <span className="text-sm font-medium text-gray-700">Days</span>
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {daysList.length} {daysList.length === 1 ? 'day' : 'days'} available
+                          </div>
+                        </div>
+
+                        <div className="relative">
+                          {/* Left Scroll Button */}
+                          <button
+                            onClick={() => smoothScroll(daysScrollRef.current, 'left')}
+                            className={`
+                              absolute left-0 top-1/2 transform -translate-y-1/2 z-10
+                              w-10 h-10 rounded-full bg-white shadow-lg border border-gray-200
+                              flex items-center justify-center transition-all duration-200
+                              ${canScrollLeft
+                                ? "text-gray-600 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-600"
+                                : "text-gray-300 cursor-not-allowed"
+                              }
+                            `}
+                            disabled={!canScrollLeft}
+                          >
+                            <ChevronLeft size={18} />
+                          </button>
+
+                          {/* Days Container */}
+                          <div
+                            ref={daysScrollRef}
+                            className="flex space-x-3 overflow-x-auto scrollbar-hide px-12 py-2 gap-2"
+                            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                            onScroll={checkScrollCapabilities}
+                          >
+                            {daysList.map((dayObj, index) => (
+                              <button
+                                key={dayObj._id}
+                                className={`
+                                  relative flex-shrink-0 px-5 py-2 rounded-lg border-2 transition-all duration-300
+                                  transform hover:scale-105 hover:shadow-md whitespace-nowrap min-w-[80px]
+                                  ${currentSelectedDay === dayObj._id
+                                    ? "bg-gradient-to-br from-blue-600 to-sky-600 text-white border-blue-600 shadow-lg shadow-blue-200"
+                                    : "bg-white border-gray-200 text-gray-700 hover:bg-blue-50 hover:border-blue-300"
+                                  }
+                                `}
+                                onClick={() => handleDayClick(dayObj._id)}
+                              >
+                                <div className="text-center">
+                                  <div className={`
+                                    text-xs font-medium mb-1
+                                    ${currentSelectedDay === dayObj._id ? "text-blue-100" : "text-gray-500"}
+                                  `}>
+                                    Day
+                                  </div>
+                                  <div className={`
+                                    text-lg font-bold
+                                    ${currentSelectedDay === dayObj._id ? "text-white" : "text-gray-800"}
+                                  `}>
+                                    {dayObj.globalDayNumber}
+                                  </div>
+                                </div>
+                                {currentSelectedDay === dayObj._id && (
+                                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full border-2 border-white"></div>
+                                )}
+                              </button>
+                            ))}
+                          </div>
+
+                          {/* Right Scroll Button */}
+                          <button
+                            onClick={() => smoothScroll(daysScrollRef.current, 'right')}
+                            className={`
+                              absolute right-0 top-1/2 transform -translate-y-1/2 z-10
+                              w-10 h-10 rounded-full bg-white shadow-lg border border-gray-200
+                              flex items-center justify-center transition-all duration-200
+                              ${canScrollRight
+                                ? "text-gray-600 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-600"
+                                : "text-gray-300 cursor-not-allowed"
+                              }
+                            `}
+                            disabled={!canScrollRight}
+                          >
+                            <ChevronRight size={18} />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* View Summary Button */}
+                      <div className="flex justify-center pt-4 border-t border-gray-100">
+                        <button
+                          className="flex items-center space-x-2 px-6 py-3 text-blue-600 hover:text-blue-700 
+                                   hover:bg-blue-50 rounded-lg transition-all duration-200 group"
+                          onClick={handleViewSummary}
+                        >
+                          <Info size={16} className="group-hover:scale-110 transition-transform duration-200" />
+                          <span className="font-medium">View Unit Summary</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Custom CSS for hiding scrollbars */}
+                    <style jsx>{`
+                      .scrollbar-hide {
+                        -ms-overflow-style: none;
+                        scrollbar-width: none;
+                      }
+                      .scrollbar-hide::-webkit-scrollbar {
+                        display: none;
+                      }
+                    `}</style>
+                  </div>
                 </div>
               </DialogContent>
             </Dialog>
@@ -189,7 +433,6 @@ export const Header = () => {
               ))}
             </SelectContent>
           </Select>
-
         </div>
       </div>
     </div>
