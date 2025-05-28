@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 const LessonCard = ({ lessons }) => {
-
   const navigate = useNavigate();
   const [expandedIndex, setExpandedIndex] = useState(null);
   const [shuffledPairs, setShuffledPairs] = useState([]);
@@ -53,6 +52,7 @@ const LessonCard = ({ lessons }) => {
               key={index}
               style={{ backgroundColor: base }}
             >
+              {console.log(lesson.avatar)}
               <div className="lession-card-inner border-gray-300">
                 <div className="bg-white p-3 rounded-md border shadow text-sm text-center flex flex-col gap-1 items-center">
                   <Clock />
@@ -62,7 +62,7 @@ const LessonCard = ({ lessons }) => {
               <div className="text-gray-800 ml-[85px]">
                 <div className="p-2">
                   <h4 className="flex items-center gap-2 font-bold text-black mb-2">
-                    <Book className="w-10 h-10" /> {lesson.title}
+                    <span><img src={lesson.avatar} alt="" className="w-12"/></span> {lesson.title}
                   </h4>
                   <p className="text-sm text-black mb-2 md:text-md">
                     {lesson.description}

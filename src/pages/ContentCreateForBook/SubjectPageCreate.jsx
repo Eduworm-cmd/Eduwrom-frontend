@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
     AllPagesBySubjectId,
     createSubjectPage,
+    deleteSubjectPage,
 } from '@/Network/Super_Admin/auth';
 import {
     Button,
@@ -134,6 +135,7 @@ const SubjectPageCreate = () => {
                 subjectName: item.SubjectId?.title || 'Unknown Subject',
                 pagetitle: item.title || `Page ${skip + index + 1}`,
                 pageImage: item.imageUrl,
+                pageContentId: item.SubjectPageContent,
                 _id: item._id,
                 createdAt: item.createdAt,
                 updatedAt: item.updatedAt,
@@ -222,25 +224,24 @@ const SubjectPageCreate = () => {
     };
 
     const handleDelete = async (pageId, pageTitle) => {
-        // try {
-        //     setIsDeleting(pageId);
+        try {
+            setIsDeleting(pageId);
 
-        //     if (typeof deleteSubjectPage === 'function') {
-        //         await deleteSubjectPage(pageId);
-        //         message.success(`Page "${pageTitle}" deleted successfully`);
+            const response = await deleteSubjectPage(pageId);
 
-        //         // Refresh the pages list
-        //         await fetchPagesData(pagination.current);
-        //     } else {
-        //         message.info(`Delete functionality for "${pageTitle}" will be implemented soon`);
-        //     }
-        // } catch (err) {
-        //     const errorMessage = err?.response?.data?.message || err.message || 'Failed to delete page';
-        //     message.error(errorMessage);
-        //     console.error('Error deleting page:', err);
-        // } finally {
-        //     setIsDeleting(null);
-        // }
+            if (response.success) {
+                message.success(`Page "${pageTitle}" deleted successfully`);
+                await fetchPagesData(pagination.current);
+            } else {
+                throw new Error(response.message || 'Failed to delete page');
+            }
+        } catch (err) {
+            const errorMessage = err?.response?.data?.message || err.message || 'Failed to delete page';
+            message.error(errorMessage);
+            console.error('Error deleting page:', err);
+        } finally {
+            setIsDeleting(null);
+        }
     };
 
     const handleImageUpload = async (file) => {
@@ -429,8 +430,9 @@ const SubjectPageCreate = () => {
                             {
                                 key: 'edit',
                                 label: (
-                                    <div className="flex items-center gap-2 text-blue-600">
+                                    <div className="flex items-center gap-2 text-blue-600" onClick={() => navigate(`/eduworm-content/subjectPage/edit/content/${record.pageContentId}`)}>
                                         <Edit2 size={14} /> Edit
+                                        {console.log(record)}
                                     </div>
                                 ),
                                 onClick: () => message.info('Edit functionality coming soon'),

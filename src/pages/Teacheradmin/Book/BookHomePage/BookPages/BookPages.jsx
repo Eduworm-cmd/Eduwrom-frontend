@@ -24,6 +24,8 @@ const SkillBuilderViewer = () => {
    
 
     const navigate = useNavigate();
+
+    
     
 
     useEffect(() => {
@@ -33,7 +35,7 @@ const SkillBuilderViewer = () => {
                     `http://localhost:4000/api/subjectPage/${id}`
                 );
                 const result = await response.json();
-                console.log(result);
+                console.log("result",result);
                
                 if (result.success && Array.isArray(result.data)) {
                     setPages(result.data);
@@ -57,6 +59,7 @@ const SkillBuilderViewer = () => {
         setIsModalVisible(true);
     };
 
+   
     const handleCancel = () => setIsModalVisible(false);
 
     return (
@@ -96,11 +99,15 @@ const SkillBuilderViewer = () => {
                             {/* Title below image */}
                             <div className="flex justify-between py-2 px-2 font-semibold">
                                 {page.title}
+                                {console.log("page",page)}
                                 <span onClick={() => navigate(`/eduworm-Teacher/book/pgContent/${page._id}`,{
                                     state: {
                                         ...page,          // page object
-                                        pages: pages.length  // ✅ sending total number of pages
+                                        pages: pages.length  
+                                        // ✅ sending total number of pages
+                                        
                                     }
+                                    
                                     
                                 })} className="text-gray-400 flex cursor-pointer justify-end"> <CircleArrowRight /></span>
                                 

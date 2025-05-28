@@ -73,7 +73,7 @@ const BookContentPage = () => {
     }
 
     return (
-        <div className="max-w-5xl mx-auto p-6">
+        <div className="max-w-5xl mx-auto p-2">
             {/* Book Header */}
             <div className="flex items-center gap-4 mb-6">
                 <img
@@ -121,7 +121,10 @@ const BookContentPage = () => {
 
             {/* Lesson Cards */}
             {lessons?.length > 0 ? (
-                <LessonCard lessons={lessons} />
+                <div className="mt-5">
+
+                    <LessonCard lessons={lessons} />
+                </div>
             ) : (
                 <div className="text-center text-gray-500">No lessons available.</div>
             )}
