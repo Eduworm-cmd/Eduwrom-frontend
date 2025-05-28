@@ -151,3 +151,9 @@ body {
 .scrollbar-hide::-webkit-scrollbar{
   display: none !important;
 }
+
+/* global.css ya index.css */
+.ant-card-head {
+  min-height: 0px !important;
+  padding: 0px !important;
+}
