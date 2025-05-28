@@ -475,6 +475,25 @@ const subjectPageContentCreate = async (body) => {
     })
 } 
 
+const subjectPageContentGet = async (id) => {
+    return await apiRequest(`subject_PageContent/byId/${id}`, {
+        method: "GET",
+    })
+}
+
+const deleteSubjectPage = async (id) => {
+    return await apiRequest(`subjectPage/${id}`, {
+        method: "DELETE",
+    })
+}
+
+const subjectPageContentUpdate = async (id, body) => {
+    return await apiRequest(`subject_PageContent/update/${id}`, {
+        method: "PUT",
+        body
+    })
+}
+
 
 
 
@@ -492,6 +511,8 @@ const AddContent = async (body) => {
 
 
 export {
+    deleteSubjectPage,
+    subjectPageContentUpdate,
     subjectPageContentCreate,
     dropdownSubjectPages,
     createSubjectPage,
@@ -520,6 +541,7 @@ export {
     ClassesDropdown,
     GetSchoolById,
     GetAllStudentByBranch,
+    subjectPageContentGet,
     GetAllStudent,
     CreateSchool,
     CreateBranch,

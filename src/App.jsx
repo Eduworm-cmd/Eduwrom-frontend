@@ -50,12 +50,12 @@ import { All_Add_StaffList } from "./pages/super-admin-pannel/Staff/AllStaff/All
 import { StaffByBranch } from "./pages/super-admin-pannel/Staff/StaffByBranch/StaffByBranch";
 import CreateUnit from "./pages/ContentAdmin/CreateUnit";
 import SubjectCreate from "./pages/ContentCreateForBook/SubjectCreate";
-import CreateSubjectPagesContent from "./pages/ContentCreateForBook/CreateSubjectPagesContent";
 import SubjectPageCreate from "./pages/ContentCreateForBook/SubjectPageCreate";
 import BookPages from "./pages/Teacheradmin/Book/BookHomePage/BookPages/BookPages";
 import BookPgContentOverView from "./pages/Teacheradmin/Book/BookHomePage/BookPageContentOverView/BookPgContentOverView";
 import SubjectPageCreateContent from "./pages/ContentCreateForBook/SubjectPageCreateContent";
 import BookContentPreview from "./pages/Teacheradmin/Book/BookPreview/BookContentPreview";
+import SubjectPageContentEdit from "./pages/ContentCreateForBook/SubjectPageContentEdit";
 
 function App() {
   return (
@@ -135,9 +135,9 @@ function App() {
           <Route path="content/add" element={<Add_Content />} />
           <Route path="Unit/add" element={<CreateUnit />} />
           <Route path="Subject/add" element={<SubjectCreate/>} />
-          <Route path="SubjectPage/Content" element={<CreateSubjectPagesContent/>} />
           <Route path="subjectPage/add/:id" element={<SubjectPageCreate/>} />
           <Route path="subjectPage/add/content/:id" element={<SubjectPageCreateContent  />} />
+          <Route path="subjectPage/edit/content/:id" element={<SubjectPageContentEdit />} />
         </Route>
 
 

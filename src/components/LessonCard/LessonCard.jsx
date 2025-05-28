@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 
 const LessonCard = ({ lessons }) => {
 
+  console.log("lesson",lessons);
+
   const navigate = useNavigate();
   const [expandedIndex, setExpandedIndex] = useState(null);
   const [shuffledPairs, setShuffledPairs] = useState([]);
@@ -62,7 +64,7 @@ const LessonCard = ({ lessons }) => {
               <div className="text-gray-800 ml-[85px]">
                 <div className="p-2">
                   <h4 className="flex items-center gap-2 font-bold text-black mb-2">
-                    <Book className="w-10 h-10" /> {lesson.title}
+                    <span><img src={lessons[0]?.avatar} alt="" className="w-12"/></span> {lesson.title}
                   </h4>
                   <p className="text-sm text-black mb-2 md:text-md">
                     {lesson.description}
