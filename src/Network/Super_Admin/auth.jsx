@@ -297,9 +297,25 @@ const GetAllStudentByBranch = async (id, page = 1, limit = 10) => {
     });
 };
 
-
 const GetUnitsByClassId = async (classId) => {
     return await apiRequest(`unit/UnitByClass/${classId}`, {
+        method: "GET",
+    });
+};
+
+const GetUnitsDropdownByClassId = async (classId) => {
+    return await apiRequest(`unit/dropdown/${classId}`, {
+        method: "GET",
+    });
+};
+
+const GetSubjectsByClassId = async (classId) => {
+    return await apiRequest(`subject/dropdown/${classId}`, {
+        method: "GET",
+    });
+};
+const GetSubjectsPagesBySubjectId = async (classId) => {
+    return await apiRequest(`subjectPage/dropdown/${classId}`, {
         method: "GET",
     });
 };
@@ -571,10 +587,13 @@ export {
     DeleteStudent,
     PostUnit,
     GetUnitsByClassId,
+    GetUnitsDropdownByClassId,
     GetDaysByUnitId,
     CreateLesson,
     GetLessonsDaysId,
     GetLessonsByLessonId,
     CreateSubject,
     AllPagesBySubjectId,
+    GetSubjectsByClassId,
+    GetSubjectsPagesBySubjectId,
 };
