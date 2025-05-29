@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Eye, Edit2, Trash2, EllipsisVertical, PlusCircle, EyeIcon, List } from "lucide-react";
-import { Table, Button, Dropdown } from "antd";
+import {
+  EyeIcon,
+  Edit2,
+  Trash2,
+  EllipsisVertical,
+  PlusCircle,
+  Search,
+} from "lucide-react";
+import { Table, Button, Dropdown, Input } from "antd";
 import { DeleteStaff, GetAllStaff } from "@/Network/Super_Admin/auth";
 import { toast, ToastContainer } from "react-toastify";
 
@@ -9,6 +16,8 @@ export const StaffList = () => {
   const navigate = useNavigate();
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [staffData, setStaffData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [searchText, setSearchText] = useState("");
   const [loading, setLoading] = useState(true);
 
   const fetchStaffData = async () => {
@@ -16,15 +25,14 @@ export const StaffList = () => {
       const response = await GetAllStaff();
 
       if (Array.isArray(response)) {
-        const data = response;
-
-        const formattedData = data.map((item, index) => ({
+        const data = response.map((item, index) => ({
           ...item,
           key: item._id,
           sno: index + 1,
         }));
 
-        setStaffData(formattedData);
+        setStaffData(data);
+        setFilteredData(data);
       }
     } catch (error) {
       console.error("Error fetching staff data:", error);
@@ -37,10 +45,31 @@ export const StaffList = () => {
     fetchStaffData();
   }, []);
 
+  useEffect(() => {
+    if (!searchText) {
+      setFilteredData(staffData);
+    } else {
+      const lowerSearch = searchText.toLowerCase();
+      const filtered = staffData.filter((item) =>
+        item.firstName?.toLowerCase().includes(lowerSearch) ||
+        item.lastName?.toLowerCase().includes(lowerSearch) ||
+        `${item.firstName} ${item.lastName}`.toLowerCase().includes(lowerSearch) ||
+        item.emailId?.toLowerCase().includes(lowerSearch) ||
+        item.phoneNumber?.toLowerCase().includes(lowerSearch) ||
+        item.employeeRole?.toLowerCase().includes(lowerSearch) ||
+        item.department?.toLowerCase().includes(lowerSearch) ||
+        item.branch?.toLowerCase().includes(lowerSearch)
+      );
+      setFilteredData(filtered);
+    }
+  }, [searchText, staffData]);
 
+  const handleSearch = (e) => {
+    setSearchText(e.target.value);
+  };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this academic year?")) return;
+    if (!window.confirm("Are you sure you want to delete this staff member?")) return;
     try {
       const response = await DeleteStaff(id);
       toast.success(response.message || "Deleted!", {
@@ -50,7 +79,8 @@ export const StaffList = () => {
     } catch (error) {
       console.log(error);
     }
-  }
+  };
+
   const onSelectChange = (selectedKeys) => {
     setSelectedRowKeys(selectedKeys);
   };
@@ -70,7 +100,7 @@ export const StaffList = () => {
       title: "Name",
       dataIndex: "firstName",
       key: "name",
-      render: (_, record) => `${record.firstName} ${record.lastName}`, // Display full name
+      render: (_, record) => `${record.firstName} ${record.lastName}`,
     },
     {
       title: "Email/Phone",
@@ -96,7 +126,7 @@ export const StaffList = () => {
       title: "Created Date",
       dataIndex: "createdAt",
       key: "createdAt",
-      render: (createdAt) => new Date(createdAt).toLocaleDateString(), // Format the created date
+      render: (createdAt) => new Date(createdAt).toLocaleDateString(),
     },
     {
       title: "Actions",
@@ -111,7 +141,9 @@ export const StaffList = () => {
                 label: (
                   <div
                     className="flex items-center gap-2 text-black"
-                    onClick={() => navigate(`/eduworm-admin/staff/edit/${record._id}`)}
+                    onClick={() =>
+                      navigate(`/eduworm-admin/staff/edit/${record._id}`)
+                    }
                   >
                     <Edit2 size={14} /> Edit
                   </div>
@@ -122,7 +154,9 @@ export const StaffList = () => {
                 label: (
                   <div
                     className="flex items-center gap-2 text-black"
-                    onClick={() => navigate(`/eduworm-admin/staff/view/${record._id}`)}
+                    onClick={() =>
+                      navigate(`/eduworm-admin/staff/view/${record._id}`)
+                    }
                   >
                     <EyeIcon size={14} /> View
                   </div>
@@ -150,11 +184,18 @@ export const StaffList = () => {
     },
   ];
 
-
   return (
     <div className="overflow-x-auto">
       <ToastContainer />
       <div className="flex justify-end gap-2 mb-4">
+        <Input
+          prefix={<Search />}
+          placeholder="Search by Name, Role, Email, Phone, etc."
+          value={searchText}
+          onChange={handleSearch}
+          allowClear
+          style={{ width: 300 }}
+        />
         <button
           onClick={() => navigate("/eduworm-admin/allstaff/add")}
           className="flex items-center gap-2 bg-sky-500 text-white font-semibold text-sm py-2 px-4 rounded"
@@ -173,7 +214,7 @@ export const StaffList = () => {
         rowSelection={rowSelection}
         columns={columns}
         loading={loading}
-        dataSource={staffData}
+        dataSource={filteredData}
         pagination={{
           position: ["bottomRight"],
           pageSizeOptions: ["10", "20", "50"],

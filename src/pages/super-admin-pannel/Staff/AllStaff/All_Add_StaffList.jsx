@@ -405,7 +405,7 @@ export const All_Add_StaffList = () => {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item label="Class" name="classId" rules={[{ required: true }]}>
-                <Select placeholder="Select class" disabled={isEditMode}>
+                <Select placeholder="Select class" >
                   {Array.isArray(classes) && classes.length > 0 ? (
                     classes.map(cls => (
                       <Option key={cls._id} value={cls._id}>
