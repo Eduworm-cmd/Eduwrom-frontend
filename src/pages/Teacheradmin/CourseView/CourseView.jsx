@@ -11,8 +11,7 @@ export const CourseView = () => {
     const { id } = useParams();
     const [loading, setLoading] = useState(true);
     const [lessonData, setLessonData] = useState(null);
-    const [activeIndex, setActiveIndex] = useState(0); // ✅ Set first one open by default
-
+    const [activeIndex, setActiveIndex] = useState(0); 
     useEffect(() => {
         const fetchLesson = async () => {
             try {
@@ -28,19 +27,9 @@ export const CourseView = () => {
         fetchLesson();
     }, [id]);
 
-    const parseHtmlContent = (htmlString) => {
-        if (!htmlString) return [];
-        const listItems = htmlString.match(/<li[^>]*>(.*?)<\/li>/g) || [];
-        return listItems.map(item =>
-            item.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim()
-        ).filter(item => item.length > 0);
-    };
-
     if (loading) return <div className="text-center p-10 text-lg">Loading lesson...</div>;
 
     const content = lessonData?.data;
-
-    console.log(content?.SubjectId?.title);
 
     return (
         <div className="px-2 py-4 bg-gray-100 min-h-screen">
@@ -51,10 +40,10 @@ export const CourseView = () => {
                 </div>
                 <div className="pl-0 sm:pl-40 w-full">
                     <h3 className="text-2xl font-bold">{content?.title}</h3>
-                    <div className="flex items-center">
-                        <p className="text-blue-100 mt-1">{content?.shcedule?.[0]?.unit},</p>
-                        <p className="text-blue-100 mt-1">Week{content?.shcedule?.[0]?.week},</p>
-                        <p className="text-blue-100 mt-1">Day{content?.shcedule?.[0]?.day}</p>
+                    <div className="flex items-center gap-2 flex-wrap text-blue-100 mt-1">
+                        <p>{content?.shcedule?.[0]?.unit},</p>
+                        <p>Week {content?.shcedule?.[0]?.week},</p>
+                        <p>Day {content?.shcedule?.[0]?.day}</p>
                     </div>
                     <div className="mt-4 flex flex-wrap gap-2">
                         <span className="flex items-center bg-white text-blue-600 font-medium px-3 py-1 rounded-full shadow-sm">
@@ -70,32 +59,25 @@ export const CourseView = () => {
                 <section>
                     <h3 className="text-lg font-semibold text-gray-700 mb-4">Learning Objectives</h3>
                     <div className="space-y-4">
-                        {content?.objectives?.map((item, index) => {
-                            const parsedList = parseHtmlContent(item.objectiveValue);
-                            return (
-                                <div key={item._id} className="border rounded-lg overflow-hidden">
-                                    <button
-                                        onClick={() => setActiveIndex(prevIndex => (prevIndex === index ? null : index))}
-                                        className="flex items-center w-full px-3 cursor-pointer py-2 bg-gray-100 hover:bg-gray-300 transition text-left"
-                                    >
-                                        <div className={`w-8 h-8 ${activeIndex === index ? 'bg-sky-600' : 'bg-gray-300'} text-white flex items-center justify-center rounded-full`}>
-                                            <Target className="w-5 h-5" />
-                                        </div>
-                                        <span className="ml-4 text-gray-800 font-medium">{item.objectiveTitle}</span>
-                                    </button>
-                                    {activeIndex === index && (
-                                        <div className="p-4 bg-white">
-                                            <ul className="list-disc ml-6 space-y-2 text-gray-700">
-                                                {parsedList.map((point, idx) => (
-                                                    <li key={idx}>{point}</li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    )}
-                                </div>
-                            );
-                        })}
-
+                        {content?.objectives?.map((item, index) => (
+                            <div key={item._id} className="border rounded-lg overflow-hidden">
+                                <button
+                                    onClick={() => setActiveIndex(prevIndex => (prevIndex === index ? null : index))}
+                                    className="flex items-center w-full px-3 cursor-pointer py-2 bg-gray-100 hover:bg-gray-300 transition text-left"
+                                >
+                                    <div className={`w-8 h-8 ${activeIndex === index ? 'bg-sky-600' : 'bg-gray-300'} text-white flex items-center justify-center rounded-full`}>
+                                        <Target className="w-5 h-5" />
+                                    </div>
+                                    <span className="ml-4 text-gray-800 font-medium">{item.objectiveTitle}</span>
+                                </button>
+                                {activeIndex === index && (
+                                    <div
+                                        className="p-4 bg-white text-gray-700 prose max-w-none"
+                                        dangerouslySetInnerHTML={{ __html: item.objectiveValue }}
+                                    />
+                                )}
+                            </div>
+                        ))}
                     </div>
                 </section>
 

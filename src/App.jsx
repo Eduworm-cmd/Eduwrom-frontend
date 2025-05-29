@@ -1,7 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { TeacherHomePage } from "./pages/Teacheradmin/TeacherHomePage/TeacherHomePage";
 import { Layout } from "./layout/Layout";
-import DaysView from "./pages/Teacheradmin/DaysView/DaysView";
 import { MainLayout } from "./layout/MainLayout";
 import { CourseView } from "./pages/Teacheradmin/CourseView/CourseView";
 import UnitSummary from "./components/UnitSummary/UnitSummary";
@@ -56,6 +55,7 @@ import BookPgContentOverView from "./pages/Teacheradmin/Book/BookHomePage/BookPa
 import SubjectPageCreateContent from "./pages/ContentCreateForBook/SubjectPageCreateContent";
 import BookContentPreview from "./pages/Teacheradmin/Book/BookPreview/BookContentPreview";
 import SubjectPageContentEdit from "./pages/ContentCreateForBook/SubjectPageContentEdit";
+import { DaysView } from "./pages/Teacheradmin/DaysView/DaysView";
 
 function App() {
   return (
@@ -74,7 +74,7 @@ function App() {
         </Route>
 
         <Route element={<MainLayout />}>
-          <Route path="/days" element={<DaysView />} />
+          <Route path="/days/:id" element={<DaysView />} />
           <Route path="/view/:id" element={<CourseView />} />
           <Route path="/unit" element={<UnitSummary />} />
           <Route path="/book/preview/:id" element={<BookContentPreview />} />

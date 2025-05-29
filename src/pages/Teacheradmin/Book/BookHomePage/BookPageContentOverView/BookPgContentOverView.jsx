@@ -41,6 +41,7 @@ const BookContentPage = () => {
                 const data = response?.data?.data || [];
 
                 const formattedLessons = data.map(lesson => ({
+                    url:'/view/',
                     id: lesson._id,
                     title: lesson.title || "Untitled Lesson",
                     duration: lesson.duration || "0",

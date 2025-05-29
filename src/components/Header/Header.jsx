@@ -52,11 +52,10 @@ export const Header = () => {
     setClassId(value);
   };
 
-  const handleDayClick = (dayId) => {
-    console.log("Selected Day ID:", dayId);
-    
+  const handleDayClick = (dayId) => {    
     setCurrentSelectedDay(dayId);
     dispatch(setSelectedDayId(dayId));
+    handleCloseDailog();
   };
 
   // NEW: Handle unit click
@@ -100,7 +99,6 @@ export const Header = () => {
   };
 
   const handleViewSummary = () => {
-    // Handle view summary logic here
     console.log("View summary clicked");
   };
 
@@ -394,7 +392,7 @@ export const Header = () => {
                       {/* View Summary Button */}
                       <div className="flex justify-center pt-4 border-t border-gray-100">
                         <button
-                          className="flex items-center space-x-2 px-6 py-3 text-blue-600 hover:text-blue-700 
+                          className="flex items-center space-x-2 px-6 py-3 underline text-blue-600 hover:text-blue-700 
                                    hover:bg-blue-50 rounded-lg transition-all duration-200 group"
                           onClick={handleViewSummary}
                         >

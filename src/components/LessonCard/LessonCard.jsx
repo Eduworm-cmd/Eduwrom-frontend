@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 const LessonCard = ({ lessons }) => {
+  console.log("Lessons in LessonCard:", lessons); 
+  
   const navigate = useNavigate();
   const [expandedIndex, setExpandedIndex] = useState(null);
   const [shuffledPairs, setShuffledPairs] = useState([]);
@@ -88,7 +90,7 @@ const LessonCard = ({ lessons }) => {
                       </div>
                       <span
                         className="text-slate-500 cursor-pointer"
-                        onClick={() => navigate(`/view/${lesson.id}`)}
+                        onClick={() => navigate(`${lesson.url}${lesson.id}`)}
                       >
                         View &gt;
                       </span>

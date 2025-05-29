@@ -293,8 +293,6 @@ const contentcreatorData = {
       icon: Users,
       items: [
         { title: "Create Subject", url: "/eduworm-content/Subject/add" },
-        { title: "Create Pages", url: "/eduworm-content/SubjectPage/add" },
-        { title: "Subject Pages Content", url: "/eduworm-content/SubjectPage/Content" },
       ]
     },
     {
