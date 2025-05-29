@@ -3,7 +3,6 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { Image } from 'antd';
 import { BookOpen, AlertCircle, RefreshCw, Eye } from 'lucide-react';
-import 'antd/dist/reset.css';
 import { CircleArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 const PLACEHOLDER_IMAGE = "https://via.placeholder.com/300x400?text=No+Image";

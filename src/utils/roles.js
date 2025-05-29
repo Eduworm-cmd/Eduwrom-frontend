@@ -207,7 +207,7 @@ const teacherData = {
         { title: "Playlist/ Assignment", url: "/eduworm-school/playlist" },
         { title: "Content", url: "/eduworm-school/content" },
         { title: "Scheduled List", url:"/eduworm-school/scheduleList" },
-        { title: "Assignment History", url: "" },
+        { title: "Assignment History", url: "/admin/teachers/add" },
       ]
     },
 
@@ -293,8 +293,6 @@ const contentcreatorData = {
       icon: Users,
       items: [
         { title: "Create Subject", url: "/eduworm-content/Subject/add" },
-        { title: "Create Pages", url: "/eduworm-content/SubjectPage/add" },
-        { title: "Subject Pages Content", url: "/eduworm-content/SubjectPage/Content" },
       ]
     },
     {
