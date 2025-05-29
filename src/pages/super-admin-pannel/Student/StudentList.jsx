@@ -67,9 +67,7 @@ useEffect(() => {
 }, [id]);
 
   const handleDelete = async (id) => {
-    console.log("Staff iD", id);
-
-    if (!window.confirm("Are you sure you want to delete this academic year?")) return;
+  
 
     try {
       const response = await DeleteStudent(id);
