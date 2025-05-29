@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Swal from 'sweetalert2';
 import { useNavigate } from "react-router-dom";
 import {
   PlusCircle, Edit2, Trash2, Eye, EllipsisVertical, Search,
@@ -8,6 +9,7 @@ import DownloadButton from "@/components/Buttons/DownloadButton/DownloadButton";
 import { ExportButton } from "@/components/Buttons/ExportButton/ExportButton";
 import { GetAllBranch } from "@/Network/Super_Admin/auth";
 import './Branchlist.css'
+import axios from "axios";
 export const BranchList = () => {
   const navigate = useNavigate();
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -61,15 +63,46 @@ export const BranchList = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this branch?")) {
-      try {
-        await axios.delete(`http://localhost:4000/api/auth_SchoolBranch/DeleteBranch/${id}`);
-        fetchBranches(pagination.current, pagination.pageSize, searchQuery);
-      } catch (err) {
-        console.error("Error deleting branch:", err);
+    const swalWithBootstrapButtons = Swal.mixin({
+      customClass: {
+        confirmButton: "bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded ",
+        cancelButton: "bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded mr-2"
+      },
+      buttonsStyling: false
+    });
+
+    swalWithBootstrapButtons.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, cancel!",
+      reverseButtons: true
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await axios.delete(`http://localhost:4000/api/auth_SchoolBranch/DeleteBranch/${id}`);
+          swalWithBootstrapButtons.fire({
+            title: "Deleted!",
+            text: "Your branch has been deleted.",
+            icon: "success"
+          });
+          fetchBranches(pagination.current, pagination.pageSize, searchQuery);
+        } catch (err) {
+          console.error("Error deleting branch:", err);
+          Swal.fire("Error", "Something went wrong!", "error");
+        }
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        swalWithBootstrapButtons.fire({
+          title: "Cancelled",
+          text: "Your branch is safe :)",
+          icon: "error"
+        });
       }
-    }
+    });
   };
+  
 
   useEffect(() => {
     fetchBranches();
