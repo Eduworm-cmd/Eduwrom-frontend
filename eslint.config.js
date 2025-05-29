@@ -20,6 +20,7 @@ export default [
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
     },
+    plugins: [require('@tailwindcss/typography')],
     rules: {
       ...js.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,

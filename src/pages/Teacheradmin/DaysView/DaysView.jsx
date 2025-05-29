@@ -28,14 +28,6 @@ export const DaysView = () => {
         fetchLesson();
     }, [id]);
 
-    const parseHtmlContent = (htmlString) => {
-        if (!htmlString) return [];
-        const listItems = htmlString.match(/<li[^>]*>(.*?)<\/li>/g) || [];
-        return listItems.map(item =>
-            item.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim()
-        ).filter(item => item.length > 0);
-    };
-
     if (loading) return <div className="text-center p-10 text-lg">Loading lesson...</div>;
 
     const content = lessonData?.data;
@@ -63,36 +55,30 @@ export const DaysView = () => {
 
             {/* Lesson Content */}
             <div className="bg-white p-4 rounded-sm shadow max-w-8xl mx-auto space-y-10">
+                
                 {/* Objectives */}
                 <section>
                     <h3 className="text-lg font-semibold text-gray-700 mb-4">Learning Objectives</h3>
                     <div className="space-y-4">
-                        {content?.objectives?.map((item, index) => {
-                            const parsedList = parseHtmlContent(item.objectiveValue);
-                            return (
-                                <div key={item._id} className="border rounded-lg overflow-hidden">
-                                    <button
-                                        onClick={() => setActiveIndex(prevIndex => (prevIndex === index ? null : index))}
-                                        className="flex items-center w-full px-3 cursor-pointer py-2 bg-gray-100 hover:bg-gray-300 transition text-left"
-                                    >
-                                        <div className={`w-8 h-8 ${activeIndex === index ? 'bg-sky-600' : 'bg-gray-300'} text-white flex items-center justify-center rounded-full`}>
-                                            <Target className="w-5 h-5" />
-                                        </div>
-                                        <span className="ml-4 text-gray-800 font-medium">{item.objectiveTitle}</span>
-                                    </button>
-                                    {activeIndex === index && (
-                                        <div className="p-4 bg-white">
-                                            <ul className="list-disc ml-6 space-y-2 text-gray-700">
-                                                {parsedList.map((point, idx) => (
-                                                    <li key={idx}>{point}</li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    )}
-                                </div>
-                            );
-                        })}
-
+                        {content?.objectives?.map((item, index) => (
+                            <div key={item._id} className="border rounded-lg overflow-hidden">
+                                <button
+                                    onClick={() => setActiveIndex(prevIndex => (prevIndex === index ? null : index))}
+                                    className="flex items-center w-full px-3 cursor-pointer py-2 bg-gray-100 hover:bg-gray-300 transition text-left"
+                                >
+                                    <div className={`w-8 h-8 ${activeIndex === index ? 'bg-sky-600' : 'bg-gray-300'} text-white flex items-center justify-center rounded-full`}>
+                                        <Target className="w-5 h-5" />
+                                    </div>
+                                    <span className="ml-4 text-gray-800 font-medium">{item.objectiveTitle}</span>
+                                </button>
+                                {activeIndex === index && (
+                                    <div
+                                        className="p-4 bg-white text-gray-700 prose max-w-none"
+                                        dangerouslySetInnerHTML={{ __html: item.objectiveValue }}
+                                    />
+                                )}
+                            </div>
+                        ))}
                     </div>
                 </section>
 

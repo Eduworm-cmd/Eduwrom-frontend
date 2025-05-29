@@ -207,7 +207,7 @@ const teacherData = {
         { title: "Playlist/ Assignment", url: "/eduworm-school/playlist" },
         { title: "Content", url: "/eduworm-school/content" },
         { title: "Scheduled List", url:"/eduworm-school/scheduleList" },
-        { title: "Assignment History", url: "/admin/teachers/add" },
+        { title: "Assignment History", url: "" },
       ]
     },
 
