@@ -176,12 +176,17 @@ export const Add_Content = () => {
     };
 
     const handleAddObjective = (lessonIndex) => {
+        console.log("Clicked add for lesson", lessonIndex);
+
         setLessons(prev => {
             const updated = [...prev];
+            console.log("Updating lesson", lessonIndex, "before:", updated[lessonIndex].objectives.length);
             updated[lessonIndex].objectives.push({ objectiveTitle: '', objectiveValue: '' });
+            console.log("After:", updated[lessonIndex].objectives.length);
             return updated;
         });
     };
+
 
     const handleRemoveObjective = (lessonIndex, objectiveIndex) => {
         setLessons(prev => {
@@ -622,14 +627,6 @@ export const Add_Content = () => {
                                                         <Target className="mr-2" size={20} />
                                                         Learning Objectives
                                                     </label>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handleAddObjective(lessonIndex)}
-                                                        className="flex items-center px-2 py-1 bg-sky-500 hover:bg-sky-600 cursor-pointer text-white rounded-sm transition-colors duration-200"
-                                                    >
-                                                        <Plus size={16} className="mr-1" />
-                                                        Add Objective
-                                                    </button>
                                                 </div>
 
                                                 {lesson.objectives.map((obj, objectiveIndex) => (
@@ -680,6 +677,17 @@ export const Add_Content = () => {
                                                         </div>
                                                     </div>
                                                 ))}
+
+                                                <div className="flex items-center justify-end">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleAddObjective(lessonIndex)}
+                                                        className="flex items-center px-2 py-1 bg-sky-500 hover:bg-sky-600 cursor-pointer text-white rounded-sm transition-colors duration-200"
+                                                    >
+                                                        <Plus size={16} className="mr-1" />
+                                                        Add Objective
+                                                    </button>
+                                                </div>
                                             </div>
 
                                             {/* Interactive Activities */}
@@ -689,14 +697,6 @@ export const Add_Content = () => {
                                                         <Activity className="mr-2" size={20} />
                                                         Interactive Activities
                                                     </label>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => addActivity(lessonIndex)}
-                                                        className="flex items-center px-2 py-1 bg-sky-500 hover:bg-sky-600 text-white rounded-sm transition-colors duration-200"
-                                                    >
-                                                        <Plus size={16} className="mr-1" />
-                                                        Add Activity
-                                                    </button>
                                                 </div>
 
                                                 {lesson.interactiveActivities.map((activity, activityIndex) => (
@@ -787,6 +787,17 @@ export const Add_Content = () => {
 
                                                     </div>
                                                 ))}
+
+                                                <div className="flex items-center justify-end">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => addActivity(lessonIndex)}
+                                                        className="flex items-center px-2 py-1 bg-sky-500 hover:bg-sky-600 text-white rounded-sm transition-colors duration-200"
+                                                    >
+                                                        <Plus size={16} className="mr-1" />
+                                                        Add Activity
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     )}

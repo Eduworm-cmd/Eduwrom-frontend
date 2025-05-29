@@ -7,9 +7,7 @@ import store from './Store/store'
 import { ToastContainer } from 'react-toastify'
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
     <Provider store={store}>
       <App />
     </Provider>
-  </StrictMode>,
 )
