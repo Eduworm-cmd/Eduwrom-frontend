@@ -4,6 +4,7 @@ import { useLocation, useParams } from "react-router-dom";
 import { Typography, Divider, Card, Spin, Button, message } from "antd";
 import { DownloadOutlined, ExpandOutlined } from "@ant-design/icons";
 import LessonCard from "@/components/LessonCard/LessonCard";
+import { getSubjectPageContentByPageId } from "@/Network/Super_Admin/auth";
 
 const { Title, Text } = Typography;
 
@@ -37,8 +38,9 @@ const BookContentPage = () => {
         const fetchLessons = async () => {
             setLoading(true);
             try {
-                const response = await axios.get(`http://localhost:4000/api/subject_PageContent/${id}`);
-                const data = response?.data?.data || [];
+                const response = await getSubjectPageContentByPageId(id);
+                const data = response?.data || [];
+                console.log(data);
 
                 const formattedLessons = data.map(lesson => ({
                     url:'/view/',

@@ -479,6 +479,18 @@ const dropdownSubjectPages = async (subjectId) => {
 }
 
 
+const getSubjectPageContentByPageId = async (pageId) => {
+    return await apiRequest(`subject_PageContent/${pageId}`, {
+        method: "GET",
+    })
+}
+
+ const getcontentById = async (id) => {
+    return await apiRequest(`subject_PageContent/getcontent/${id}`, {
+        method: "GET",
+    })
+ }
+
 const subjectPageContentCreate = async (body) => {
     return await apiRequest("subject_PageContent/create", {
         method: "POST",
@@ -543,6 +555,8 @@ const UpdateBranch = async (id, body) => {
 
 
 export {
+    getcontentById,
+    getSubjectPageContentByPageId,
     DeleteBranch,
     UpdateBranch,
     SubjectDelete,

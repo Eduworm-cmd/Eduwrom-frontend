@@ -7,6 +7,7 @@ import {
 } from "@ant-design/icons";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { CircleArrowRight } from 'lucide-react';
+import { dropdownSubjectPages } from "@/Network/Super_Admin/auth";
 
 
 
@@ -31,12 +32,7 @@ const SkillBuilderViewer = () => {
     useEffect(() => {
         const fetchPages = async () => {
             try {
-                const response = await fetch(
-                    `http://localhost:4000/api/subjectPage/${id}`
-                );
-                const result = await response.json();
-                console.log("result",result);
-               
+                const result = await dropdownSubjectPages(id);
                 if (result.success && Array.isArray(result.data)) {
                     setPages(result.data);
                 } else {

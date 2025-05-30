@@ -5,6 +5,7 @@ import { Image } from 'antd';
 import { BookOpen, AlertCircle, RefreshCw, Eye } from 'lucide-react';
 import { CircleArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { getSubjectByClassId } from '@/Network/Super_Admin/auth';
 const PLACEHOLDER_IMAGE = "https://via.placeholder.com/300x400?text=No+Image";
 
 const BookSkeleton = () => (
@@ -144,11 +145,9 @@ export const BookHomePage = () => {
     setError(null);
 
     try {
-      const response = await axios.get(`http://localhost:4000/api/subject/${classId}`);
-
-
-      if (response.data.success && Array.isArray(response.data.data)) {
-        setSubjects(response.data.data);
+      const response = await getSubjectByClassId(classId);
+      if (response.success && Array.isArray(response.data)) {
+        setSubjects(response.data);
       } else {
         setSubjects([]);
       }
@@ -159,6 +158,7 @@ export const BookHomePage = () => {
       setLoading(false);
     }
   }, [classId]);
+
 
   useEffect(() => {
     fetchSubjects();

@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 import intoGirl from "../../../assets/Images/Day-view-girl.png";
 import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
+import { getcontentById } from '@/Network/Super_Admin/auth';
 
 export const CourseView = () => {
     const { id } = useParams();
@@ -15,9 +16,9 @@ export const CourseView = () => {
     useEffect(() => {
         const fetchLesson = async () => {
             try {
-                const response = await axios.get(`http://localhost:4000/api/subject_PageContent/getcontent/${id}`);
-                setLessonData(response.data);
-                console.log("Lesson Data:", response.data);
+                const response = await getcontentById(id);
+                setLessonData(response);
+                console.log("Lesson Data:", response);
             } catch (error) {
                 console.error("Error fetching lesson data:", error);
             } finally {
