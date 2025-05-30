@@ -19,7 +19,7 @@ export const CourseView = () => {
                 const response = await getcontentById(id);
                 setLessonData(response);
                 console.log("Lesson Data:", response);
-            } catch (error) {
+                } catch (error) {
                 console.error("Error fetching lesson data:", error);
             } finally {
                 setLoading(false);
