@@ -144,9 +144,11 @@ export const BookHomePage = () => {
     setError(null);
 
     try {
-      const response = await getSubjectByClassId(classId);
-      if (response.success && Array.isArray(response.data)) {
-        setSubjects(response.data);
+      const response = await axios.get(`http://localhost:4000/api/subject/${classId}`);
+
+
+      if (response.data.success && Array.isArray(response.data.data)) {
+        setSubjects(response.data.data);
       } else {
         setSubjects([]);
       }
@@ -157,7 +159,6 @@ export const BookHomePage = () => {
       setLoading(false);
     }
   }, [classId]);
-  
 
   useEffect(() => {
     fetchSubjects();
