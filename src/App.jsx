@@ -59,6 +59,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+    
         <Route path="/SPlogin" element={<Login_SignUp />} />
         <Route path="/login" element={<School_Teacher_Login />} />
         <Route path="*" element={<PageNotFound />} />
