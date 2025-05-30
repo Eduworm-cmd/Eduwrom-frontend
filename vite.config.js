@@ -1,6 +1,6 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import path from 'path';
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import path from 'path'
 
 export default defineConfig({
   plugins: [react()],
@@ -10,8 +10,8 @@ export default defineConfig({
     },
   },
   server: {
-    host: true,
-    cors: true, // enable CORS
-    allowedHosts: 'all' // allow all hosts
+    host: '0.0.0.0', // or true
+    cors: true,
+    allowedHosts: ['eduwrom-frontend.onrender.com','all']
   }
-});
+})
