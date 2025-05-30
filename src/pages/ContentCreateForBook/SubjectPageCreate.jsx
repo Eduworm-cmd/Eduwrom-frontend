@@ -28,6 +28,7 @@ import {
 import { UploadOutlined, LoadingOutlined, } from '@ant-design/icons';
 import { EllipsisVertical, EyeIcon, Trash2, Edit2, Search, ArrowLeft, RefreshCw, PlusCircle } from 'lucide-react';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const { Title, Text } = Typography;
 const { Search: AntSearch } = Input;
@@ -227,22 +228,56 @@ const SubjectPageCreate = () => {
         try {
             setIsDeleting(pageId);
 
-            const response = await deleteSubjectPage(pageId);
+            const result = await Swal.fire({
+                title: 'Are you sure?',
+                text: `You want to delete page "${pageTitle}"?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel',
+                allowOutsideClick: false,
+                customClass: {
+                    container: 'swal2-container',
+                    popup: 'swal2-popup',
+                    header: 'swal2-header',
+                    title: 'swal2-title',
+                    closeButton: 'swal2-close',
+                    icon: 'swal2-icon',
+                    actions: 'swal2-actions',
+                    confirmButton: 'swal2-confirm',
+                    cancelButton: 'swal2-cancel',
+                }
+            });
 
-            if (response.success) {
-                message.success(`Page "${pageTitle}" deleted successfully`);
-                await fetchPagesData(pagination.current);
-            } else {
-                throw new Error(response.message || 'Failed to delete page');
+            if (result.isConfirmed) {
+                const response = await deleteSubjectPage(pageId);
+
+                if (response.success) {
+                    await Swal.fire(
+                        'Deleted!',
+                        `Page "${pageTitle}" has been deleted.`,
+                        'success'
+                    );
+                    await fetchPagesData(pagination.current);
+                } else {
+                    throw new Error(response.message || 'Failed to delete page');
+                }
             }
         } catch (err) {
             const errorMessage = err?.response?.data?.message || err.message || 'Failed to delete page';
-            message.error(errorMessage);
+            await Swal.fire(
+                'Error!',
+                errorMessage,
+                'error'
+            );
             console.error('Error deleting page:', err);
         } finally {
             setIsDeleting(null);
         }
     };
+      
 
     const handleImageUpload = async (file) => {
         if (!validateImageFile(file)) {
@@ -449,23 +484,17 @@ const SubjectPageCreate = () => {
                             {
                                 key: 'delete',
                                 label: (
-                                    <Popconfirm
-                                        title="Delete Page"
-                                        description={`Are you sure you want to delete "${record.pagetitle}"?`}
-                                        onConfirm={() => handleDelete(record._id, record.pagetitle)}
-                                        okText="Yes"
-                                        cancelText="No"
-                                        okButtonProps={{ danger: true }}
+                                    <div
+                                        className="flex items-center gap-2 text-red-500"
+                                        onClick={() => handleDelete(record._id, record.pagetitle)}
                                     >
-                                        <div className="flex items-center gap-2 text-red-500">
-                                            {isDeleting === record._id ? (
-                                                <LoadingOutlined size={14} />
-                                            ) : (
-                                                <Trash2 size={14} />
-                                            )}
-                                            Delete
-                                        </div>
-                                    </Popconfirm>
+                                        {isDeleting === record._id ? (
+                                            <LoadingOutlined size={14} />
+                                        ) : (
+                                            <Trash2 size={14} />
+                                        )}
+                                        Delete
+                                    </div>
                                 ),
                             },
                         ],
