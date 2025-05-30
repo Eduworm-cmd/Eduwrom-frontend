@@ -25,7 +25,6 @@ export const SchoolView = () => {
     }
   };
 
-  
   useEffect(() => {
     if (id) SchoolApi(id);
   }, [id]);
