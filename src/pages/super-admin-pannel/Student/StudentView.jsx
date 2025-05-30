@@ -14,11 +14,10 @@ export const StudentView = () => {
     const handleDeleteStudent = async () => {
         const confirmed = window.confirm("Are you sure you want to deactivate this student?");
         if (!confirmed) return;
-
         try {
             await DeleteStudent(id);
             alert("Student has been deactivated successfully.");
-            navigate("/eduworm-admin/students"); // Redirect after delete
+            navigate("/eduworm-admin/students"); 
         } catch (error) {
             console.error("Failed to delete student:", error);
             alert("Something went wrong while deactivating the student.");
