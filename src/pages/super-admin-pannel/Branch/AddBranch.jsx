@@ -19,6 +19,7 @@ import {
   CreateBranch,
   GetBranchById,
   SchoolsDropdwon,
+  UpdateBranch,
 } from "@/Network/Super_Admin/auth";
 import axios from "axios";
 
@@ -195,11 +196,7 @@ export const AddBranch = () => {
       let response;
       if (isEditMode) {
         // ✅ Update API
-        response = await axios
-        .put(
-          `http://localhost:4000/api/auth_SchoolBranch/UpdateBranch/${id}`,
-          submissionData
-        );
+        response = await UpdateBranch(id, submissionData);
       } else {
         // ✅ Create API
         response = await CreateBranch(submissionData);

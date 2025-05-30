@@ -22,7 +22,6 @@ import ScheduleList from "./pages/Teacheradmin/InteractiveContent/ScheduleList";
 import { SP_ScheduleList } from "./pages/super-admin-pannel/ScheduleList/SP_ScheduleList";
 import { School_Teacher_Login } from "./auth/School_Teacher_Login";
 import PageNotFound from "./components/PageNotFound/PageNotFound";
-import ToogleTabs from "./pages/super-admin-pannel/ToogleTabs";
 import { PlayListAssignment } from "./pages/Teacheradmin/InteractiveContent/PlayListAssignment";
 import { StudentList } from "./pages/super-admin-pannel/Student/StudentList";
 import { AddStudent } from "./pages/super-admin-pannel/Student/AddStudent";
@@ -36,7 +35,6 @@ import { BranchView } from "./pages/super-admin-pannel/Branch/BranchView";
 import { SchoolList } from "./pages/super-admin-pannel/School/SchoolList";
 import { AddSchool } from "./pages/super-admin-pannel/School/AddSchool";
 import { SchoolView } from "./pages/super-admin-pannel/School/SchoolView";
-import { GradeList } from "./pages/super-admin-pannel/GradeList/GradeList";
 import { ClassList } from "./pages/super-admin-pannel/ClassList/ClassList";
 import { SA_StaffList } from "./pages/ShoolAdmin/SA_Staff/SA_StaffList";
 import { SA_AddStaff } from "./pages/ShoolAdmin/SA_Staff/SA_AddStaff";
@@ -107,7 +105,6 @@ function App() {
           <Route path="allstaff/edit/:id" element={<All_Add_StaffList/>} />
 
           <Route path="academic Year" element={<AcademicList />} />
-          <Route path="grade" element={<GradeList />} />
           <Route path="class" element={<ClassList />} />
           <Route path="students/list/:id" element={<StudentList />} />
           <Route path="students/add" element={<AddStudent />} />
@@ -124,7 +121,6 @@ function App() {
           <Route path="playlist" element={<PlayListAssignment />} />
           <Route path="content" element={<Content />} />
           <Route path="scheduleList" element={<ScheduleList />} />
-          <Route path="toogletabs" element={<ToogleTabs />} />
 
 
           {/* Teacher Admin Panel Routes */}

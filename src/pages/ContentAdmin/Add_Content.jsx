@@ -2,7 +2,7 @@ import { Trash2, Plus, Upload, BookOpen, FileText, Target, Activity } from 'luci
 import React, { useState, useEffect, useCallback } from 'react';
 import RichtoolEditor from '@/components/RichtoolEditor/RichtoolEditor';
 import axios from 'axios';
-import { ClassesDropdown, GetUnitsDropdownByClassId, GetSubjectsByClassId, GetSubjectsPagesBySubjectId, GetUnitsByClassId, GetDaysByUnitId } from '@/Network/Super_Admin/auth';
+import { ClassesDropdown, GetUnitsDropdownByClassId, GetSubjectsByClassId, GetSubjectsPagesBySubjectId, GetUnitsByClassId, GetDaysByUnitId, CreateLesson } from '@/Network/Super_Admin/auth';
 import { toast, ToastContainer } from 'react-toastify';
 
 export const Add_Content = () => {
@@ -323,7 +323,7 @@ export const Add_Content = () => {
             // Submit all lessons
             const responses = await Promise.all(
                 lessonsToSubmit.map(lesson =>
-                    axios.post('http://localhost:4000/api/Lesson/createLesson', lesson)
+                   CreateLesson(lesson)
                 )
             );
 

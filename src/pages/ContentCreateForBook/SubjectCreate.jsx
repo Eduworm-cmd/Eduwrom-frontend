@@ -17,7 +17,7 @@ import {
     Alert
 } from 'antd';
 import { UploadOutlined, LoadingOutlined } from '@ant-design/icons';
-import { ClassesDropdown, CreateSubject, getSubjectByClassId } from '@/Network/Super_Admin/auth';
+import { ClassesDropdown, CreateSubject, getSubjectByClassId, SubjectDelete } from '@/Network/Super_Admin/auth';
 import { Edit2, EllipsisVertical, Eye, EyeIcon, PlusCircle, Trash2, RefreshCw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
@@ -233,9 +233,7 @@ const SubjectCreate = () => {
 
             if (result.isConfirmed) {
                 // Call your delete API endpoint
-                const response = await fetch(`http://localhost:4000/api/subject/${id}`, {
-                    method: 'DELETE'
-                });
+                const response = await SubjectDelete(id);
                 const data = await response.json();
 
                 if (response.ok && data.success) {

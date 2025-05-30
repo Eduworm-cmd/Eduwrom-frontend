@@ -7,7 +7,7 @@ import {
 import { Table, Button, Dropdown } from "antd";
 import DownloadButton from "@/components/Buttons/DownloadButton/DownloadButton";
 import { ExportButton } from "@/components/Buttons/ExportButton/ExportButton";
-import { GetAllBranch } from "@/Network/Super_Admin/auth";
+import { DeleteBranch, GetAllBranch } from "@/Network/Super_Admin/auth";
 import './Branchlist.css'
 import axios from "axios";
 export const BranchList = () => {
@@ -82,7 +82,7 @@ export const BranchList = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete(`http://localhost:4000/api/auth_SchoolBranch/DeleteBranch/${id}`);
+          await DeleteBranch(id);
           swalWithBootstrapButtons.fire({
             title: "Deleted!",
             text: "Your branch has been deleted.",

@@ -24,12 +24,7 @@ const ConvertImageToBase64 = (file) => {
     });
 };
 
-const FetchMenuItems = async (body) => {
-    return await apiRequest("menu/items/all", {
-        method: "GET",
-        body,
-    })
-}
+
 
 const UpdateMenuItems = async (id, body) => {
     return await apiRequest(`menu/item/${id}`, {
@@ -491,6 +486,12 @@ const subjectPageContentCreate = async (body) => {
     })
 } 
 
+const SubjectDelete = async (id) => {
+    return await apiRequest(`subject/${id}`, {
+        method: "DELETE",
+    })
+}
+
 
 const subjectPageContentGet = async (id) => {
     return await apiRequest(`subject_PageContent/byId/${id}`, {
@@ -511,6 +512,12 @@ const subjectPageContentUpdate = async (id, body) => {
     })
 }
 
+const DeleteBranch = async (id) => {
+    return await apiRequest(`auth_SchoolBranch/DeleteBranch/${id}`, {
+        method: "DELETE",
+    })
+}
+
 
 
 
@@ -525,9 +532,20 @@ const AddContent = async (body) => {
     });
 };
 
+const UpdateBranch = async (id, body) => {
+    return await apiRequest(`auth_SchoolBranch/UpdateBranch/${id}`, {
+        method: "PUT",
+        body,
+    });
+}
+
+
 
 
 export {
+    DeleteBranch,
+    UpdateBranch,
+    SubjectDelete,
     deleteSubjectPage,
     subjectPageContentUpdate,
     subjectPageContentCreate,
@@ -541,7 +559,6 @@ export {
     SetLocalStorage,
     ConvertImageToBase64,
     GetUser,
-    FetchMenuItems,
     UpdateMenuItems,
     ToogleMenuItem,
     SuperAdminRegister,

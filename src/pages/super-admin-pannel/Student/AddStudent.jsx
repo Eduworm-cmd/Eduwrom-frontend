@@ -15,7 +15,7 @@ import dayjs from "dayjs";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate, useParams } from "react-router-dom";
-import { CreateStudent, UpdateStudent } from "@/Network/Super_Admin/auth";
+import { ClassByBranchId, CreateStudent, GetSchoolBranches, SchoolsDropdwon, studentGetById, UpdateStudent } from "@/Network/Super_Admin/auth";
 
 const { Option } = Select;
 
@@ -39,9 +39,8 @@ export const AddStudent = () => {
 
   const fetchSchools = async () => {
     try {
-      const res = await fetch("http://localhost:4000/api/school/dropdown");
-      const data = await res.json();
-      setSchools(data?.data || []);
+      const res = await SchoolsDropdwon();
+      setSchools(res.data || []);
     } catch (error) {
       message.error("Failed to fetch schools");
     }
@@ -50,10 +49,9 @@ export const AddStudent = () => {
   const fetchStudentDetails = async () => {
     if (!id) return;
     try {
-      const res = await fetch(`http://localhost:4000/api/superStudent/ById/${id}`);
-      const data = await res.json();
-
-      if (data?.student) {
+      const res = await studentGetById(id);
+     
+      if (res?.student) {
 
         const student = data.student;
         // Populate form with existing student data
@@ -114,9 +112,8 @@ export const AddStudent = () => {
 
   const fetchBranches = async (schoolId) => {
     try {
-      const res = await fetch(`http://localhost:4000/api/auth_SchoolBranch/${schoolId}`);
-      const data = await res.json();
-      setBranches(data?.data || []);
+      const res = await GetSchoolBranches(schoolId);
+      setBranches(res?.data || []);
       setClassList([]);
       form.setFieldsValue({ branchId: undefined, classId: undefined });
     } catch (error) {
@@ -127,9 +124,8 @@ export const AddStudent = () => {
   const fetchClassDropdown = async (branchId) => {
     if (!branchId) return;
     try {
-      const res = await fetch(`http://localhost:4000/api/class/${branchId}`);
-      const data = await res.json();
-      setClassList(data?.data || []);
+      const res = await ClassByBranchId(branchId);
+      setClassList(res?.data || []);
       form.setFieldsValue({ classId: undefined });
     } catch (error) {
       message.error("Failed to fetch classes");
