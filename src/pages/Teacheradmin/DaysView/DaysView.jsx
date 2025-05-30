@@ -11,7 +11,7 @@ export const DaysView = () => {
     const { id } = useParams();
     const [loading, setLoading] = useState(true);
     const [lessonData, setLessonData] = useState(null);
-    const [activeIndex, setActiveIndex] = useState(0); 
+    const [activeIndex, setActiveIndex] = useState(0);
 
     useEffect(() => {
         const fetchLesson = async () => {
@@ -47,7 +47,7 @@ export const DaysView = () => {
                             <ArrowRight className="w-4 h-4 mr-1" /> Subject
                         </span>
                         <span className="bg-white text-indigo-600 font-medium px-4 py-1 rounded-full shadow-sm">
-                            {content.SubjectId.title}
+                            {content?.SubjectId?.title}
                         </span>
                     </div>
                 </div>
@@ -55,7 +55,7 @@ export const DaysView = () => {
 
             {/* Lesson Content */}
             <div className="bg-white p-4 rounded-sm shadow max-w-8xl mx-auto space-y-10">
-                
+
                 {/* Objectives */}
                 <section>
                     <h3 className="text-lg font-semibold text-gray-700 mb-4">Learning Objectives</h3>
