@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Edit, Trash } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { GetSchoolById } from '@/Network/Super_Admin/auth';
-import user from "../../../assets/Images/teacher.webp";
+// import user from "../../../assets/Images/teacher.webp";
 
 export const SchoolView = () => {
   const [school, setSchool] = useState(null);
@@ -38,7 +38,7 @@ export const SchoolView = () => {
       <div className="max-w-8xl mx-auto mt-10 bg-white rounded-md shadow-md overflow-hidden flex flex-col md:flex-row">
         <div className="md:w-1/3 p-4 bg-sky-100 flex flex-col justify-center items-center">
           <img
-            src={school.schoolLogo || user}
+            src={school.schoolLogo || "https://img.favpng.com/14/3/22/stock-photography-computer-icons-user-png-favpng-TWgLj8kmcdnekcpWySfpV97h3.jpg"}
             alt="School Logo"
             className="w-32 h-32 rounded-full object-cover border-2 bg-slate-200 border-white shadow"
           />

@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { BookOpen, DollarSign, Edit, GraduationCap, Trash, User, User2, Users } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import user from "../../../assets/Images/teacher.webp";
+// import user from "../../../assets/Images/teacher.webp";
 import Barcharts from '@/components/Charts/Barcharts';
 import { PieChart } from '@/components/Charts/PieChart';
 import { GetBranchById, } from '@/Network/Super_Admin/auth';
-import { toast } from 'react-toastify';
 
 export const BranchView = () => {
   const [school, setSchool] = useState(null);
@@ -67,7 +66,7 @@ export const BranchView = () => {
       {/* Main Profile Section */}
       <div className="max-w-8xl mx-auto mt-10 bg-white rounded-md shadow-md overflow-hidden flex flex-col md:flex-row">
         <div className="md:w-1/3 p-4 bg-sky-100 flex flex-col justify-center items-center">
-          <img src={user} alt="School Logo" className="w-32 h-32 rounded-full object-cover border-2 bg-slate-200 border-white shadow" />
+          <img src="https://img.favpng.com/14/3/22/stock-photography-computer-icons-user-png-favpng-TWgLj8kmcdnekcpWySfpV97h3.jpg" alt="School Logo" className="w-32 h-32 rounded-full object-cover border-2 bg-slate-200 border-white shadow" />
           <h2 className="mt-4 text-lg font-bold text-gray-800">{school?.name || '—'}</h2>
           <div className="space-x-4 mt-2 flex w-full justify-center items-center my-6">
             <button className='bg-yellow-500 px-4 py-2 cursor-pointer flex text-white rounded-sm gap-2' onClick={() => navigate(`/eduworm-admin/schoolbranch/edit/${id}`)}>
