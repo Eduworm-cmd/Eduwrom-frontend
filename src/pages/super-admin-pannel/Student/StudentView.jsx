@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Edit, Trash } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
-import userImage from "../../../assets/Images/teacher.webp";
+// import userImage from "../../../assets/Images/teacher.webp";
 import { DeleteStudent, studentGetById } from '@/Network/Super_Admin/auth';
 
 export const StudentView = () => {
@@ -50,7 +50,7 @@ export const StudentView = () => {
                 <div className="bg-white rounded-md shadow-md overflow-hidden flex flex-col md:flex-row">
                     <div className="md:w-1/3 p-6 bg-blue-100 flex flex-col items-center justify-center">
                         <img
-                            src={userImage}
+                            src={"https://img.favpng.com/14/3/22/stock-photography-computer-icons-user-png-favpng-TWgLj8kmcdnekcpWySfpV97h3.jpg"}
                             alt="Student"
                             className="w-32 h-32 rounded-full object-cover border-2 border-white shadow"
                         />

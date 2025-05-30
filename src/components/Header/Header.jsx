@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import teacher from "../../assets/images/teacher.webp";
+// import teacher from "../../assets/images/teacher.webp";
 import { Book, CalendarDays, Menu, BookOpen, Calendar, Clock, ChevronLeft, ChevronRight, Info } from "lucide-react";
 import {
   Dialog,
@@ -194,7 +194,7 @@ export const Header = () => {
         {/* Left Side */}
         <div className="flex items-center gap-4">
           <div className="bg-pink-100 w-20 h-20 max-md:w-16 max-md:h-16 rounded-full overflow-hidden">
-            <img src={teacher} alt="teacher" className="w-full h-full" />
+            <img src="https://img.favpng.com/14/3/22/stock-photography-computer-icons-user-png-favpng-TWgLj8kmcdnekcpWySfpV97h3.jpg" alt="teacher" className="w-full h-full" />
           </div>
           <div>
             <p className="text-gray-500 text-md font-semibold mb-0 max-md:text-sm">Welcome,</p>
