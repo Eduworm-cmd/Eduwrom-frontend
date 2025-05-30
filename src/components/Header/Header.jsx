@@ -107,28 +107,21 @@ export const Header = () => {
       if (!classId) return;
 
       try {
-        const unitsResponse = await GetUnitsByClassId(classId);
-        console.log("Units Response:", unitsResponse);
-        
+        const unitsResponse = await GetUnitsByClassId(classId);        
         if (unitsResponse && unitsResponse.success && unitsResponse.data) {
           setUnits(unitsResponse.data);
           
-          // Find the active unit from the response
           const activeUnit = unitsResponse.data.find(unit => unit.isActive);
           
           if (activeUnit) {
-            // Set active unit as selected
             setSelectedUnitId(activeUnit.unitId);
             
-            // Load days for active unit
             if (activeUnit.days && activeUnit.days.length > 0) {
               setDaysList(activeUnit.days);
-              // Auto-select first day
               setCurrentSelectedDay(activeUnit.days[0]._id);
               dispatch(setSelectedDayId(activeUnit.days[0]._id));
             }
           } else if (unitsResponse.data.length > 0) {
-            // Fallback: if no active unit, select first unit
             const firstUnit = unitsResponse.data[0];
             setSelectedUnitId(firstUnit.unitId);
             

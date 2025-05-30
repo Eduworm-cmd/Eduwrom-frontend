@@ -1,5 +1,5 @@
 import { Switch } from "@/components/ui/switch";
-import { Clock, Book, ChevronRight } from "lucide-react";
+import { Clock, Book, ChevronRight, Gamepad2 } from "lucide-react";
 import "./LessonCard.css";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -54,7 +54,6 @@ const LessonCard = ({ lessons }) => {
               key={index}
               style={{ backgroundColor: base }}
             >
-              {console.log(lesson.avatar)}
               <div className="lession-card-inner border-gray-300">
                 <div className="bg-white p-3 rounded-md border shadow text-sm text-center flex flex-col gap-1 items-center">
                   <Clock />
@@ -83,26 +82,26 @@ const LessonCard = ({ lessons }) => {
               <div className="bg-gray-100 w-full rounded-b-2xl shadow-md">
                 {expandedIndex === index && (
                   <div className="max-w-full mx-auto bg-white overflow-hidden px-2">
-                    <div className="flex items-center my-3 bg-slate-200 justify-between px-4 py-3 rounded-2xl">
+                    <div className="flex items-center my-3 bg-slate-200 justify-between px-4 py-4 rounded-sm">
                       <div className="flex items-center gap-3">
                         <span className="text-slate-500 text-xl">📖</span>
                         <span className="text-gray-700 font-medium">Lesson Guidelines</span>
                       </div>
                       <span
-                        className="text-slate-500 cursor-pointer"
+                        className="text-slate-500 cursor-pointer hover:underline"
                         onClick={() => navigate(`${lesson.url}${lesson.id}`)}
                       >
-                        View &gt;
+                        View More &gt;
                       </span>
                     </div>
                     {Array.isArray(lesson.activities) && lesson.activities.length > 0 ? (
                       lesson.activities.map((activity, activityIndex) => (
                         <div
                           key={activityIndex}
-                          className="p-4 mt-4 oklch(87.2% 0.01 258.338) my-2 rounded-2xl"
+                          className="p-0 mt-6 oklch(87.2% 0.01 258.338) my-2 rounded-2xl"
                         >
-                          <div className="flex items-center gap-3 mb-3">
-                            <span className="text-slate-500 text-xl">🎮</span>
+                          <div className="flex items-center gap-2 mb-3">
+                            <span className="text-slate-500"><Gamepad2 size={30}/></span>
                             <span className="text-gray-700 font-medium">Interactive Activities</span>
                           </div>
                           <div className="flex justify-between items-center px-4 py-3 bg-gray-100 rounded-lg">
@@ -110,14 +109,14 @@ const LessonCard = ({ lessons }) => {
                               <span className="text-slate-600 text-xl">🎬</span>
                               <span className="text-slate-600 underline">{activity.title}</span>
                             </div>
-                            <button className="bg-slate-700 cursor-pointer text-white px-4 py-2 rounded-lg shadow-md">
+                            <button className="bg-sky-600 cursor-pointer text-white px-4 py-1 rounded-full">
                               Assign
                             </button>
                           </div>
                         </div>
                       ))
                     ) : (
-                      <div className="text-gray-500 text-sm">No activities found.</div>
+                      null
                     )}
                   </div>
                 )}

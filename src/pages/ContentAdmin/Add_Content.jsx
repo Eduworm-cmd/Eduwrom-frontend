@@ -180,9 +180,7 @@ export const Add_Content = () => {
 
         setLessons(prev => {
             const updated = [...prev];
-            console.log("Updating lesson", lessonIndex, "before:", updated[lessonIndex].objectives.length);
             updated[lessonIndex].objectives.push({ objectiveTitle: '', objectiveValue: '' });
-            console.log("After:", updated[lessonIndex].objectives.length);
             return updated;
         });
     };

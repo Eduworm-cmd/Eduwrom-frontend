@@ -18,13 +18,13 @@ export const All_Add_StaffList = () => {
   const [classes, setClasses] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   // File and preview states
   const [profilePreview, setProfilePreview] = useState(null);
   const [profileFile, setProfileFile] = useState(null);
   const [aadharFile, setAadharFile] = useState(null);
   const [panFile, setPanFile] = useState(null);
-  
+
   // Form-related states
   const [employeeRole, setEmployeeRole] = useState('staff');
   const { id } = useParams();
@@ -53,7 +53,7 @@ export const All_Add_StaffList = () => {
     try {
       const res = await GetSchoolBranches(selectedSchoolId);
       setBranches(res.data);
-      
+
       // Clear class selection
       setClasses([]);
       form.setFieldsValue({ classId: undefined });
@@ -70,7 +70,7 @@ export const All_Add_StaffList = () => {
       console.log("No branch ID provided, skipping class fetch");
       return;
     }
-    
+
     try {
       const res = await ClassByBranchId(selectedBranchId);
       if (res && res.data) {
@@ -122,7 +122,7 @@ export const All_Add_StaffList = () => {
 
       if (data.branch) {
         formData.branchId = data.branch._id;
-        
+
         // Only fetch classes if role is teacher
         if (data.employeeRole === 'teacher') {
           await fetchClasses(data.branch._id);
@@ -149,6 +149,11 @@ export const All_Add_StaffList = () => {
         formData.bankBranch = bankDetails.bankBranch;
         formData.ifscCode = bankDetails.ifscCode;
       }
+       if (data && data.class) {
+        const classIds = data.class.map(cls => cls._id);
+        formData.classId = classIds;
+      }
+
 
       // Set form values
       form.setFieldsValue(formData);
@@ -179,7 +184,7 @@ export const All_Add_StaffList = () => {
   // Track employee role changes
   const handleRoleChange = (value) => {
     setEmployeeRole(value);
-    
+
     // Only fetch classes if the role is teacher and we have a branch ID
     const branchId = form.getFieldValue('branchId');
     if (value === 'teacher' && branchId) {
@@ -322,14 +327,14 @@ export const All_Add_StaffList = () => {
             </div>
           </Upload>
         </Form.Item>
-        
+
         {/* School and Branch Selection */}
         <Row gutter={16}>
           <Col span={12}>
             <Form.Item name="schoolId" label="School" rules={[{ required: true }]}>
-              <Select 
-                placeholder="Select School" 
-                disabled={isEditMode} 
+              <Select
+                placeholder="Select School"
+                disabled={isEditMode}
                 onChange={(value) => {
                   fetchBranches(value);
                   form.setFieldsValue({ branchId: undefined, classId: undefined });
@@ -349,8 +354,8 @@ export const All_Add_StaffList = () => {
           </Col>
           <Col span={12}>
             <Form.Item name="branchId" label="Branch" rules={[{ required: true }]}>
-              <Select 
-                placeholder="Select Branch" 
+              <Select
+                placeholder="Select Branch"
                 disabled={isEditMode}
                 onChange={(value) => {
                   console.log("Branch selected:", value);
@@ -404,8 +409,16 @@ export const All_Add_StaffList = () => {
         {employeeRole === 'teacher' && (
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item label="Class" name="classId" rules={[{ required: true }]}>
-                <Select placeholder="Select class" >
+              <Form.Item
+                label="Class"
+                name="classId" // You might want to rename this to "classIds" for clarity
+                rules={[{ required: true, message: 'Please select at least one class' }]}
+              >
+                <Select
+                  mode="multiple" // 👈 Enables multi-select
+                  placeholder="Select classes"
+                  allowClear // Optional: adds a clear (x) button
+                >
                   {Array.isArray(classes) && classes.length > 0 ? (
                     classes.map(cls => (
                       <Option key={cls._id} value={cls._id}>
@@ -418,6 +431,7 @@ export const All_Add_StaffList = () => {
                 </Select>
               </Form.Item>
             </Col>
+
             <Col span={12}>
               <Form.Item label="Teacher Name" name="teacherName">
                 <Input placeholder="Optional - Will use First Name + Last Name if blank" />
@@ -429,11 +443,11 @@ export const All_Add_StaffList = () => {
         {/* Contact Information */}
         <Row gutter={16}>
           <Col span={12}>
-            <Form.Item 
-              label="Email Address" 
-              name="emailId" 
+            <Form.Item
+              label="Email Address"
+              name="emailId"
               rules={[
-                { required: true, message: "Email is required" }, 
+                { required: true, message: "Email is required" },
                 { type: 'email', message: "Invalid email format" }
               ]}
             >
@@ -441,11 +455,11 @@ export const All_Add_StaffList = () => {
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item 
-              label="Phone Number" 
-              name="phoneNumber" 
+            <Form.Item
+              label="Phone Number"
+              name="phoneNumber"
               rules={[
-                { required: true, message: "Phone number is required" }, 
+                { required: true, message: "Phone number is required" },
                 { pattern: /^[0-9]{10}$/, message: 'Please enter a valid 10-digit phone number' }
               ]}
             >

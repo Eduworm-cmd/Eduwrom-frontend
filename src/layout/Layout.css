@@ -3,3 +3,7 @@
       width: 30%;
     }
   }
+
+.custom-scrollbar-teacher::-webkit-scrollbar{
+    display: none;
+}
