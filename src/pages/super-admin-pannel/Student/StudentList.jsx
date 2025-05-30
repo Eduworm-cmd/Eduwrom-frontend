@@ -4,6 +4,7 @@ import { Eye, Edit2, Trash2, EllipsisVertical, PlusCircle, Search } from "lucide
 import { Table, Button, Dropdown } from "antd";
 import { DeleteStudent, GetAllStudentByBranch } from "@/Network/Super_Admin/auth";
 import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 
 export const StudentList = () => {
   const params = useParams();
@@ -67,17 +68,37 @@ useEffect(() => {
 }, [id]);
 
   const handleDelete = async (id) => {
-  
+  const swalWithBootstrapButtons = Swal.mixin({
+    customClass:{
+      confirmButton: "bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded ",
+      cancelButton: "bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded mr-2"
+    },
+    buttonStyling: false
+  });
 
-    try {
-      const response = await DeleteStudent(id);
-      toast.success(response.message || "Deleted!", {
-        autoClose: 1000,
-        onClose: () => fetchStudent(),
-      });
-    } catch (error) {
-      console.log(error);
-    }
+    swalWithBootstrapButtons.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, cancel!",
+      reverseButtons: true
+    }).then(async (result) => {
+      if(result.isConfirmed){
+        try {
+          const response = await DeleteStudent(id);
+          toast.success(response.message || "Deleted!", {
+            autoClose: 1000,
+            onClose: () => fetchStudent(),
+          })
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    })
+
+    
   }
 
   const onSelectChange = (selectedKeys) => {

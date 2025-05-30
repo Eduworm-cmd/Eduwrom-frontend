@@ -20,6 +20,7 @@ import { UploadOutlined, LoadingOutlined } from '@ant-design/icons';
 import { ClassesDropdown, CreateSubject, getSubjectByClassId } from '@/Network/Super_Admin/auth';
 import { Edit2, EllipsisVertical, Eye, EyeIcon, PlusCircle, Trash2, RefreshCw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const { Option } = Select;
 
@@ -207,26 +208,59 @@ const SubjectCreate = () => {
     };
 
     const handleDelete = async (id, subjectName) => {
-        // try {
-        //     setIsDeleting(id);
-        //     // If deleteSubject API exists, use it
-        //     if (typeof deleteSubject === 'function') {
-        //         await deleteSubject(id);
-        //         message.success(`Subject "${subjectName}" deleted successfully`);
+        try {
+            setIsDeleting(id);
 
-        //         // Refresh the subjects list
-        //         await fetchSubjectsByClassId(selectedClassId);
-        //     } else {
-        //         // Fallback if API doesn't exist yet
-        //         message.info(`Delete functionality for "${subjectName}" will be implemented soon`);
-        //     }
-        // } catch (err) {
-        //     const errorMessage = err?.response?.data?.message || err.message || 'Failed to delete subject';
-        //     message.error(errorMessage);
-        //     console.error('Error deleting subject:', err);
-        // } finally {
-        //     setIsDeleting(null);
-        // }
+            const result = await Swal.fire({
+                title: 'Are you sure?',
+                text: `You want to delete subject "${subjectName}"? This action cannot be undone.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'No, cancel',
+                allowOutsideClick: false,
+                customClass: {
+                    container: 'swal2-container',
+                    popup: 'swal2-popup',
+                    title: 'swal2-title',
+                    actions: 'swal2-actions',
+                    confirmButton: 'swal2-confirm',
+                    cancelButton: 'swal2-cancel',
+                }
+            });
+
+            if (result.isConfirmed) {
+                // Call your delete API endpoint
+                const response = await fetch(`http://localhost:4000/api/subject/${id}`, {
+                    method: 'DELETE'
+                });
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    await Swal.fire(
+                        'Deleted!',
+                        `Subject "${subjectName}" has been deleted.`,
+                        'success'
+                    );
+                    // Refresh the subjects list
+                    await fetchSubjectsByClassId(selectedClassId);
+                } else {
+                    throw new Error(data.message || 'Failed to delete subject');
+                }
+            }
+        } catch (err) {
+            const errorMessage = err?.response?.data?.message || err.message || 'Failed to delete subject';
+            await Swal.fire(
+                'Error!',
+                errorMessage,
+                'error'
+            );
+            console.error('Error deleting subject:', err);
+        } finally {
+            setIsDeleting(null);
+        }
     };
 
     const handleImageUpload = async (file) => {
@@ -401,23 +435,17 @@ const SubjectCreate = () => {
                             {
                                 key: "delete",
                                 label: (
-                                    <Popconfirm
-                                        title="Delete Subject"
-                                        description={`Are you sure you want to delete "${record.subjectName}"?`}
-                                        onConfirm={() => handleDelete(record._id, record.subjectName)}
-                                        okText="Yes"
-                                        cancelText="No"
-                                        okButtonProps={{ danger: true }}
+                                    <div
+                                        className="flex items-center gap-2 text-red-500"
+                                        onClick={() => handleDelete(record._id, record.subjectName)}
                                     >
-                                        <div className="flex items-center gap-2 text-red-500">
-                                            {isDeleting === record._id ? (
-                                                <LoadingOutlined size={14} />
-                                            ) : (
-                                                <Trash2 size={14} />
-                                            )}
-                                            Delete
-                                        </div>
-                                    </Popconfirm>
+                                        {isDeleting === record._id ? (
+                                            <LoadingOutlined size={14} />
+                                        ) : (
+                                            <Trash2 size={14} />
+                                        )}
+                                        Delete
+                                    </div>
                                 ),
                             },
                         ],
