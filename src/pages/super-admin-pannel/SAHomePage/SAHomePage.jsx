@@ -2,8 +2,7 @@ import React from "react";
 import { GraduationCap, User, Users, DollarSign, BellRing, Pencil } from "lucide-react";
 import Barcharts from "@/components/Charts/Barcharts";
 import { RadialCharts } from "@/components/Charts/RadialCharts";
-import DataTable from "@/components/DataTable/DataTable";
-import Table from "../Staff/Table";
+
 
 const stats = [
   {
@@ -93,8 +92,7 @@ export const SAHomePage = () => {
           <RadialCharts/>
       </div>
       <div className="p-6 bg-muted/50 rounded-2xl">
-         {/* <Table columns={} data={} actionMenu={} /> */}
-          <DataTable columns={columns} data={data} title="Star Student" actionButtons={actionButtons}/>
+        
       </div>
     </div>
   );
