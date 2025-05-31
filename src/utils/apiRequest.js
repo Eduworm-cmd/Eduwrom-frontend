@@ -20,6 +20,8 @@ const apiRequest = async (
       headers.Authorization = `Bearer ${token}`;
     }
 
+    console.log("Ulr",BASE_URL);
+    
     // Clean up query params and append to URL
     let fullUrl = `${BASE_URL}${url}`;
     if (params && method === "GET") {
