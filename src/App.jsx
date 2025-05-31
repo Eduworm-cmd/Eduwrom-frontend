@@ -60,9 +60,10 @@ function App() {
     <BrowserRouter>
       <Routes>
         {/* Auth Routes */}
-        <Route path="/sp-login" element={<Login_SignUp />} />
+              <Route path="/SPlogin" element={<Login_SignUp />} />
         <Route path="/login" element={<School_Teacher_Login />} />
-        <Route path="/" element={<School_Teacher_Login />} />
+        <Route path="/" element={<School_Teacher_Login/>} />        
+        <Route path="*" element={<PageNotFound />} />
 
         {/* Teacher Routes with Layout */}
         <Route path="/eduworm-teacher" element={<Layout />}>
