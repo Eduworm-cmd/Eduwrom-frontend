@@ -24,16 +24,16 @@ export const OtpVerify = ({ onCancel, handleOtpSubmit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    handleOtpSubmit(otp); 
+    handleOtpSubmit(otp);
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6 m-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-auto p-4 sm:p-6">
         <form onSubmit={handleSubmit}>
-          <h2 className="text-2xl font-bold mb-4 text-center text-gray-700">Verify OTP</h2>
-          <p className="text-center text-gray-500 mb-4">OTP sent to your phone</p>
-          <div className="flex justify-between mb-4">
+          <h2 className="text-xl sm:text-2xl font-bold mb-4 text-center text-gray-700">Verify OTP</h2>
+          <p className="text-center text-gray-500 mb-4 text-sm sm:text-base">OTP sent to your phone</p>
+          <div className="flex justify-between gap-2 sm:gap-1 mb-4">
             {otp.map((digit, index) => (
               <input
                 key={index}
@@ -43,21 +43,21 @@ export const OtpVerify = ({ onCancel, handleOtpSubmit }) => {
                 value={digit}
                 onChange={(e) => handleOtpChange(e, index)}
                 onKeyDown={(e) => handleKeyDown(e, index)}
-                className="w-12 h-12 text-center border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-10 h-10 sm:w-12 sm:h-12 text-center border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                 placeholder="-"
               />
             ))}
           </div>
           <button
             type="submit"
-            className="bg-blue-600 text-white py-2 w-full rounded-lg shadow hover:bg-blue-500 transition-all"
+            className="bg-blue-600 text-white py-2 w-full rounded-lg shadow hover:bg-blue-500 transition-all text-sm sm:text-base"
           >
             Verify OTP
           </button>
           <button
             type="button"
             onClick={onCancel}
-            className="mt-4 text-sm text-gray-500 hover:text-gray-700 text-center w-full"
+            className="mt-4 text-xs sm:text-sm text-gray-500 hover:text-gray-700 text-center w-full"
           >
             Cancel
           </button>

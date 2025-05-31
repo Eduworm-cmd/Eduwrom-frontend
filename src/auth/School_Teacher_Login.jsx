@@ -55,7 +55,6 @@ export const School_Teacher_Login = () => {
             if (showForm) {
                 try {
                     const response = await SchoolAdminLoginByEmail({ email, password });
-
                     if (response?.message === "Login successful") {
                         SetLocalStorage("token", response.token);
                         dispatch(setUserData({
@@ -76,12 +75,8 @@ export const School_Teacher_Login = () => {
                             onClose: () => navigate("/eduworm-school"),
                         });
                     }
-                    else {
-                        console.log(error);
-                    }
                 } catch (err) {
                     console.log(err);
-
                 }
             } else {
                 try {
@@ -92,7 +87,6 @@ export const School_Teacher_Login = () => {
                     }
                 } catch (err) {
                     console.log(err);
-
                 }
             }
         } else if (role === "Staff") {
@@ -118,16 +112,11 @@ export const School_Teacher_Login = () => {
                         autoClose: 2000,
                         onClose: () => navigate("/eduworm-school"),
                     });
-                } else {
-                    console.log(error);
-
                 }
             } catch (err) {
-                console.log(error);
-
+                console.log(err);
             }
         }
-
     };
 
     const handleVerifyOTP = async (e) => {
@@ -141,7 +130,6 @@ export const School_Teacher_Login = () => {
 
             if (response.message === "OTP verified successfully") {
                 SetLocalStorage("token", response.token);
-
                 dispatch(setUserData({
                     user: {
                         id: response?.user?.id,
@@ -160,128 +148,109 @@ export const School_Teacher_Login = () => {
                     autoClose: 3000,
                     onClose: () => navigate("/eduworm-school"),
                 });
-            } else {
-                console.log(error);
             }
         } catch (err) {
             console.log(err);
-
         }
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-white relative overflow-hidden">
+        <div className="min-h-screen flex items-center justify-center bg-white relative overflow-hidden px-4">
             <ToastContainer />
-            <div className="bg-white rounded-3xl shadow-lg flex overflow-hidden w-[900px] h-[550px]">
+            <div className="bg-white rounded-3xl shadow-lg flex flex-col md:flex-row overflow-hidden w-full max-w-5xl h-auto md:h-[550px]">
                 {/* Left Image Section */}
-                <div className="w-1/2 bg-sky-400 p-6 flex flex-col justify-center items-center text-center relative">
-                    <h1 className="absolute top-4 left-4 text-2xl font-bold text-blue-900">EduWorm</h1>
+                <div className="w-full md:w-1/2 bg-sky-400 p-6 flex flex-col justify-center items-center text-center relative">
+                    <h1 className="absolute top-4 left-4 text-xl md:text-2xl font-bold text-blue-900">EduWorm</h1>
                     <img
                         src="https://img.freepik.com/free-photo/young-man-using-laptop-white_23-2148327183.jpg"
                         alt="learning"
-                        className="rounded-xl w-44 h-44 object-cover mb-4"
+                        className="rounded-xl w-32 h-32 md:w-44 md:h-44 object-cover mb-4"
                     />
                 </div>
 
                 {/* Right Form Section */}
-                <div className="w-1/2 p-8 flex flex-col justify-start">
-                    {/* Tabs */}
+                <div className="w-full md:w-1/2 p-6 md:p-8 flex flex-col justify-start">
                     <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-2xl font-semibold">Log in</h2>
+                        <h2 className="text-xl md:text-2xl font-semibold">Log in</h2>
                         <div className="bg-blue-100 p-1 rounded-full flex">
                             <button
                                 onClick={() => {
                                     setRole("School");
                                     setShowForm(false);
                                 }}
-                                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${role === "School" ? "bg-blue-900 text-white" : "text-gray-700"
-                                    }`}
+                                className={`px-3 md:px-4 py-1.5 rounded-full text-sm font-medium ${role === "School" ? "bg-blue-900 text-white" : "text-gray-700"}`}
                             >
                                 As School
                             </button>
                             <button
                                 onClick={() => setRole("Staff")}
-                                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${role === "Staff" ? "bg-blue-900 text-white" : "text-gray-700"
-                                    }`}
+                                className={`px-3 md:px-4 py-1.5 rounded-full text-sm font-medium ${role === "Staff" ? "bg-blue-900 text-white" : "text-gray-700"}`}
                             >
                                 As Staff
                             </button>
                         </div>
                     </div>
 
-                    {/* Form */}
                     <form onSubmit={handleLogin} className="space-y-4 flex flex-col justify-center h-full">
                         {role === "School" ? (
                             showForm ? (
                                 <>
                                     <div>
-                                        <label htmlFor="school-email" className="block text-md font-medium text-gray-700">
-                                            Email Address <span className="text-red-500">*</span>
-                                        </label>
+                                        <label className="block text-sm font-medium text-gray-700">Email Address <span className="text-red-500">*</span></label>
                                         <input
-                                            id="school-email"
                                             type="email"
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
+                                            className="w-full p-2.5 md:p-3 border border-gray-300 rounded-md focus:outline-none"
                                             placeholder="Enter your email"
-                                            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none"
                                         />
                                     </div>
                                     <div>
-                                        <label htmlFor="school-password" className="block text-md font-medium text-gray-700">
-                                            Password <span className="text-red-500">*</span>
-                                        </label>
+                                        <label className="block text-sm font-medium text-gray-700">Password <span className="text-red-500">*</span></label>
                                         <input
-                                            id="school-password"
                                             type="password"
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
+                                            className="w-full p-2.5 md:p-3 border border-gray-300 rounded-md focus:outline-none"
                                             placeholder="Enter your password"
-                                            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none"
                                         />
                                     </div>
                                 </>
                             ) : (
                                 <div>
-                                    <label htmlFor="school-phone" className="block text-md font-medium text-gray-700">
-                                        Phone Number <span className="text-red-500">*</span>
-                                    </label>
+                                    <label className="block text-sm font-medium text-gray-700">Phone Number <span className="text-red-500">*</span></label>
                                     <input
-                                        id="school-phone"
                                         type="tel"
                                         value={phone}
                                         onChange={(e) => setPhone(e.target.value)}
+                                        className="w-full p-2.5 md:p-3 border border-gray-300 rounded-md focus:outline-none"
                                         placeholder="Enter your phone number"
-                                        className="w-full p-3 border border-gray-300 rounded-md focus:outline-none"
                                     />
                                 </div>
                             )
                         ) : (
                             <>
                                 <input
-                                    id="teacher-email"
                                     type="email"
                                     value={staffEmail}
                                     onChange={(e) => setStaffEmail(e.target.value)}
+                                    className="w-full p-2.5 md:p-3 border border-gray-300 rounded-md focus:outline-none"
                                     placeholder="Enter your email"
-                                    className="w-full p-3 border border-gray-300 rounded-md focus:outline-none"
                                 />
                                 <input
-                                    id="teacher-password"
                                     type="password"
                                     value={staffPassword}
                                     onChange={(e) => setStaffPassword(e.target.value)}
+                                    className="w-full p-2.5 md:p-3 border border-gray-300 rounded-md focus:outline-none"
                                     placeholder="Enter your password"
-                                    className="w-full p-3 border border-gray-300 rounded-md focus:outline-none"
                                 />
-
                             </>
                         )}
 
                         {role === "School" && (
-                            <div className="mt-4 text-center">
+                            <div className="mt-2 text-center">
                                 <p
-                                    className="text-lg underline cursor-pointer text-sky-600 font-bold"
+                                    className="text-sm md:text-lg underline cursor-pointer text-sky-600 font-bold"
                                     onClick={toggleFormType}
                                 >
                                     {showForm ? "Login Via Mobile Number" : "Login Via Email"}
@@ -292,7 +261,7 @@ export const School_Teacher_Login = () => {
                         <div className="flex justify-center">
                             <button
                                 type="submit"
-                                className="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition-all"
+                                className="bg-blue-600 text-white px-4 md:px-6 py-2.5 md:py-3 rounded-md hover:bg-blue-700 transition-all"
                             >
                                 {role === "School" && !showForm ? "Send OTP" : "Login"}
                             </button>
@@ -303,10 +272,10 @@ export const School_Teacher_Login = () => {
 
             {/* OTP Modal */}
             {showOtp && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6 m-4">
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4">
+                    <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-4 md:p-6">
                         <form onSubmit={handleVerifyOTP}>
-                            <h2 className="text-2xl font-bold mb-4 text-center text-gray-700">Verify OTP</h2>
+                            <h2 className="text-xl md:text-2xl font-bold mb-4 text-center text-gray-700">Verify OTP</h2>
                             <p className="text-center text-gray-500 mb-4">OTP sent to your phone</p>
                             <div className="flex justify-between mb-4">
                                 {otp.map((digit, index) => (
@@ -318,7 +287,7 @@ export const School_Teacher_Login = () => {
                                         value={digit}
                                         onChange={(e) => handleOtpChange(e, index)}
                                         onKeyDown={(e) => handleKeyDown(e, index)}
-                                        className="w-12 h-12 text-center border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        className="w-10 h-10 md:w-12 md:h-12 text-center border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         placeholder="-"
                                     />
                                 ))}
