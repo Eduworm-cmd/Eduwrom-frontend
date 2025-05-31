@@ -14,6 +14,6 @@ export default defineConfig({
   server: {
     host: '0.0.0.0', // or true
     cors: true,
-    allowedHosts: ['eduwrom-frontend.onrender.com']
+    allowedHosts: ['eduwrom-frontend.onrender.com','*']
   }
 })
